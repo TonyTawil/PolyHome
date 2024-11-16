@@ -1,4 +1,4 @@
-package com.antoinetawil.polyhome
+package com.antoinetawil.polyhome.Models
 
 data class Peripheral(
     val id: String,
@@ -6,5 +6,5 @@ data class Peripheral(
     val availableCommands: List<String>,
     val opening: Int? = null,
     val openingMode: Int? = null,
-    val power: Int? = null
+    var power: Int? = null
 )

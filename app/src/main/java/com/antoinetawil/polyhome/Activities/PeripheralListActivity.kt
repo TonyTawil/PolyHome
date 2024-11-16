@@ -1,4 +1,4 @@
-package com.antoinetawil.polyhome
+package com.antoinetawil.polyhome.Activities
 
 import android.content.Context
 import android.os.Bundle
@@ -7,6 +7,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.antoinetawil.polyhome.Models.Peripheral
+import com.antoinetawil.polyhome.Adapters.PeripheralListAdapter
+import com.antoinetawil.polyhome.R
 import okhttp3.*
 import org.json.JSONObject
 import java.io.IOException

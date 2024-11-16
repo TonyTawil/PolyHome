@@ -1,9 +1,15 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.PolyHome" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
-    </style>
+<resources>
+    <style name="Theme.PolyHome" parent="Theme.MaterialComponents.DayNight.NoActionBar">
 
-    <style name="Theme.PolyHome" parent="Base.Theme.PolyHome" />
+        <item name="colorPrimary">@color/PolytechBlue</item>
+        <item name="colorPrimaryVariant">@color/PolytechBlue</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <item name="android:colorBackground">@color/background_color</item>
+        <item name="colorSurface">@color/white</item>
+        <item name="colorOnSurface">@color/primary_text</item>
+
+        <item name="android:statusBarColor">@color/PolytechBlue</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
 </resources>

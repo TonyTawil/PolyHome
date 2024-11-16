@@ -1,10 +1,18 @@
-package com.antoinetawil.polyhome
+package com.antoinetawil.polyhome.Activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.ClickableSpan
+import android.text.style.ForegroundColorSpan
 import android.util.Log
-import android.widget.*
+import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import com.antoinetawil.polyhome.R
+import com.google.android.material.textfield.TextInputEditText
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -21,33 +29,33 @@ class SignupActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
 
-        val emailEditText: EditText = findViewById(R.id.editTextEmailAddress)
-        val passwordEditText: EditText = findViewById(R.id.editTextPassword)
-        val togglePasswordButton: ImageButton = findViewById(R.id.togglePasswordVisibility)
-        val signupButton: Button = findViewById(R.id.signupButton)
-        val loginTextView: TextView = findViewById(R.id.linkToLoginTextView)
+        val emailEditText: TextInputEditText = findViewById(R.id.editTextEmailAddress)
+        val passwordEditText: TextInputEditText = findViewById(R.id.editTextPassword)
+        val signupButton: androidx.appcompat.widget.AppCompatButton = findViewById(R.id.signupButton)
+        val loginTextView: androidx.appcompat.widget.AppCompatTextView = findViewById(R.id.linkToLoginTextView)
 
-        // Navigate to LoginActivity
-        loginTextView.setOnClickListener {
-            Log.d(TAG, "Navigating to LoginActivity")
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
+        val fullText = "Already have an account? Log in"
+        val spannableString = SpannableString(fullText)
 
-        // Password visibility toggle
-        togglePasswordButton.setOnClickListener {
-            if (passwordEditText.inputType == android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD) {
-                passwordEditText.inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
-                togglePasswordButton.setImageResource(R.drawable.ic_eye_closed)
-            } else {
-                passwordEditText.inputType = android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-                togglePasswordButton.setImageResource(R.drawable.ic_eye_open)
+        val clickableSpan = object : ClickableSpan() {
+            override fun onClick(widget: View) {
+                Log.d(TAG, "Navigating to LoginActivity")
+                val intent = Intent(this@SignupActivity, LoginActivity::class.java)
+                startActivity(intent)
+                finish()
             }
-            passwordEditText.setSelection(passwordEditText.text.length) // Keep cursor at the end
         }
 
-        // Handle Signup
+        val colorSpan = ForegroundColorSpan(ContextCompat.getColor(this, R.color.PolytechBlue))
+        val startIndex = fullText.indexOf("Log in")
+        val endIndex = startIndex + "Log in".length
+
+        spannableString.setSpan(clickableSpan, startIndex, endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        spannableString.setSpan(colorSpan, startIndex, endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        loginTextView.text = spannableString
+        loginTextView.movementMethod = android.text.method.LinkMovementMethod.getInstance()
+
         signupButton.setOnClickListener {
             val email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()
@@ -67,7 +75,6 @@ class SignupActivity : AppCompatActivity() {
         val url = "https://polyhome.lesmoulinsdudev.com/api/users/register"
         val client = OkHttpClient()
 
-        // Create JSON body
         val jsonObject = JSONObject()
         jsonObject.put("login", email)
         jsonObject.put("password", password)
@@ -77,7 +84,6 @@ class SignupActivity : AppCompatActivity() {
 
         Log.d(TAG, "Signup request body created: $jsonBody")
 
-        // Build the request
         val request = Request.Builder()
             .url(url)
             .post(requestBody)
@@ -86,7 +92,6 @@ class SignupActivity : AppCompatActivity() {
 
         Log.d(TAG, "Signup request built with URL: $url")
 
-        // Execute the request
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 Log.e(TAG, "Network request failed: ${e.message}", e)

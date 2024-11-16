@@ -1,14 +1,18 @@
-package com.antoinetawil.polyhome
+package com.antoinetawil.polyhome.Activities
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.antoinetawil.polyhome.Adapters.HouseListAdapter
+import com.antoinetawil.polyhome.Models.House
+import com.antoinetawil.polyhome.R
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -32,7 +36,7 @@ class HouseListActivity : AppCompatActivity() {
 
         recyclerView = findViewById(R.id.recyclerView)
         adapter = HouseListAdapter(houses, this,
-            onManagePermission = { houseId, isOwner -> showPermissionPopup(houseId) },
+            onManagePermission = { houseId, view -> showPermissionPopup(houseId, view) },
             onHouseSelected = { houseId -> navigateToPeripheralList(houseId) }
         )
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -113,9 +117,11 @@ class HouseListActivity : AppCompatActivity() {
         }
     }
 
-    private fun showPermissionPopup(houseId: Int) {
+    private fun showPermissionPopup(houseId: Int, anchorView: View) {
         val popupView = LayoutInflater.from(this).inflate(R.layout.permission_popup, null)
-        val popupWindow = PopupWindow(popupView, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, true)
+
+        val desiredWidth = resources.displayMetrics.widthPixels * 0.7
+        val popupWindow = PopupWindow(popupView, desiredWidth.toInt(), LinearLayout.LayoutParams.WRAP_CONTENT, true)
 
         val emailEditText = popupView.findViewById<EditText>(R.id.emailEditText)
         val givePermissionButton = popupView.findViewById<Button>(R.id.givePermissionButton)
@@ -141,8 +147,11 @@ class HouseListActivity : AppCompatActivity() {
             }
         }
 
-        popupWindow.showAtLocation(recyclerView, android.view.Gravity.CENTER, 0, 0)
+        popupWindow.elevation = 8f
+        popupWindow.animationStyle = android.R.style.Animation_Dialog
+        popupWindow.showAsDropDown(anchorView, 50, 80)
     }
+
 
     private fun managePermission(houseId: Int, email: String, isGrant: Boolean) {
         val url = "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/users"
