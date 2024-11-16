@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.antoinetawil.polyhome.Models.Peripheral
 import com.antoinetawil.polyhome.Adapters.PeripheralListAdapter
 import com.antoinetawil.polyhome.R
+import com.antoinetawil.polyhome.Utils.HeaderUtils
 import okhttp3.*
 import org.json.JSONObject
 import java.io.IOException
@@ -27,6 +28,8 @@ class PeripheralListActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_peripheral_list)
+
+        HeaderUtils.setupHeader(this)
 
         recyclerView = findViewById(R.id.recyclerView)
         adapter = PeripheralListAdapter(peripherals, this)

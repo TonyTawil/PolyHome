@@ -1,5 +1,6 @@
 package com.antoinetawil.polyhome.Activities
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.antoinetawil.polyhome.Adapters.HouseListAdapter
 import com.antoinetawil.polyhome.Models.House
 import com.antoinetawil.polyhome.R
+import com.antoinetawil.polyhome.Utils.HeaderUtils
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -33,6 +35,8 @@ class HouseListActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_house_list)
+
+        HeaderUtils.setupHeader(this)
 
         recyclerView = findViewById(R.id.recyclerView)
         adapter = HouseListAdapter(houses, this,

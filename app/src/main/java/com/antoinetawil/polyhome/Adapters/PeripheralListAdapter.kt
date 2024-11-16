@@ -46,7 +46,6 @@ class PeripheralListAdapter(
         holder.commandsContainer.removeAllViews()
 
         if (peripheral.type == "light") {
-            // Add a toggle button for light peripherals
             val lightToggleButton = ImageButton(context).apply {
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -56,8 +55,6 @@ class PeripheralListAdapter(
                 }
                 setPadding(16, 16, 16, 16)
                 setBackgroundResource(android.R.color.transparent)
-
-                // Set the initial icon based on the power state
                 updateLightIcon(peripheral.power == 1)
 
                 setOnClickListener {
@@ -67,7 +64,6 @@ class PeripheralListAdapter(
                     sendCommandToPeripheral(peripheral.id, command) { success ->
                         (context as PeripheralListActivity).runOnUiThread {
                             if (success) {
-                                // Toggle power state and update the icon
                                 peripheral.power = if (isCurrentlyOn) 0 else 1
                                 updateLightIcon(peripheral.power == 1)
                                 Toast.makeText(
@@ -87,34 +83,17 @@ class PeripheralListAdapter(
                 }
             }
             holder.commandsContainer.addView(lightToggleButton)
-        } else {
-            // Add buttons for other commands
-            for (command in peripheral.availableCommands) {
-                val button = TextView(context).apply {
-                    text = command.capitalize()
-                    setPadding(12, 8, 12, 8)
-                    setBackgroundResource(R.drawable.button_background)
-                    setOnClickListener {
-                        sendCommandToPeripheral(peripheral.id, command) { success ->
-                            (context as PeripheralListActivity).runOnUiThread {
-                                if (success) {
-                                    Toast.makeText(
-                                        context,
-                                        "Command $command sent successfully!",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                } else {
-                                    Toast.makeText(
-                                        context,
-                                        "Failed to send $command",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            }
-                        }
-                    }
-                }
-                holder.commandsContainer.addView(button)
+        } else if (peripheral.type == "rolling shutter" || peripheral.type == "garage door") {
+            // Add buttons for "Open", "Pause", and "Close"
+            val openButton = createIconButton(R.drawable.ic_up, "OPEN", peripheral)
+            val pauseButton = createIconButton(R.drawable.ic_pause, "STOP", peripheral)
+            val closeButton = createIconButton(R.drawable.ic_down, "CLOSE", peripheral)
+
+            // Add buttons in the desired order
+            holder.commandsContainer.apply {
+                addView(openButton)
+                addView(pauseButton)
+                addView(closeButton)
             }
         }
     }
@@ -125,16 +104,46 @@ class PeripheralListAdapter(
         setImageResource(if (isOn) R.drawable.ic_light_on else R.drawable.ic_light_off)
     }
 
+    private fun createIconButton(iconResId: Int, command: String, peripheral: Peripheral): ImageButton {
+        return ImageButton(context).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(8, 8, 8, 8)
+            }
+            setBackgroundResource(android.R.color.transparent)
+            setImageResource(iconResId)
+
+            setOnClickListener {
+                sendCommandToPeripheral(peripheral.id, command) { success ->
+                    (context as PeripheralListActivity).runOnUiThread {
+                        if (success) {
+                            Toast.makeText(
+                                context,
+                                "Command $command sent successfully!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "Failed to send $command",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private fun sendCommandToPeripheral(deviceId: String, command: String, callback: (Boolean) -> Unit) {
         val sharedPreferences = context.getSharedPreferences("PolyHomePrefs", Context.MODE_PRIVATE)
         val token = sharedPreferences.getString("auth_token", null)
         val houseId = (context as PeripheralListActivity).intent.getIntExtra("houseId", -1)
 
         if (token != null && houseId != -1) {
-            // Properly encode the deviceId to handle spaces or special characters
-            val encodedDeviceId = URLEncoder.encode("light 2.5", "UTF-8")
-
-            val url = "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/devices/$encodedDeviceId/command"
+            val url = "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/devices/$deviceId/command"
             val client = OkHttpClient()
 
             val jsonObject = JSONObject().apply { put("command", command) }
@@ -169,12 +178,7 @@ class PeripheralListAdapter(
                 }
             })
         } else {
-            Log.e("PeripheralAdapter", "Authentication token or houseId missing")
-            (context as PeripheralListActivity).runOnUiThread {
-                callback(false)
-            }
+            callback(false)
         }
     }
-
-
 }
