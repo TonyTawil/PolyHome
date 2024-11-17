@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.antoinetawil.polyhome.Adapters.FloorListAdapter
@@ -17,6 +18,7 @@ import java.io.IOException
 class FloorListActivity : AppCompatActivity() {
 
     private lateinit var titleTextView: TextView
+    private lateinit var drawerLayout: DrawerLayout
     private lateinit var recyclerView: RecyclerView
     private val floors = listOf("All", "First Floor", "Second Floor")
     private var peripherals = mutableListOf<JSONObject>()
@@ -25,7 +27,8 @@ class FloorListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_floor_list)
 
-        HeaderUtils.setupHeader(this)
+        drawerLayout = findViewById(R.id.drawer_layout)
+        HeaderUtils.setupHeaderWithDrawer(this, drawerLayout)
 
         titleTextView = findViewById(R.id.titleTextView)
         recyclerView = findViewById(R.id.recyclerView)

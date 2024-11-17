@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.antoinetawil.polyhome.Adapters.PeripheralTypeAdapter
@@ -15,11 +16,14 @@ import java.io.IOException
 
 class PeripheralTypeListActivity : AppCompatActivity() {
 
+    private lateinit var drawerLayout: DrawerLayout
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_peripheral_type_list)
 
-        HeaderUtils.setupHeader(this)
+        drawerLayout = findViewById(R.id.drawer_layout)
+        HeaderUtils.setupHeaderWithDrawer(this, drawerLayout)
 
         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -107,7 +111,7 @@ class PeripheralTypeListActivity : AppCompatActivity() {
         val intent = Intent(this, PeripheralListActivity::class.java)
         intent.putExtra("houseId", houseId)
         intent.putExtra("type", type)
-        intent.putExtra("floor", "All") // Garage doors don’t have floors
+        intent.putExtra("floor", "All")
         intent.putExtra("filteredPeripherals", ArrayList(peripherals.map { it.toString() }))
         startActivity(intent)
     }

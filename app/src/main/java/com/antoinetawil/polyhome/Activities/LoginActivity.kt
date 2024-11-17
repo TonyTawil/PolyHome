@@ -27,6 +27,10 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (isUserLoggedIn()) {
+            navigateToHouseList()
+            return
+        }
         setContentView(R.layout.activity_login)
 
         val emailEditText: TextInputEditText = findViewById(R.id.editTextEmailAddress)
@@ -39,7 +43,6 @@ class LoginActivity : AppCompatActivity() {
 
         val clickableSpan = object : ClickableSpan() {
             override fun onClick(widget: View) {
-                Log.d(TAG, "Navigating to SignupActivity")
                 val intent = Intent(this@LoginActivity, SignupActivity::class.java)
                 startActivity(intent)
             }
@@ -59,13 +62,10 @@ class LoginActivity : AppCompatActivity() {
             val email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()
 
-            Log.d(TAG, "Login button clicked with email: $email")
-
             if (email.isNotEmpty() && password.isNotEmpty()) {
                 login(email, password)
             } else {
                 Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
-                Log.w(TAG, "Empty fields: Email or password is missing.")
             }
         }
     }
@@ -77,9 +77,7 @@ class LoginActivity : AppCompatActivity() {
         val jsonObject = JSONObject()
         jsonObject.put("login", email)
         jsonObject.put("password", password)
-        val jsonBody = jsonObject.toString()
-        val mediaType = "application/json".toMediaType()
-        val requestBody = jsonBody.toRequestBody(mediaType)
+        val requestBody = jsonObject.toString().toRequestBody("application/json".toMediaType())
 
         val request = Request.Builder()
             .url(url)
@@ -89,7 +87,6 @@ class LoginActivity : AppCompatActivity() {
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                Log.e(TAG, "Network request failed: ${e.message}", e)
                 runOnUiThread {
                     Toast.makeText(this@LoginActivity, "Login failed: ${e.message}", Toast.LENGTH_LONG).show()
                 }
@@ -97,15 +94,12 @@ class LoginActivity : AppCompatActivity() {
 
             override fun onResponse(call: Call, response: Response) {
                 if (response.isSuccessful) {
-                    val responseBodyString = response.body?.string()
-                    val token = JSONObject(responseBodyString ?: "").optString("token")
+                    val responseBody = response.body?.string()
+                    val token = JSONObject(responseBody ?: "").optString("token")
 
                     runOnUiThread {
-                        Toast.makeText(this@LoginActivity, "Login successful!", Toast.LENGTH_SHORT).show()
                         saveAuthToken(token)
-                        val intent = Intent(this@LoginActivity, HouseListActivity::class.java)
-                        startActivity(intent)
-                        finish()
+                        navigateToHouseList()
                     }
                 } else {
                     runOnUiThread {
@@ -121,5 +115,16 @@ class LoginActivity : AppCompatActivity() {
         val editor = sharedPreferences.edit()
         editor.putString("auth_token", token)
         editor.apply()
+    }
+
+    private fun isUserLoggedIn(): Boolean {
+        val sharedPreferences = getSharedPreferences("PolyHomePrefs", MODE_PRIVATE)
+        return sharedPreferences.getString("auth_token", null) != null
+    }
+
+    private fun navigateToHouseList() {
+        val intent = Intent(this, HouseListActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }

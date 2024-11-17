@@ -11,6 +11,7 @@ import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.antoinetawil.polyhome.Adapters.PeripheralListAdapter
@@ -21,6 +22,7 @@ import org.json.JSONObject
 
 class PeripheralListActivity : AppCompatActivity() {
 
+    private lateinit var drawerLayout: DrawerLayout
     private lateinit var recyclerView: RecyclerView
     private lateinit var titleTextView: TextView
     private lateinit var searchEditText: EditText
@@ -33,7 +35,8 @@ class PeripheralListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_peripheral_list)
 
-        HeaderUtils.setupHeader(this)
+        drawerLayout = findViewById(R.id.drawer_layout)
+        HeaderUtils.setupHeaderWithDrawer(this, drawerLayout)
 
         titleTextView = findViewById(R.id.titleTextView)
         recyclerView = findViewById(R.id.recyclerView)
@@ -129,4 +132,3 @@ class PeripheralListActivity : AppCompatActivity() {
         return Peripheral(id, type, availableCommands, opening, openingMode, power)
     }
 }
-

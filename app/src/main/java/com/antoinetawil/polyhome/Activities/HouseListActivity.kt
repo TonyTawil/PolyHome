@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.antoinetawil.polyhome.Adapters.HouseListAdapter
@@ -23,13 +24,13 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
 
-
 class HouseListActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "HouseListActivity"
     }
 
+    private lateinit var drawerLayout: DrawerLayout
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: HouseListAdapter
     private lateinit var searchEditText: EditText
@@ -41,7 +42,8 @@ class HouseListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_house_list)
 
-        HeaderUtils.setupHeader(this)
+        drawerLayout = findViewById(R.id.drawer_layout)
+        HeaderUtils.setupHeaderWithDrawer(this, drawerLayout)
 
         recyclerView = findViewById(R.id.recyclerView)
         adapter = HouseListAdapter(filteredHouses, this,
@@ -87,6 +89,7 @@ class HouseListActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 filterHouses(s.toString())
             }
+
             override fun afterTextChanged(s: Editable?) {}
         })
     }
