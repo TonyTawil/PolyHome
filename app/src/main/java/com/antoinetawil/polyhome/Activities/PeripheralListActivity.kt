@@ -3,6 +3,7 @@ package com.antoinetawil.polyhome.Activities
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.EditText
@@ -18,10 +19,13 @@ import com.antoinetawil.polyhome.Adapters.PeripheralListAdapter
 import com.antoinetawil.polyhome.Models.Peripheral
 import com.antoinetawil.polyhome.R
 import com.antoinetawil.polyhome.Utils.HeaderUtils
+import okhttp3.*
 import org.json.JSONObject
+import java.io.IOException
 
 class PeripheralListActivity : AppCompatActivity() {
 
+    private val TAG = "PeripheralListActivity"
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var recyclerView: RecyclerView
     private lateinit var titleTextView: TextView
@@ -63,6 +67,7 @@ class PeripheralListActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
 
         setupSearchPopup()
+        logPeripheralFetchDetails(houseId, peripheralType)
     }
 
     private fun setupSearchPopup() {
@@ -109,7 +114,6 @@ class PeripheralListActivity : AppCompatActivity() {
             "garage door" -> "Garage Door"
             else -> type + "s"
         }
-
         return when (type.lowercase()) {
             "garage door" -> pluralType
             else -> when (floor) {
@@ -130,5 +134,42 @@ class PeripheralListActivity : AppCompatActivity() {
         val power = json.optInt("power", -1).takeIf { it != -1 }
 
         return Peripheral(id, type, availableCommands, opening, openingMode, power)
+    }
+
+    private fun logPeripheralFetchDetails(houseId: Int, peripheralType: String) {
+        val url = "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/devices"
+        val sharedPreferences = getSharedPreferences("PolyHomePrefs", MODE_PRIVATE)
+        val token = sharedPreferences.getString("auth_token", null)
+
+        if (token == null) {
+            Log.e(TAG, "Auth token missing")
+            Toast.makeText(this, "Authentication token missing", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val request = Request.Builder()
+            .url(url)
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+
+        Log.d(TAG, "Sending request to fetch peripherals")
+        Log.d(TAG, "Request URL: $url")
+        Log.d(TAG, "Request Headers: Authorization: Bearer $token")
+
+        OkHttpClient().newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e(TAG, "Failed to fetch peripherals: ${e.message}", e)
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                if (response.isSuccessful) {
+                    val responseBody = response.body?.string()
+                    Log.d(TAG, "Peripheral fetch successful")
+                    Log.d(TAG, "Response Body: $responseBody")
+                } else {
+                    Log.e(TAG, "Failed to fetch peripherals, Status Code: ${response.code}")
+                }
+            }
+        })
     }
 }

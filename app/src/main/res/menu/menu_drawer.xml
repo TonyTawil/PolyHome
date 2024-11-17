@@ -14,6 +14,14 @@
         android:title="Settings" />
 
     <item
+        android:id="@+id/menu_schedules"
+        android:title="Schedules" />
+
+    <item
+        android:id="@+id/menu_statistics"
+        android:title="Statistics" />
+
+    <item
         android:id="@+id/menu_sign_out"
         android:title="Sign Out" />
 

@@ -15,6 +15,12 @@
         android:theme="@style/Theme.PolyHome"
         tools:targetApi="31">
         <activity
+            android:name=".Activities.StatisticsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.SchedulesActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activities.NotificationsActivity"
             android:exported="false" />
         <activity

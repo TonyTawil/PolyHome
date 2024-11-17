@@ -18,7 +18,6 @@ import org.json.JSONObject
 import java.io.IOException
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.net.URLEncoder
 
 class PeripheralListAdapter(
     private val peripheralList: List<Peripheral>,
@@ -42,7 +41,6 @@ class PeripheralListAdapter(
         holder.peripheralIdTextView.text = "ID: ${peripheral.id}"
         holder.peripheralTypeTextView.text = "Type: ${peripheral.type}"
 
-        // Clear any existing views in the container
         holder.commandsContainer.removeAllViews()
 
         if (peripheral.type == "light") {
@@ -55,17 +53,16 @@ class PeripheralListAdapter(
                 }
                 setPadding(16, 16, 16, 16)
                 setBackgroundResource(android.R.color.transparent)
-                updateLightIcon(peripheral.power == 1)
+                setImageResource(if (peripheral.power == 1) R.drawable.ic_light_on else R.drawable.ic_light_off)
 
                 setOnClickListener {
                     val isCurrentlyOn = peripheral.power == 1
                     val command = if (isCurrentlyOn) "TURN OFF" else "TURN ON"
-
                     sendCommandToPeripheral(peripheral.id, command) { success ->
                         (context as PeripheralListActivity).runOnUiThread {
                             if (success) {
                                 peripheral.power = if (isCurrentlyOn) 0 else 1
-                                updateLightIcon(peripheral.power == 1)
+                                setImageResource(if (peripheral.power == 1) R.drawable.ic_light_on else R.drawable.ic_light_off)
                                 Toast.makeText(
                                     context,
                                     "Light turned ${if (peripheral.power == 1) "on" else "off"}",
@@ -84,12 +81,10 @@ class PeripheralListAdapter(
             }
             holder.commandsContainer.addView(lightToggleButton)
         } else if (peripheral.type == "rolling shutter" || peripheral.type == "garage door") {
-            // Add buttons for "Open", "Pause", and "Close"
             val openButton = createIconButton(R.drawable.ic_up, "OPEN", peripheral)
             val pauseButton = createIconButton(R.drawable.ic_pause, "STOP", peripheral)
             val closeButton = createIconButton(R.drawable.ic_down, "CLOSE", peripheral)
 
-            // Add buttons in the desired order
             holder.commandsContainer.apply {
                 addView(openButton)
                 addView(pauseButton)
@@ -99,10 +94,6 @@ class PeripheralListAdapter(
     }
 
     override fun getItemCount(): Int = peripheralList.size
-
-    private fun ImageButton.updateLightIcon(isOn: Boolean) {
-        setImageResource(if (isOn) R.drawable.ic_light_on else R.drawable.ic_light_off)
-    }
 
     private fun createIconButton(iconResId: Int, command: String, peripheral: Peripheral): ImageButton {
         return ImageButton(context).apply {
@@ -145,7 +136,6 @@ class PeripheralListAdapter(
         if (token != null && houseId != -1) {
             val url = "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/devices/$deviceId/command"
             val client = OkHttpClient()
-
             val jsonObject = JSONObject().apply { put("command", command) }
             val requestBody = jsonObject.toString().toRequestBody("application/json".toMediaTypeOrNull())
 
@@ -155,26 +145,13 @@ class PeripheralListAdapter(
                 .addHeader("Authorization", "Bearer $token")
                 .build()
 
-            // Log the request details
-            Log.d("PeripheralAdapter", "Sending command: $command to $url with body: $jsonObject")
-
             client.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
-                    Log.e("PeripheralAdapter", "Failed to send command: ${e.message}", e)
-                    (context as PeripheralListActivity).runOnUiThread {
-                        callback(false)
-                    }
+                    callback(false)
                 }
 
                 override fun onResponse(call: Call, response: Response) {
-                    val responseBody = response.body?.string()
-                    Log.d("PeripheralAdapter", "Response: $responseBody")
-                    if (response.isSuccessful) {
-                        callback(true)
-                    } else {
-                        Log.e("PeripheralAdapter", "Failed response code: ${response.code}, body: $responseBody")
-                        callback(false)
-                    }
+                    callback(response.isSuccessful)
                 }
             })
         } else {

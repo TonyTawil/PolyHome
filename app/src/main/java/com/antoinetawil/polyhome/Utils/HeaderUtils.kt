@@ -11,6 +11,8 @@ import com.antoinetawil.polyhome.Activities.HouseListActivity
 import com.antoinetawil.polyhome.Activities.LoginActivity
 import com.antoinetawil.polyhome.Activities.SettingsActivity
 import com.antoinetawil.polyhome.Activities.NotificationsActivity
+import com.antoinetawil.polyhome.Activities.SchedulesActivity
+import com.antoinetawil.polyhome.Activities.StatisticsActivity
 import com.google.android.material.navigation.NavigationView
 
 object HeaderUtils {
@@ -38,6 +40,14 @@ object HeaderUtils {
                 }
                 R.id.menu_settings -> {
                     val intent = Intent(activity, SettingsActivity::class.java)
+                    activity.startActivity(intent)
+                }
+                R.id.menu_schedules -> {
+                    val intent = Intent(activity, SchedulesActivity::class.java)
+                    activity.startActivity(intent)
+                }
+                R.id.menu_statistics -> {
+                    val intent = Intent(activity, StatisticsActivity::class.java)
                     activity.startActivity(intent)
                 }
                 R.id.menu_sign_out -> {
