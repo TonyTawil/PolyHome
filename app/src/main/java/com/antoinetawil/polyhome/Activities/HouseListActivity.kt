@@ -1,6 +1,5 @@
 package com.antoinetawil.polyhome.Activities
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -41,7 +40,7 @@ class HouseListActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerView)
         adapter = HouseListAdapter(houses, this,
             onManagePermission = { houseId, view -> showPermissionPopup(houseId, view) },
-            onHouseSelected = { houseId -> navigateToPeripheralList(houseId) }
+            onHouseSelected = { houseId -> fetchPeripheralTypes(houseId) }
         )
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
@@ -55,13 +54,6 @@ class HouseListActivity : AppCompatActivity() {
             Toast.makeText(this, "Authentication token not found", Toast.LENGTH_SHORT).show()
             Log.e(TAG, "Authentication token missing")
         }
-    }
-
-    private fun navigateToPeripheralList(houseId: Int) {
-        Log.d(TAG, "Navigating to PeripheralListActivity for house ID: $houseId")
-        val intent = Intent(this, PeripheralListActivity::class.java)
-        intent.putExtra("houseId", houseId)
-        startActivity(intent)
     }
 
     private fun fetchHouseList(token: String) {
@@ -121,6 +113,67 @@ class HouseListActivity : AppCompatActivity() {
         }
     }
 
+    private fun fetchPeripheralTypes(houseId: Int) {
+        val url = "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/devices"
+        val client = OkHttpClient()
+
+        val sharedPreferences = getSharedPreferences("PolyHomePrefs", Context.MODE_PRIVATE)
+        val token = sharedPreferences.getString("auth_token", null)
+
+        if (token == null) {
+            Toast.makeText(this, "Authentication token missing", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val request = Request.Builder()
+            .url(url)
+            .addHeader("Authorization", "Bearer $token")
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                runOnUiThread {
+                    Toast.makeText(this@HouseListActivity, "Failed to fetch peripheral types", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                if (response.isSuccessful) {
+                    val responseBody = response.body?.string()
+                    if (responseBody != null) {
+                        val types = parsePeripheralTypes(responseBody)
+                        runOnUiThread {
+                            navigateToPeripheralTypeList(houseId, types)
+                        }
+                    }
+                } else {
+                    runOnUiThread {
+                        Toast.makeText(this@HouseListActivity, "Failed to fetch peripheral types", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        })
+    }
+
+    private fun parsePeripheralTypes(jsonResponse: String): List<String> {
+        val jsonArray = JSONObject(jsonResponse).getJSONArray("devices")
+        val types = mutableSetOf<String>()
+
+        for (i in 0 until jsonArray.length()) {
+            val device = jsonArray.getJSONObject(i)
+            val type = device.getString("type")
+            types.add(type)
+        }
+        return types.toList()
+    }
+
+    private fun navigateToPeripheralTypeList(houseId: Int, types: List<String>) {
+        val intent = Intent(this, PeripheralTypeListActivity::class.java)
+        intent.putExtra("houseId", houseId)
+        intent.putStringArrayListExtra("availableTypes", ArrayList(types))
+        startActivity(intent)
+    }
+
     private fun showPermissionPopup(houseId: Int, anchorView: View) {
         val popupView = LayoutInflater.from(this).inflate(R.layout.permission_popup, null)
 
@@ -155,7 +208,6 @@ class HouseListActivity : AppCompatActivity() {
         popupWindow.animationStyle = android.R.style.Animation_Dialog
         popupWindow.showAsDropDown(anchorView, 50, 80)
     }
-
 
     private fun managePermission(houseId: Int, email: String, isGrant: Boolean) {
         val url = "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/users"

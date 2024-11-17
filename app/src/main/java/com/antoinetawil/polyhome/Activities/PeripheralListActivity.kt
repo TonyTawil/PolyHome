@@ -7,8 +7,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.antoinetawil.polyhome.Models.Peripheral
 import com.antoinetawil.polyhome.Adapters.PeripheralListAdapter
+import com.antoinetawil.polyhome.Models.Peripheral
 import com.antoinetawil.polyhome.R
 import com.antoinetawil.polyhome.Utils.HeaderUtils
 import okhttp3.*
@@ -39,16 +39,17 @@ class PeripheralListActivity : AppCompatActivity() {
         val sharedPreferences = getSharedPreferences("PolyHomePrefs", Context.MODE_PRIVATE)
         val token = sharedPreferences.getString("auth_token", null)
         val houseId = intent.getIntExtra("houseId", -1)
+        val type = intent.getStringExtra("type")
 
         if (token != null && houseId != -1) {
-            fetchPeripheralList(token, houseId)
+            fetchPeripheralList(token, houseId, type)
         } else {
             Toast.makeText(this, "Error loading peripherals", Toast.LENGTH_SHORT).show()
             Log.e(TAG, "Token or houseId is invalid")
         }
     }
 
-    private fun fetchPeripheralList(token: String, houseId: Int) {
+    private fun fetchPeripheralList(token: String, houseId: Int, type: String?) {
         val url = "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/devices"
         val client = OkHttpClient()
 
@@ -57,7 +58,7 @@ class PeripheralListActivity : AppCompatActivity() {
             .addHeader("Authorization", "Bearer $token")
             .build()
 
-        Log.d(TAG, "Fetching peripherals for house ID: $houseId")
+        Log.d(TAG, "Fetching peripherals for house ID: $houseId, Type: $type")
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
@@ -73,7 +74,7 @@ class PeripheralListActivity : AppCompatActivity() {
                     Log.d(TAG, "Peripheral list response: $responseBody")
 
                     if (responseBody != null) {
-                        parseAndDisplayPeripherals(responseBody)
+                        parseAndDisplayPeripherals(responseBody, type)
                     }
                 } else {
                     Log.e(TAG, "Failed to fetch peripherals: ${response.code}")
@@ -85,7 +86,7 @@ class PeripheralListActivity : AppCompatActivity() {
         })
     }
 
-    private fun parseAndDisplayPeripherals(jsonResponse: String) {
+    private fun parseAndDisplayPeripherals(jsonResponse: String, type: String?) {
         try {
             val jsonArray = JSONObject(jsonResponse).getJSONArray("devices")
             peripherals.clear()
@@ -93,19 +94,21 @@ class PeripheralListActivity : AppCompatActivity() {
             for (i in 0 until jsonArray.length()) {
                 val deviceObject = jsonArray.getJSONObject(i)
                 val id = deviceObject.getString("id")
-                val type = deviceObject.getString("type")
+                val deviceType = deviceObject.getString("type")
                 val availableCommands = deviceObject.getJSONArray("availableCommands")
 
-                val commands = mutableListOf<String>()
-                for (j in 0 until availableCommands.length()) {
-                    commands.add(availableCommands.getString(j))
+                if (type == null || deviceType == type) {
+                    val commands = mutableListOf<String>()
+                    for (j in 0 until availableCommands.length()) {
+                        commands.add(availableCommands.getString(j))
+                    }
+
+                    val opening = deviceObject.optInt("opening", -1).takeIf { it != -1 }
+                    val openingMode = deviceObject.optInt("openingMode", -1).takeIf { it != -1 }
+                    val power = deviceObject.optInt("power", -1).takeIf { it != -1 }
+
+                    peripherals.add(Peripheral(id, deviceType, commands, opening, openingMode, power))
                 }
-
-                val opening = deviceObject.optInt("opening", -1).takeIf { it != -1 }
-                val openingMode = deviceObject.optInt("openingMode", -1).takeIf { it != -1 }
-                val power = deviceObject.optInt("power", -1).takeIf { it != -1 }
-
-                peripherals.add(Peripheral(id, type, commands, opening, openingMode, power))
             }
 
             runOnUiThread {

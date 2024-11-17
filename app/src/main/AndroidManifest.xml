@@ -24,6 +24,9 @@
             android:name=".Activities.SignupActivity"
             android:exported="false" />
         <activity
+            android:name=".Activities.PeripheralTypeListActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activities.LoginActivity"
             android:exported="true">
             <intent-filter>
