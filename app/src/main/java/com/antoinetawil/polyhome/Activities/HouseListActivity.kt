@@ -3,6 +3,8 @@ package com.antoinetawil.polyhome.Activities
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -21,6 +23,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
 
+
 class HouseListActivity : AppCompatActivity() {
 
     companion object {
@@ -29,7 +32,10 @@ class HouseListActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: HouseListAdapter
+    private lateinit var searchEditText: EditText
+    private lateinit var searchPopup: PopupWindow
     private val houses = mutableListOf<House>()
+    private val filteredHouses = mutableListOf<House>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +44,7 @@ class HouseListActivity : AppCompatActivity() {
         HeaderUtils.setupHeader(this)
 
         recyclerView = findViewById(R.id.recyclerView)
-        adapter = HouseListAdapter(houses, this,
+        adapter = HouseListAdapter(filteredHouses, this,
             onManagePermission = { houseId, view -> showPermissionPopup(houseId, view) },
             onHouseSelected = { houseId -> fetchPeripheralTypes(houseId) }
         )
@@ -54,6 +60,45 @@ class HouseListActivity : AppCompatActivity() {
             Toast.makeText(this, "Authentication token not found", Toast.LENGTH_SHORT).show()
             Log.e(TAG, "Authentication token missing")
         }
+
+        setupSearchPopup()
+    }
+
+    private fun setupSearchPopup() {
+        val popupView = LayoutInflater.from(this).inflate(R.layout.search_popup, null)
+        searchEditText = popupView.findViewById(R.id.searchEditText)
+
+        searchPopup = PopupWindow(
+            popupView,
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+            true
+        )
+
+        val searchButton: View? = findViewById(R.id.searchIcon)
+        searchButton?.setOnClickListener {
+            if (!searchPopup.isShowing) {
+                searchPopup.showAsDropDown(it, 0, 0)
+            }
+        }
+
+        searchEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                filterHouses(s.toString())
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
+    }
+
+    private fun filterHouses(query: String) {
+        filteredHouses.clear()
+        if (query.isEmpty()) {
+            filteredHouses.addAll(houses)
+        } else {
+            filteredHouses.addAll(houses.filter { it.houseId.toString().contains(query, ignoreCase = true) })
+        }
+        adapter.notifyDataSetChanged()
     }
 
     private fun fetchHouseList(token: String) {
@@ -97,6 +142,7 @@ class HouseListActivity : AppCompatActivity() {
         try {
             val jsonArray = JSONArray(jsonResponse)
             houses.clear()
+            filteredHouses.clear()
 
             for (i in 0 until jsonArray.length()) {
                 val houseObject = jsonArray.getJSONObject(i)
@@ -105,6 +151,7 @@ class HouseListActivity : AppCompatActivity() {
                 houses.add(House(houseId, isOwner))
             }
 
+            filteredHouses.addAll(houses)
             runOnUiThread {
                 adapter.notifyDataSetChanged()
             }

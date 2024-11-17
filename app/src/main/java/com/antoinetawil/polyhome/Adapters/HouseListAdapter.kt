@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.antoinetawil.polyhome.Models.House
 import com.antoinetawil.polyhome.R
@@ -21,7 +20,7 @@ class HouseListAdapter(
 
     class HouseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val houseIdTextView: TextView = itemView.findViewById(R.id.houseIdValueTextView)
-        val ownerTextView: TextView = itemView.findViewById(R.id.houseIdTextView)
+        val ownerStatusTextView: TextView = itemView.findViewById(R.id.houseOwnerStatusTextView)
         val managePermissionButton: ImageButton = itemView.findViewById(R.id.managePermissionButton)
         val arrowIcon: ImageView = itemView.findViewById(R.id.arrowIcon)
     }
@@ -33,8 +32,8 @@ class HouseListAdapter(
 
     override fun onBindViewHolder(holder: HouseViewHolder, position: Int) {
         val house = houseList[position]
-        holder.houseIdTextView.text = if (house.owner) "Owner" else "Guest"
         holder.houseIdTextView.text = "ID: ${house.houseId}"
+        holder.ownerStatusTextView.text = if (house.owner) "Owner" else "Guest"
 
         holder.itemView.setOnClickListener {
             onHouseSelected(house.houseId)

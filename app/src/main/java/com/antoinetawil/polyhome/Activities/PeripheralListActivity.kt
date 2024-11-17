@@ -1,6 +1,13 @@
 package com.antoinetawil.polyhome.Activities
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -16,8 +23,11 @@ class PeripheralListActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var titleTextView: TextView
+    private lateinit var searchEditText: EditText
+    private lateinit var searchPopup: PopupWindow
     private lateinit var adapter: PeripheralListAdapter
     private val peripherals = mutableListOf<Peripheral>()
+    private val filteredPeripherals = mutableListOf<Peripheral>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,23 +52,63 @@ class PeripheralListActivity : AppCompatActivity() {
 
         peripherals.clear()
         peripherals.addAll(filteredPeripheralsJson.map { parsePeripheral(JSONObject(it)) })
+        filteredPeripherals.addAll(peripherals)
 
         titleTextView.text = generateTitle(peripheralType, floor)
 
-        adapter = PeripheralListAdapter(peripherals, this)
+        adapter = PeripheralListAdapter(filteredPeripherals, this)
         recyclerView.adapter = adapter
+
+        setupSearchPopup()
+    }
+
+    private fun setupSearchPopup() {
+        val popupView = LayoutInflater.from(this).inflate(R.layout.search_popup, null)
+        searchEditText = popupView.findViewById(R.id.searchEditText)
+
+        searchPopup = PopupWindow(
+            popupView,
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+            true
+        )
+
+        val searchButton: View? = findViewById(R.id.searchIcon)
+        searchButton?.setOnClickListener {
+            if (!searchPopup.isShowing) {
+                searchPopup.showAsDropDown(it, 0, 0)
+            }
+        }
+
+        searchEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                filterPeripherals(s.toString())
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
+    }
+
+    private fun filterPeripherals(query: String) {
+        filteredPeripherals.clear()
+        if (query.isEmpty()) {
+            filteredPeripherals.addAll(peripherals)
+        } else {
+            filteredPeripherals.addAll(peripherals.filter { it.id.contains(query, ignoreCase = true) })
+        }
+        adapter.notifyDataSetChanged()
     }
 
     private fun generateTitle(type: String, floor: String): String {
         val pluralType = when (type.lowercase()) {
             "light" -> "Lights"
             "rolling shutter" -> "Rolling Shutters"
-            "garage door" -> "Garage Door" // Singular for Garage Door
+            "garage door" -> "Garage Door"
             else -> type + "s"
         }
 
         return when (type.lowercase()) {
-            "garage door" -> pluralType // Skip "All" or floor reference for Garage Door
+            "garage door" -> pluralType
             else -> when (floor) {
                 "All" -> "All $pluralType"
                 else -> "$floor $pluralType"
@@ -79,3 +129,4 @@ class PeripheralListActivity : AppCompatActivity() {
         return Peripheral(id, type, availableCommands, opening, openingMode, power)
     }
 }
+

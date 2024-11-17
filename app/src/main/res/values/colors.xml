@@ -6,4 +6,5 @@
     <color name="primary_text">#212121</color>
     <color name="background_color">#F5F5F5</color>
     <color name="gray">#BDBDBD</color>
+    <color name="light_gray">#E0E0E0</color>
 </resources>
