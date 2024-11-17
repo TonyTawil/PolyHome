@@ -1,10 +1,10 @@
 package com.antoinetawil.polyhome.Adapters
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -81,13 +81,13 @@ class PeripheralListAdapter(
             }
             holder.commandsContainer.addView(lightToggleButton)
         } else if (peripheral.type == "rolling shutter" || peripheral.type == "garage door") {
-            val openButton = createIconButton(R.drawable.ic_up, "OPEN", peripheral)
-            val pauseButton = createIconButton(R.drawable.ic_pause, "STOP", peripheral)
-            val closeButton = createIconButton(R.drawable.ic_down, "CLOSE", peripheral)
+            val openButton = createTextButton("Open", "OPEN", peripheral)
+            val stopButton = createTextButton("Stop", "STOP", peripheral)
+            val closeButton = createTextButton("Close", "CLOSE", peripheral)
 
             holder.commandsContainer.apply {
                 addView(openButton)
-                addView(pauseButton)
+                addView(stopButton)
                 addView(closeButton)
             }
         }
@@ -95,17 +95,15 @@ class PeripheralListAdapter(
 
     override fun getItemCount(): Int = peripheralList.size
 
-    private fun createIconButton(iconResId: Int, command: String, peripheral: Peripheral): ImageButton {
-        return ImageButton(context).apply {
+    private fun createTextButton(text: String, command: String, peripheral: Peripheral): Button {
+        return Button(context).apply {
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             ).apply {
                 setMargins(8, 8, 8, 8)
             }
-            setBackgroundResource(android.R.color.transparent)
-            setImageResource(iconResId)
-
+            setText(text)
             setOnClickListener {
                 sendCommandToPeripheral(peripheral.id, command) { success ->
                     (context as PeripheralListActivity).runOnUiThread {

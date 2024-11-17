@@ -6,6 +6,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.PopupWindow
@@ -20,8 +21,11 @@ import com.antoinetawil.polyhome.Models.Peripheral
 import com.antoinetawil.polyhome.R
 import com.antoinetawil.polyhome.Utils.HeaderUtils
 import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.io.IOException
+import java.util.concurrent.Executors
 
 class PeripheralListActivity : AppCompatActivity() {
 
@@ -34,6 +38,8 @@ class PeripheralListActivity : AppCompatActivity() {
     private lateinit var adapter: PeripheralListAdapter
     private val peripherals = mutableListOf<Peripheral>()
     private val filteredPeripherals = mutableListOf<Peripheral>()
+    private lateinit var actionButtonsContainer: LinearLayout
+    private var isOperationInProgress = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +51,7 @@ class PeripheralListActivity : AppCompatActivity() {
         titleTextView = findViewById(R.id.titleTextView)
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
+        actionButtonsContainer = findViewById(R.id.actionButtonsContainer)
 
         val houseId = intent.getIntExtra("houseId", -1)
         val peripheralType = intent.getStringExtra("type")
@@ -66,8 +73,38 @@ class PeripheralListActivity : AppCompatActivity() {
         adapter = PeripheralListAdapter(filteredPeripherals, this)
         recyclerView.adapter = adapter
 
+        setupActionButtons(peripheralType)
         setupSearchPopup()
-        logPeripheralFetchDetails(houseId, peripheralType)
+    }
+
+    private fun setupActionButtons(peripheralType: String) {
+        actionButtonsContainer.removeAllViews()
+
+        when (peripheralType.lowercase()) {
+            "light" -> {
+                addActionButton("Turn On All") { performBulkOperation("TURN ON", "light") }
+                addActionButton("Turn Off All") { performBulkOperation("TURN OFF", "light") }
+            }
+            "rolling shutter" -> {
+                addActionButton("Open All") { performBulkOperation("OPEN", "rolling shutter") }
+                addActionButton("Close All") { performBulkOperation("CLOSE", "rolling shutter") }
+                addActionButton("Stop All") { performBulkOperation("STOP", "rolling shutter") }
+            }
+        }
+    }
+
+    private fun addActionButton(text: String, action: () -> Unit) {
+        val button = Button(this).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(8, 8, 8, 8)
+            }
+            this.text = text
+            setOnClickListener { action() }
+        }
+        actionButtonsContainer.addView(button)
     }
 
     private fun setupSearchPopup() {
@@ -136,40 +173,74 @@ class PeripheralListActivity : AppCompatActivity() {
         return Peripheral(id, type, availableCommands, opening, openingMode, power)
     }
 
-    private fun logPeripheralFetchDetails(houseId: Int, peripheralType: String) {
-        val url = "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/devices"
-        val sharedPreferences = getSharedPreferences("PolyHomePrefs", MODE_PRIVATE)
-        val token = sharedPreferences.getString("auth_token", null)
+    private fun performBulkOperation(command: String, type: String) {
+        if (isOperationInProgress) return
 
-        if (token == null) {
-            Log.e(TAG, "Auth token missing")
-            Toast.makeText(this, "Authentication token missing", Toast.LENGTH_SHORT).show()
-            return
-        }
+        isOperationInProgress = true
+        toggleButtons(false)
+        val executor = Executors.newFixedThreadPool(5)
 
-        val request = Request.Builder()
-            .url(url)
-            .addHeader("Authorization", "Bearer $token")
-            .build()
-
-        Log.d(TAG, "Sending request to fetch peripherals")
-        Log.d(TAG, "Request URL: $url")
-        Log.d(TAG, "Request Headers: Authorization: Bearer $token")
-
-        OkHttpClient().newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e(TAG, "Failed to fetch peripherals: ${e.message}", e)
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                if (response.isSuccessful) {
-                    val responseBody = response.body?.string()
-                    Log.d(TAG, "Peripheral fetch successful")
-                    Log.d(TAG, "Response Body: $responseBody")
-                } else {
-                    Log.e(TAG, "Failed to fetch peripherals, Status Code: ${response.code}")
+        peripherals.filter { it.type == type }.forEach { peripheral ->
+            executor.submit {
+                sendCommandToPeripheral(peripheral.id, command) {
+                    if (type == "light") {
+                        runOnUiThread {
+                            peripheral.power = if (command == "TURN ON") 1 else 0
+                            adapter.notifyDataSetChanged()
+                        }
+                    }
                 }
             }
-        })
+        }
+
+        executor.shutdown()
+        executor.awaitTermination(30, java.util.concurrent.TimeUnit.SECONDS)
+
+        runOnUiThread {
+            isOperationInProgress = false
+            toggleButtons(true)
+            Toast.makeText(this, "$command completed for all $type", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun toggleButtons(enable: Boolean) {
+        for (i in 0 until actionButtonsContainer.childCount) {
+            actionButtonsContainer.getChildAt(i).isEnabled = enable
+        }
+    }
+
+    private fun sendCommandToPeripheral(deviceId: String, command: String, onComplete: () -> Unit) {
+        val sharedPreferences = getSharedPreferences("PolyHomePrefs", MODE_PRIVATE)
+        val token = sharedPreferences.getString("auth_token", null)
+        val houseId = intent.getIntExtra("houseId", -1)
+
+        if (token != null && houseId != -1) {
+            val url = "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/devices/$deviceId/command"
+            val client = OkHttpClient()
+            val jsonObject = JSONObject().apply { put("command", command) }
+            val requestBody = jsonObject.toString().toRequestBody("application/json".toMediaTypeOrNull())
+
+            val request = Request.Builder()
+                .url(url)
+                .post(requestBody)
+                .addHeader("Authorization", "Bearer $token")
+                .build()
+
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    Log.e(TAG, "Command $command failed for $deviceId")
+                    onComplete()
+                }
+
+                override fun onResponse(call: Call, response: Response) {
+                    if (!response.isSuccessful) {
+                        Log.e(TAG, "Command $command failed for $deviceId")
+                    }
+                    onComplete()
+                }
+            })
+        } else {
+            onComplete()
+        }
     }
 }
