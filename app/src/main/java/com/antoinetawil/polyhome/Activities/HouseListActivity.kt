@@ -10,9 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.biometric.BiometricManager
-import androidx.biometric.BiometricPrompt
-import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,9 +24,8 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
-import java.util.concurrent.Executor
 
-class HouseListActivity : BaseActivity() {
+class HouseListActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "HouseListActivity"
@@ -41,78 +38,13 @@ class HouseListActivity : BaseActivity() {
     private lateinit var searchPopup: PopupWindow
     private val houses = mutableListOf<House>()
     private val filteredHouses = mutableListOf<House>()
-    private lateinit var executor: Executor
-    private lateinit var biometricPrompt: BiometricPrompt
-    private lateinit var promptInfo: BiometricPrompt.PromptInfo
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        applyThemeFromPreferences()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_house_list)
 
-        if (!checkBiometricAvailability()) {
-            Toast.makeText(this, "Biometric authentication not available", Toast.LENGTH_LONG).show()
-            finish()
-            return
-        }
-
-        initializeBiometricPrompt()
-        authenticateUser()
-    }
-
-    private fun initializeBiometricPrompt() {
-        executor = ContextCompat.getMainExecutor(this)
-        biometricPrompt = BiometricPrompt(this, executor, object : BiometricPrompt.AuthenticationCallback() {
-            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                super.onAuthenticationSucceeded(result)
-                Log.d(TAG, "Authentication succeeded")
-                Toast.makeText(this@HouseListActivity, "Authentication succeeded", Toast.LENGTH_SHORT).show()
-                initializeUI()
-            }
-
-            override fun onAuthenticationFailed() {
-                super.onAuthenticationFailed()
-                Log.e(TAG, "Authentication failed")
-                Toast.makeText(this@HouseListActivity, "Authentication failed", Toast.LENGTH_SHORT).show()
-                finish()
-            }
-
-            override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                super.onAuthenticationError(errorCode, errString)
-                Log.e(TAG, "Authentication error: $errString")
-                Toast.makeText(this@HouseListActivity, "Authentication error: $errString", Toast.LENGTH_SHORT).show()
-                finish()
-            }
-        })
-
-        promptInfo = BiometricPrompt.PromptInfo.Builder()
-            .setTitle("Secure Access")
-            .setSubtitle("Authenticate to access your houses")
-            .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
-            .build()
-    }
-
-    private fun authenticateUser() {
-        biometricPrompt.authenticate(promptInfo)
-    }
-
-    private fun checkBiometricAvailability(): Boolean {
-        val biometricManager = BiometricManager.from(this)
-        return when (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)) {
-            BiometricManager.BIOMETRIC_SUCCESS -> true
-            BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
-                Log.e(TAG, "No biometric features available on this device.")
-                false
-            }
-            BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE -> {
-                Log.e(TAG, "Biometric features are currently unavailable.")
-                false
-            }
-            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
-                Log.e(TAG, "No biometric credentials enrolled.")
-                false
-            }
-            else -> false
-        }
+        initializeUI()
     }
 
     private fun initializeUI() {
@@ -372,5 +304,15 @@ class HouseListActivity : BaseActivity() {
         } else {
             Toast.makeText(this, "Authentication token missing. Please log in again.", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun applyThemeFromPreferences() {
+        val sharedPreferences = getSharedPreferences("PolyHomePrefs", MODE_PRIVATE)
+        val isDarkMode = sharedPreferences.getBoolean("DARK_MODE", false)
+
+        AppCompatDelegate.setDefaultNightMode(
+            if (isDarkMode) AppCompatDelegate.MODE_NIGHT_YES
+            else AppCompatDelegate.MODE_NIGHT_NO
+        )
     }
 }

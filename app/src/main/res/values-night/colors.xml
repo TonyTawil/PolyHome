@@ -1,0 +1,15 @@
+<!-- colors-night.xml -->
+<resources>
+    <color name="white">#FF000000</color>
+    <color name="black">#FFFFFFFF</color>
+    <color name="PolytechBlue">#009FE3</color> <!-- Brand color -->
+    <color name="primary_text">#BDBDBD</color> <!-- Light text for dark background -->
+    <color name="background_color">#121212</color> <!-- Dark background -->
+    <color name="gray">#9E9E9E</color> <!-- Adjusted gray for dark mode -->
+    <color name="light_gray">#2C2C2C</color> <!-- Darker light gray -->
+    <color name="dark_accent">#346CCF</color> <!-- Special accent for dark mode -->
+    <color name="surface_color">#1E1E1E</color> <!-- Dark surface -->
+    <color name="on_surface">@color/white</color> <!-- White text on surfaces -->
+    <color name="drawer_text_color">#FFFFFF</color>
+
+</resources>
