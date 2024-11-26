@@ -12,18 +12,17 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.antoinetawil.polyhome.R
+import com.antoinetawil.polyhome.Utils.Api
 import com.google.android.material.textfield.TextInputEditText
-import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
-import java.io.IOException
 
 class LoginActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "LoginActivity"
     }
+
+    private val api = Api()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,42 +71,30 @@ class LoginActivity : AppCompatActivity() {
 
     private fun login(email: String, password: String) {
         val url = "https://polyhome.lesmoulinsdudev.com/api/users/auth"
-        val client = OkHttpClient()
+        val requestData = mapOf(
+            "login" to email,
+            "password" to password
+        )
 
-        val jsonObject = JSONObject()
-        jsonObject.put("login", email)
-        jsonObject.put("password", password)
-        val requestBody = jsonObject.toString().toRequestBody("application/json".toMediaType())
-
-        val request = Request.Builder()
-            .url(url)
-            .post(requestBody)
-            .addHeader("Content-Type", "application/json")
-            .build()
-
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
+        api.post<Map<String, String>, Map<String, String>>(
+            path = url,
+            data = requestData,
+            onSuccess = { responseCode, response ->
                 runOnUiThread {
-                    Toast.makeText(this@LoginActivity, "Login failed: ${e.message}", Toast.LENGTH_LONG).show()
-                }
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                if (response.isSuccessful) {
-                    val responseBody = response.body?.string()
-                    val token = JSONObject(responseBody ?: "").optString("token")
-
-                    runOnUiThread {
-                        saveAuthToken(token)
-                        navigateToHouseList()
-                    }
-                } else {
-                    runOnUiThread {
-                        Toast.makeText(this@LoginActivity, "Invalid credentials", Toast.LENGTH_SHORT).show()
+                    if (responseCode == 200 && response != null) {
+                        val token = response["token"]
+                        if (!token.isNullOrEmpty()) {
+                            saveAuthToken(token)
+                            navigateToHouseList()
+                        } else {
+                            Toast.makeText(this, "Invalid response from server", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        Toast.makeText(this, "Invalid credentials", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
-        })
+        )
     }
 
     private fun saveAuthToken(token: String) {

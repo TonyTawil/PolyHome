@@ -17,13 +17,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.antoinetawil.polyhome.Adapters.HouseListAdapter
 import com.antoinetawil.polyhome.Models.House
 import com.antoinetawil.polyhome.R
+import com.antoinetawil.polyhome.Utils.Api
 import com.antoinetawil.polyhome.Utils.HeaderUtils
-import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
-import java.io.IOException
 
 class HouseListActivity : AppCompatActivity() {
 
@@ -31,6 +28,7 @@ class HouseListActivity : AppCompatActivity() {
         private const val TAG = "HouseListActivity"
     }
 
+    private val api = Api()
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: HouseListAdapter
@@ -112,116 +110,75 @@ class HouseListActivity : AppCompatActivity() {
 
     private fun fetchHouseList(token: String) {
         val url = "https://polyhome.lesmoulinsdudev.com/api/houses"
-        val client = OkHttpClient()
 
-        val request = Request.Builder()
-            .url(url)
-            .addHeader("Authorization", "Bearer $token")
-            .build()
-
-        Log.d(TAG, "Fetching house list with token: $token")
-
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e(TAG, "Network request failed: ${e.message}", e)
+        api.get<List<House>>(
+            path = url,
+            securityToken = token,
+            onSuccess = { responseCode, response ->
                 runOnUiThread {
-                    Toast.makeText(this@HouseListActivity, "Failed to fetch houses: ${e.message}", Toast.LENGTH_LONG).show()
-                }
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                if (response.isSuccessful) {
-                    val responseBody = response.body?.string()
-                    Log.d(TAG, "House list response: $responseBody")
-
-                    if (responseBody != null) {
-                        parseAndDisplayHouses(responseBody)
-                    }
-                } else {
-                    Log.e(TAG, "Failed to fetch houses: ${response.code}")
-                    runOnUiThread {
-                        Toast.makeText(this@HouseListActivity, "Failed to fetch houses", Toast.LENGTH_SHORT).show()
+                    if (responseCode == 200 && response != null) {
+                        Log.d(TAG, "Fetched house list successfully.")
+                        houses.clear()
+                        houses.addAll(response)
+                        filteredHouses.clear()
+                        filteredHouses.addAll(houses)
+                        adapter.notifyDataSetChanged()
+                    } else {
+                        Log.e(TAG, "Failed to fetch house list. Code: $responseCode")
+                        Toast.makeText(this, "Failed to fetch houses", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
-        })
-    }
-
-    private fun parseAndDisplayHouses(jsonResponse: String) {
-        try {
-            val jsonArray = JSONArray(jsonResponse)
-            houses.clear()
-            filteredHouses.clear()
-
-            for (i in 0 until jsonArray.length()) {
-                val houseObject = jsonArray.getJSONObject(i)
-                val houseId = houseObject.getInt("houseId")
-                val isOwner = houseObject.getBoolean("owner")
-                houses.add(House(houseId, isOwner))
-            }
-
-            filteredHouses.addAll(houses)
-            runOnUiThread {
-                adapter.notifyDataSetChanged()
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error parsing house list: ${e.message}", e)
-        }
+        )
     }
 
     private fun fetchPeripheralTypes(houseId: Int) {
         val url = "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/devices"
-        val client = OkHttpClient()
+        Log.d(TAG, "Fetching peripheral types for houseId=$houseId with URL=$url")
 
         val sharedPreferences = getSharedPreferences("PolyHomePrefs", Context.MODE_PRIVATE)
         val token = sharedPreferences.getString("auth_token", null)
 
         if (token == null) {
+            Log.e(TAG, "Authentication token missing. Cannot fetch peripherals.")
             Toast.makeText(this, "Authentication token missing", Toast.LENGTH_SHORT).show()
             return
         }
 
-        val request = Request.Builder()
-            .url(url)
-            .addHeader("Authorization", "Bearer $token")
-            .build()
+        Log.d(TAG, "Using token: $token")
 
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
+        api.get<Map<String, Any>>(
+            path = url,
+            securityToken = token,
+            onSuccess = { responseCode, response ->
                 runOnUiThread {
-                    Toast.makeText(this@HouseListActivity, "Failed to fetch peripheral types", Toast.LENGTH_SHORT).show()
-                }
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                if (response.isSuccessful) {
-                    val responseBody = response.body?.string()
-                    if (responseBody != null) {
-                        val types = parsePeripheralTypes(responseBody)
-                        runOnUiThread {
+                    Log.d(TAG, "API Response Code: $responseCode")
+                    if (responseCode == 200 && response != null) {
+                        val devices = response["devices"] as? List<Map<String, Any>>
+                        if (devices != null) {
+                            Log.d(TAG, "Fetched devices: $devices")
+                            // Use `id` field to group devices into types (e.g., Shutter, GarageDoor, Light).
+                            val types = devices.mapNotNull { device ->
+                                val id = device["id"] as? String
+                                id?.split(" ")?.firstOrNull() // Extract type (e.g., "Shutter" from "Shutter 1.1")
+                            }.distinct()
+                            Log.d(TAG, "Peripheral types extracted: $types")
                             navigateToPeripheralTypeList(houseId, types)
+                        } else {
+                            Log.e(TAG, "Unexpected response structure: $response")
+                            Toast.makeText(this, "Invalid response structure.", Toast.LENGTH_SHORT).show()
                         }
-                    }
-                } else {
-                    runOnUiThread {
-                        Toast.makeText(this@HouseListActivity, "Failed to fetch peripheral types", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Log.e(TAG, "Failed to fetch peripherals. Response Code: $responseCode, Response: $response")
+                        Toast.makeText(this, "Failed to fetch peripherals. Check logs for details.", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
-        })
+        )
     }
 
-    private fun parsePeripheralTypes(jsonResponse: String): List<String> {
-        val jsonArray = JSONObject(jsonResponse).getJSONArray("devices")
-        val types = mutableSetOf<String>()
 
-        for (i in 0 until jsonArray.length()) {
-            val device = jsonArray.getJSONObject(i)
-            val type = device.getString("type")
-            types.add(type)
-        }
-        return types.toList()
-    }
+
 
     private fun navigateToPeripheralTypeList(houseId: Int, types: List<String>) {
         val intent = Intent(this, PeripheralTypeListActivity::class.java)
@@ -267,44 +224,46 @@ class HouseListActivity : AppCompatActivity() {
 
     private fun managePermission(houseId: Int, email: String, isGrant: Boolean) {
         val url = "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/users"
-        val method = if (isGrant) "POST" else "DELETE"
         val sharedPreferences = getSharedPreferences("PolyHomePrefs", MODE_PRIVATE)
         val token = sharedPreferences.getString("auth_token", null)
 
         if (token != null) {
-            val client = OkHttpClient()
-            val jsonObject = JSONObject().apply { put("userLogin", email) }
-            val requestBody = jsonObject.toString().toRequestBody("application/json".toMediaTypeOrNull())
+            val requestData = mapOf("userLogin" to email)
 
-            val request = Request.Builder()
-                .url(url)
-                .method(method, requestBody)
-                .addHeader("Authorization", "Bearer $token")
-                .build()
-
-            client.newCall(request).enqueue(object : Callback {
-                override fun onFailure(call: Call, e: IOException) {
-                    runOnUiThread {
-                        Toast.makeText(this@HouseListActivity, "Failed to ${if (isGrant) "give" else "remove"} permission: ${e.message}", Toast.LENGTH_LONG).show()
+            if (isGrant) {
+                api.post<Map<String, String>>(
+                    path = url,
+                    data = requestData,
+                    securityToken = token,
+                    onSuccess = { responseCode ->
+                        handlePermissionResponse(responseCode, isGrant)
                     }
-                }
-
-                override fun onResponse(call: Call, response: Response) {
-                    if (response.isSuccessful) {
-                        runOnUiThread {
-                            Toast.makeText(this@HouseListActivity, "${if (isGrant) "Permission granted" else "Permission removed"} successfully!", Toast.LENGTH_SHORT).show()
-                        }
-                    } else {
-                        runOnUiThread {
-                            Toast.makeText(this@HouseListActivity, "Failed to ${if (isGrant) "give" else "remove"} permission: ${response.code}", Toast.LENGTH_LONG).show()
-                        }
+                )
+            } else {
+                api.delete<Map<String, String>>(
+                    path = url,
+                    data = requestData,
+                    securityToken = token,
+                    onSuccess = { responseCode ->
+                        handlePermissionResponse(responseCode, isGrant)
                     }
-                }
-            })
+                )
+            }
         } else {
             Toast.makeText(this, "Authentication token missing. Please log in again.", Toast.LENGTH_SHORT).show()
         }
     }
+
+    private fun handlePermissionResponse(responseCode: Int, isGrant: Boolean) {
+        runOnUiThread {
+            if (responseCode == 200) {
+                Toast.makeText(this, "${if (isGrant) "Permission granted" else "Permission removed"} successfully!", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Failed to ${if (isGrant) "grant" else "remove"} permission", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
 
     private fun applyThemeFromPreferences() {
         val sharedPreferences = getSharedPreferences("PolyHomePrefs", MODE_PRIVATE)

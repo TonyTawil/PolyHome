@@ -12,18 +12,16 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.antoinetawil.polyhome.R
+import com.antoinetawil.polyhome.Utils.Api
 import com.google.android.material.textfield.TextInputEditText
-import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.RequestBody.Companion.toRequestBody
-import org.json.JSONObject
-import java.io.IOException
 
 class SignupActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "SignupActivity"
     }
+
+    private val api = Api()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,52 +71,33 @@ class SignupActivity : AppCompatActivity() {
 
     private fun signup(email: String, password: String) {
         val url = "https://polyhome.lesmoulinsdudev.com/api/users/register"
-        val client = OkHttpClient()
+        val requestData = mapOf(
+            "login" to email,
+            "password" to password
+        )
 
-        val jsonObject = JSONObject()
-        jsonObject.put("login", email)
-        jsonObject.put("password", password)
-        val jsonBody = jsonObject.toString()
-        val mediaType = "application/json".toMediaType()
-        val requestBody = jsonBody.toRequestBody(mediaType)
+        Log.d(TAG, "Signup request initiated with data: $requestData")
 
-        Log.d(TAG, "Signup request body created: $jsonBody")
-
-        val request = Request.Builder()
-            .url(url)
-            .post(requestBody)
-            .addHeader("Content-Type", "application/json")
-            .build()
-
-        Log.d(TAG, "Signup request built with URL: $url")
-
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e(TAG, "Network request failed: ${e.message}", e)
+        api.post<Map<String, String>, Map<String, String>>(
+            path = url,
+            data = requestData,
+            onSuccess = { responseCode, response ->
                 runOnUiThread {
-                    Toast.makeText(this@SignupActivity, "Signup failed: ${e.message}", Toast.LENGTH_LONG).show()
-                }
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                val responseBody = response.body
-                Log.d(TAG, "Signup response received: ${response.code}")
-
-                if (response.isSuccessful) {
-                    Log.d(TAG, "Signup successful!")
-                    runOnUiThread {
-                        Toast.makeText(this@SignupActivity, "Signup successful! Redirecting to login.", Toast.LENGTH_SHORT).show()
-                        navigateToLogin()
-                    }
-                } else {
-                    val errorMessage = responseBody?.string() ?: "No response body"
-                    Log.w(TAG, "Signup failed with code: ${response.code}, message: $errorMessage")
-                    runOnUiThread {
-                        Toast.makeText(this@SignupActivity, "Signup failed: $errorMessage", Toast.LENGTH_SHORT).show()
+                    if (responseCode == 200) {
+                        if (response != null) {
+                            Log.d(TAG, "Signup successful: $response")
+                            Toast.makeText(this, "Signup successful! Redirecting to login.", Toast.LENGTH_SHORT).show()
+                            navigateToLogin()
+                        } else {
+                            Log.w(TAG, "Signup successful but no response body.")
+                            Toast.makeText(this, "Signup successful! Please log in.", Toast.LENGTH_SHORT).show()
+                            navigateToLogin()
+                        }
                     }
                 }
             }
-        })
+        )
+
     }
 
     private fun navigateToLogin() {

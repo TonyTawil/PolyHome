@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">PolyHome</string>
+    <string-array name="language_options">
+        <item>Anglais</item>
+        <item>Français</item>
+    </string-array>
+    <string name="settings">Paramètres</string>
+    <string name="theme">Thème</string>
+    <string name="enable_dark_mode">Activer le mode sombre</string>
+    <string name="language">Langue</string>
+    <string name="security">Sécurité</string>
+    <string name="enable_biometric_auth">Activer l\'authentification biométrique</string>
+    <string name="about">À propos</string>
+    <string name="app_version">Version de l\'application : 1.0.0</string>
+    <string name="general">Général</string>
+    <string name="all_floors">Tous les étages</string>
+    <string name="first_floor">Premier étage</string>
+    <string name="second_floor">Deuxième étage</string>
+    <string name="invalid_data">Données invalides</string>
+    <string name="auth_token_missing">Jeton d\'authentification manquant</string>
+    <string name="fetch_failed">Échec de la récupération des périphériques</string>
+</resources>

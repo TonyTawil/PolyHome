@@ -37,12 +37,13 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Settings"
+                    android:text="@string/settings"
                     android:textSize="20sp"
                     android:textStyle="bold"
                     android:textColor="@color/primary_text"
                     android:paddingBottom="16dp" />
 
+                <!-- Theme Section -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -54,21 +55,36 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Theme"
+                        android:text="@string/theme"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="@color/primary_text" />
 
-                    <Switch
-                        android:id="@+id/themeSwitch"
-                        android:layout_width="wrap_content"
+                    <RelativeLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Enable Dark Mode"
-                        android:textColor="@color/gray"
-                        android:paddingTop="8dp" />
+                        android:paddingTop="8dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/enable_dark_mode"
+                            android:textColor="@color/gray"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true" />
+
+                        <Switch
+                            android:id="@+id/themeSwitch"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:thumbTint="@color/PolytechBlue"
+                            android:trackTint="@color/gray"
+                            android:layout_centerVertical="true" />
+                    </RelativeLayout>
                 </LinearLayout>
 
-
+                <!-- Security Section -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -80,19 +96,36 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Security"
+                        android:text="@string/security"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="@color/primary_text" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <RelativeLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Change password"
-                        android:textColor="@color/gray"
-                        android:paddingTop="8dp" />
+                        android:paddingTop="8dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/enable_biometric_auth"
+                            android:textColor="@color/gray"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true" />
+
+                        <Switch
+                            android:id="@+id/biometricSwitch"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:thumbTint="@color/PolytechBlue"
+                            android:trackTint="@color/gray"
+                            android:layout_centerVertical="true" />
+                    </RelativeLayout>
                 </LinearLayout>
 
+                <!-- General Section -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -104,19 +137,35 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="General"
+                        android:text="@string/general"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="@color/primary_text" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <RelativeLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Language"
-                        android:textColor="@color/gray"
-                        android:paddingTop="8dp" />
+                        android:paddingTop="8dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/language"
+                            android:textColor="@color/gray"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true" />
+
+                        <Spinner
+                            android:id="@+id/languageSpinner"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:spinnerMode="dropdown"
+                            android:layout_centerVertical="true" />
+                    </RelativeLayout>
                 </LinearLayout>
 
+                <!-- About Section -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -127,7 +176,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="About"
+                        android:text="@string/about"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="@color/primary_text" />
@@ -135,7 +184,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="App Version: 1.0.0"
+                        android:text="@string/app_version"
                         android:textColor="@color/gray"
                         android:paddingTop="8dp" />
                 </LinearLayout>

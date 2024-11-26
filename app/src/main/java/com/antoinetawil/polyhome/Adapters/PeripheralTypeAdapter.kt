@@ -30,15 +30,15 @@ class PeripheralTypeAdapter(
 
         // Update the icon based on the peripheral type
         val iconResId = when (type.lowercase()) {
-            "light" -> R.drawable.ic_light_on
-            "rolling shutter" -> R.drawable.ic_shutter
-            "garage door" -> R.drawable.ic_garage
-            else -> R.drawable.ic_light_on
+            "light" -> R.drawable.ic_light_off // Use correct icon for "light"
+            "rolling shutter" -> R.drawable.ic_shutter // Use correct icon for "rolling shutter"
+            "garage door" -> R.drawable.ic_garage // Use correct icon for "garage door"
+            else -> R.drawable.ic_light_off // Use a default icon for unknown types
         }
         holder.typeIcon.setImageResource(iconResId)
 
         // Set the type text
-        holder.typeTextView.text = type.capitalize()
+        holder.typeTextView.text = type.replaceFirstChar { it.uppercase() }
 
         // Set the onClickListener for the item
         holder.itemView.setOnClickListener { onTypeSelected(type) }
@@ -46,3 +46,4 @@ class PeripheralTypeAdapter(
 
     override fun getItemCount(): Int = types.size
 }
+

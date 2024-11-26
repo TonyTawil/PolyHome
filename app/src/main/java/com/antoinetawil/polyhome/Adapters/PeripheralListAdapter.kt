@@ -1,6 +1,8 @@
 package com.antoinetawil.polyhome.Adapters
 
+import android.content.ContentValues.TAG
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,60 +42,66 @@ class PeripheralListAdapter(
 
         holder.peripheralIdTextView.text = "ID: ${peripheral.id}"
         holder.peripheralTypeTextView.text = "Type: ${peripheral.type}"
-
         holder.commandsContainer.removeAllViews()
 
-        if (peripheral.type == "light") {
-            val lightToggleButton = ImageButton(context).apply {
-                layoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    setMargins(8, 8, 8, 8)
-                }
-                setPadding(16, 16, 16, 16)
-                setBackgroundResource(android.R.color.transparent)
-                setImageResource(if (peripheral.power == 1) R.drawable.ic_light_on else R.drawable.ic_light_off)
-
-                setOnClickListener {
-                    val isCurrentlyOn = peripheral.power == 1
-                    val command = if (isCurrentlyOn) "TURN OFF" else "TURN ON"
-                    sendCommandToPeripheral(peripheral.id, command) { success ->
-                        (context as PeripheralListActivity).runOnUiThread {
-                            if (success) {
-                                peripheral.power = if (isCurrentlyOn) 0 else 1
-                                setImageResource(if (peripheral.power == 1) R.drawable.ic_light_on else R.drawable.ic_light_off)
-                                Toast.makeText(
-                                    context,
-                                    "Light turned ${if (peripheral.power == 1) "on" else "off"}",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            } else {
-                                Toast.makeText(
-                                    context,
-                                    "Failed to toggle light state",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        }
-                    }
-                }
-            }
-            holder.commandsContainer.addView(lightToggleButton)
-        } else if (peripheral.type == "rolling shutter" || peripheral.type == "garage door") {
-            val openButton = createTextButton("Open", "OPEN", peripheral)
-            val stopButton = createTextButton("Stop", "STOP", peripheral)
-            val closeButton = createTextButton("Close", "CLOSE", peripheral)
-
-            holder.commandsContainer.apply {
-                addView(openButton)
-                addView(stopButton)
-                addView(closeButton)
-            }
+        when (peripheral.type.lowercase()) {
+            "light" -> configureLightToggle(holder, peripheral)
+            "rolling shutter", "garage door" -> configureShutterAndDoorButtons(holder, peripheral)
         }
     }
 
     override fun getItemCount(): Int = peripheralList.size
+
+    private fun configureLightToggle(holder: PeripheralViewHolder, peripheral: Peripheral) {
+        val lightToggleButton = ImageButton(context).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(8, 8, 8, 8)
+            }
+            setPadding(16, 16, 16, 16)
+            setBackgroundResource(android.R.color.transparent)
+            setImageResource(if (peripheral.power == 1) R.drawable.ic_light_on else R.drawable.ic_light_off)
+
+            setOnClickListener {
+                val isCurrentlyOn = peripheral.power == 1
+                val command = if (isCurrentlyOn) "TURN OFF" else "TURN ON"
+                sendCommandToPeripheral(peripheral.id, command) { success ->
+                    (context as PeripheralListActivity).runOnUiThread {
+                        if (success) {
+                            peripheral.power = if (isCurrentlyOn) 0 else 1
+                            setImageResource(if (peripheral.power == 1) R.drawable.ic_light_on else R.drawable.ic_light_off)
+                            Toast.makeText(
+                                context,
+                                "Light turned ${if (peripheral.power == 1) "on" else "off"}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "Failed to toggle light state",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }
+            }
+        }
+        holder.commandsContainer.addView(lightToggleButton)
+    }
+
+    private fun configureShutterAndDoorButtons(holder: PeripheralViewHolder, peripheral: Peripheral) {
+        val openButton = createTextButton("Open", "OPEN", peripheral)
+        val stopButton = createTextButton("Stop", "STOP", peripheral)
+        val closeButton = createTextButton("Close", "CLOSE", peripheral)
+
+        holder.commandsContainer.apply {
+            addView(openButton)
+            addView(stopButton)
+            addView(closeButton)
+        }
+    }
 
     private fun createTextButton(text: String, command: String, peripheral: Peripheral): Button {
         return Button(context).apply {
@@ -103,20 +111,22 @@ class PeripheralListAdapter(
             ).apply {
                 setMargins(8, 8, 8, 8)
             }
-            setText(text)
+            this.text = text
+            isEnabled = peripheral.availableCommands.contains(command)
+
             setOnClickListener {
                 sendCommandToPeripheral(peripheral.id, command) { success ->
                     (context as PeripheralListActivity).runOnUiThread {
                         if (success) {
                             Toast.makeText(
                                 context,
-                                "Command $command sent successfully!",
+                                "Command $command sent successfully to ${peripheral.id}",
                                 Toast.LENGTH_SHORT
                             ).show()
                         } else {
                             Toast.makeText(
                                 context,
-                                "Failed to send $command",
+                                "Failed to send $command to ${peripheral.id}",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
@@ -145,6 +155,7 @@ class PeripheralListAdapter(
 
             client.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
+                    Log.e(TAG, "Command $command failed for $deviceId")
                     callback(false)
                 }
 
@@ -157,3 +168,4 @@ class PeripheralListAdapter(
         }
     }
 }
+

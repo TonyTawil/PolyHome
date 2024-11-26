@@ -6,12 +6,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.PopupWindow
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,12 +14,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.antoinetawil.polyhome.Adapters.PeripheralListAdapter
 import com.antoinetawil.polyhome.Models.Peripheral
 import com.antoinetawil.polyhome.R
+import com.antoinetawil.polyhome.Utils.Api
 import com.antoinetawil.polyhome.Utils.HeaderUtils
-import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
-import java.io.IOException
 import java.util.concurrent.Executors
 
 class PeripheralListActivity : AppCompatActivity() {
@@ -40,6 +32,7 @@ class PeripheralListActivity : AppCompatActivity() {
     private val filteredPeripherals = mutableListOf<Peripheral>()
     private lateinit var actionButtonsContainer: LinearLayout
     private var isOperationInProgress = false
+    private val api = Api()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +48,15 @@ class PeripheralListActivity : AppCompatActivity() {
 
         val houseId = intent.getIntExtra("houseId", -1)
         val peripheralType = intent.getStringExtra("type")
+        Log.d(TAG, "Peripheral Type: $peripheralType") // Debugging log
+
+        if (peripheralType.isNullOrEmpty()) {
+            Toast.makeText(this, "Invalid data", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+
+        setupActionButtons(peripheralType)
         val floor = intent.getStringExtra("floor") ?: "All"
         val filteredPeripheralsJson = intent.getStringArrayListExtra("filteredPeripherals")
 
@@ -73,27 +75,29 @@ class PeripheralListActivity : AppCompatActivity() {
         adapter = PeripheralListAdapter(filteredPeripherals, this)
         recyclerView.adapter = adapter
 
-        setupActionButtons(peripheralType)
         setupSearchPopup()
     }
 
     private fun setupActionButtons(peripheralType: String) {
-        actionButtonsContainer.removeAllViews()
+        actionButtonsContainer.removeAllViews() // Clear any existing buttons
 
         when (peripheralType.lowercase()) {
             "light" -> {
                 addActionButton("Turn On All") { performBulkOperation("TURN ON", "light") }
                 addActionButton("Turn Off All") { performBulkOperation("TURN OFF", "light") }
             }
-            "rolling shutter" -> {
-                addActionButton("Open All") { performBulkOperation("OPEN", "rolling shutter") }
-                addActionButton("Close All") { performBulkOperation("CLOSE", "rolling shutter") }
-                addActionButton("Stop All") { performBulkOperation("STOP", "rolling shutter") }
+            "shutter", "garage door" -> {
+                addActionButton("Open All") { performBulkOperation("OPEN", peripheralType.lowercase()) }
+                addActionButton("Close All") { performBulkOperation("CLOSE", peripheralType.lowercase()) }
+                addActionButton("Stop All") { performBulkOperation("STOP", peripheralType.lowercase()) }
             }
         }
     }
 
+
+
     private fun addActionButton(text: String, action: () -> Unit) {
+        Log.d(TAG, "Adding action button: $text") // Debugging log
         val button = Button(this).apply {
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -106,6 +110,7 @@ class PeripheralListActivity : AppCompatActivity() {
         }
         actionButtonsContainer.addView(button)
     }
+
 
     private fun setupSearchPopup() {
         val popupView = LayoutInflater.from(this).inflate(R.layout.search_popup, null)
@@ -162,7 +167,17 @@ class PeripheralListActivity : AppCompatActivity() {
 
     private fun parsePeripheral(json: JSONObject): Peripheral {
         val id = json.getString("id")
-        val type = json.getString("type")
+        val type = if (json.has("type")) {
+            json.getString("type")
+        } else {
+            // Infer type from ID if type is missing
+            when {
+                id.startsWith("Light", ignoreCase = true) -> "Light"
+                id.startsWith("Shutter", ignoreCase = true) -> "Shutter"
+                id.startsWith("GarageDoor", ignoreCase = true) -> "Garage Door"
+                else -> "Unknown"
+            }
+        }
         val availableCommands = json.getJSONArray("availableCommands").let { array ->
             MutableList(array.length()) { array.getString(it) }
         }
@@ -173,28 +188,41 @@ class PeripheralListActivity : AppCompatActivity() {
         return Peripheral(id, type, availableCommands, opening, openingMode, power)
     }
 
+
     private fun performBulkOperation(command: String, type: String) {
         if (isOperationInProgress) return
 
         isOperationInProgress = true
         toggleButtons(false)
-        val executor = Executors.newFixedThreadPool(5)
 
-        peripherals.filter { it.type == type }.forEach { peripheral ->
-            executor.submit {
-                sendCommandToPeripheral(peripheral.id, command) {
-                    if (type == "light") {
-                        runOnUiThread {
-                            peripheral.power = if (command == "TURN ON") 1 else 0
-                            adapter.notifyDataSetChanged()
+        Log.d(TAG, "Performing Bulk Operation: $command for type: $type")
+
+        peripherals.filter { it.type.equals(type, ignoreCase = true) && it.availableCommands.contains(command) }
+            .forEach { peripheral ->
+                val houseId = intent.getIntExtra("houseId", -1)
+                val sharedPreferences = getSharedPreferences("PolyHomePrefs", MODE_PRIVATE)
+                val token = sharedPreferences.getString("auth_token", null)
+
+                if (token == null || houseId == -1) {
+                    Log.e(TAG, "Invalid token or houseId")
+                    return@forEach
+                }
+
+                val url = "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/devices/${peripheral.id}/command"
+                Log.d(TAG, "Sending command $command to URL: $url")
+
+                api.post<Map<String, String>, Unit>(
+                    path = url,
+                    data = mapOf("command" to command),
+                    securityToken = token,
+                    onSuccess = { responseCode, _ ->
+                        Log.d(TAG, "Command $command response for ${peripheral.id}: $responseCode")
+                        if (responseCode != 200) {
+                            Log.e(TAG, "Failed to execute $command for ${peripheral.id}")
                         }
                     }
-                }
+                )
             }
-        }
-
-        executor.shutdown()
-        executor.awaitTermination(30, java.util.concurrent.TimeUnit.SECONDS)
 
         runOnUiThread {
             isOperationInProgress = false
@@ -206,41 +234,6 @@ class PeripheralListActivity : AppCompatActivity() {
     private fun toggleButtons(enable: Boolean) {
         for (i in 0 until actionButtonsContainer.childCount) {
             actionButtonsContainer.getChildAt(i).isEnabled = enable
-        }
-    }
-
-    private fun sendCommandToPeripheral(deviceId: String, command: String, onComplete: () -> Unit) {
-        val sharedPreferences = getSharedPreferences("PolyHomePrefs", MODE_PRIVATE)
-        val token = sharedPreferences.getString("auth_token", null)
-        val houseId = intent.getIntExtra("houseId", -1)
-
-        if (token != null && houseId != -1) {
-            val url = "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/devices/$deviceId/command"
-            val client = OkHttpClient()
-            val jsonObject = JSONObject().apply { put("command", command) }
-            val requestBody = jsonObject.toString().toRequestBody("application/json".toMediaTypeOrNull())
-
-            val request = Request.Builder()
-                .url(url)
-                .post(requestBody)
-                .addHeader("Authorization", "Bearer $token")
-                .build()
-
-            client.newCall(request).enqueue(object : Callback {
-                override fun onFailure(call: Call, e: IOException) {
-                    Log.e(TAG, "Command $command failed for $deviceId")
-                    onComplete()
-                }
-
-                override fun onResponse(call: Call, response: Response) {
-                    if (!response.isSuccessful) {
-                        Log.e(TAG, "Command $command failed for $deviceId")
-                    }
-                    onComplete()
-                }
-            })
-        } else {
-            onComplete()
         }
     }
 }

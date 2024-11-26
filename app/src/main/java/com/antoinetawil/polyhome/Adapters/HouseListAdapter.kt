@@ -1,6 +1,7 @@
 package com.antoinetawil.polyhome.Adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +19,10 @@ class HouseListAdapter(
     private val onHouseSelected: (houseId: Int) -> Unit
 ) : RecyclerView.Adapter<HouseListAdapter.HouseViewHolder>() {
 
+    companion object {
+        private const val TAG = "HouseListAdapter"
+    }
+
     class HouseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val houseIdTextView: TextView = itemView.findViewById(R.id.houseIdValueTextView)
         val ownerStatusTextView: TextView = itemView.findViewById(R.id.houseOwnerStatusTextView)
@@ -32,17 +37,25 @@ class HouseListAdapter(
 
     override fun onBindViewHolder(holder: HouseViewHolder, position: Int) {
         val house = houseList[position]
+
         holder.houseIdTextView.text = "ID: ${house.houseId}"
         holder.ownerStatusTextView.text = if (house.owner) "Owner" else "Guest"
 
+        Log.d(TAG, "Binding house: ${house.houseId}, Owner: ${house.owner}")
+
         holder.itemView.setOnClickListener {
+            Log.d(TAG, "House selected: ${house.houseId}")
             onHouseSelected(house.houseId)
         }
 
         holder.managePermissionButton.setOnClickListener {
+            Log.d(TAG, "Manage permission clicked for house: ${house.houseId}")
             onManagePermission(house.houseId, holder.managePermissionButton)
         }
     }
 
-    override fun getItemCount(): Int = houseList.size
+    override fun getItemCount(): Int {
+        Log.d(TAG, "House list size: ${houseList.size}")
+        return houseList.size
+    }
 }
