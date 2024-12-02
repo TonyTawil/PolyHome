@@ -134,7 +134,8 @@ class FloorListActivity : BaseActivity() {
 
     private fun setupFloorAdapter(houseId: Int, peripheralType: String) {
         Log.d(TAG, "Setting up floor adapter for houseId=$houseId, peripheralType=$peripheralType")
-        val adapter = FloorListAdapter(floors) { selectedFloor ->
+
+        val adapter = FloorListAdapter(floors, peripheralType) { selectedFloor ->
             Log.d(TAG, "Floor selected: $selectedFloor")
             val filteredPeripherals = when (selectedFloor) {
                 getString(R.string.first_floor) -> peripherals.filter { it.getString("id").contains("1.") }
@@ -152,6 +153,7 @@ class FloorListActivity : BaseActivity() {
         }
         recyclerView.adapter = adapter
     }
+
 
     private fun navigateToPeripheralList(houseId: Int, type: String, floor: String, filteredPeripherals: List<JSONObject>) {
         Log.d(TAG, "Navigating to PeripheralListActivity with houseId=$houseId, type=$type, floor=$floor, peripherals=$filteredPeripherals")

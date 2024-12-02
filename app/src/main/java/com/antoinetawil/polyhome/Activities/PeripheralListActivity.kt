@@ -197,32 +197,51 @@ class PeripheralListActivity : AppCompatActivity() {
 
         Log.d(TAG, "Performing Bulk Operation: $command for type: $type")
 
-        peripherals.filter { it.type.equals(type, ignoreCase = true) && it.availableCommands.contains(command) }
-            .forEach { peripheral ->
-                val houseId = intent.getIntExtra("houseId", -1)
-                val sharedPreferences = getSharedPreferences("PolyHomePrefs", MODE_PRIVATE)
-                val token = sharedPreferences.getString("auth_token", null)
+        val affectedPeripherals = peripherals.filter {
+            it.type.equals(type, ignoreCase = true) && it.availableCommands.contains(command)
+        }
 
-                if (token == null || houseId == -1) {
-                    Log.e(TAG, "Invalid token or houseId")
-                    return@forEach
-                }
-
-                val url = "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/devices/${peripheral.id}/command"
-                Log.d(TAG, "Sending command $command to URL: $url")
-
-                api.post<Map<String, String>, Unit>(
-                    path = url,
-                    data = mapOf("command" to command),
-                    securityToken = token,
-                    onSuccess = { responseCode, _ ->
-                        Log.d(TAG, "Command $command response for ${peripheral.id}: $responseCode")
-                        if (responseCode != 200) {
-                            Log.e(TAG, "Failed to execute $command for ${peripheral.id}")
-                        }
-                    }
-                )
+        if (affectedPeripherals.isEmpty()) {
+            runOnUiThread {
+                Toast.makeText(this, "No devices to operate on.", Toast.LENGTH_SHORT).show()
+                isOperationInProgress = false
+                toggleButtons(true)
             }
+            return
+        }
+
+        affectedPeripherals.forEach { peripheral ->
+            val houseId = intent.getIntExtra("houseId", -1)
+            val sharedPreferences = getSharedPreferences("PolyHomePrefs", MODE_PRIVATE)
+            val token = sharedPreferences.getString("auth_token", null)
+
+            if (token == null || houseId == -1) {
+                Log.e(TAG, "Invalid token or houseId")
+                return@forEach
+            }
+
+            val url = "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/devices/${peripheral.id}/command"
+            Log.d(TAG, "Sending command $command to URL: $url")
+
+            api.post<Map<String, String>, Unit>(
+                path = url,
+                data = mapOf("command" to command),
+                securityToken = token,
+                onSuccess = { responseCode, _ ->
+                    if (responseCode == 200) {
+                        runOnUiThread {
+                            // Update the power state locally based on the command
+                            if (type.equals("light", ignoreCase = true)) {
+                                peripheral.power = if (command == "TURN ON") 1 else 0
+                            }
+                            adapter.notifyDataSetChanged()
+                        }
+                    } else {
+                        Log.e(TAG, "Failed to execute $command for ${peripheral.id}")
+                    }
+                }
+            )
+        }
 
         runOnUiThread {
             isOperationInProgress = false
@@ -230,6 +249,7 @@ class PeripheralListActivity : AppCompatActivity() {
             Toast.makeText(this, "$command completed for all $type", Toast.LENGTH_SHORT).show()
         }
     }
+
 
     private fun toggleButtons(enable: Boolean) {
         for (i in 0 until actionButtonsContainer.childCount) {
