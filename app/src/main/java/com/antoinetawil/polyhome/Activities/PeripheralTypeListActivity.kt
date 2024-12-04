@@ -3,18 +3,19 @@ package com.antoinetawil.polyhome.Activities
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.antoinetawil.polyhome.Adapters.PeripheralTypeAdapter
 import com.antoinetawil.polyhome.R
 import com.antoinetawil.polyhome.Utils.Api
+import com.antoinetawil.polyhome.Utils.BaseActivity
 import com.antoinetawil.polyhome.Utils.HeaderUtils
 import org.json.JSONObject
 
-class PeripheralTypeListActivity : AppCompatActivity() {
+class PeripheralTypeListActivity : BaseActivity() {
 
     companion object {
         private const val TAG = "PeripheralTypeList"
@@ -40,17 +41,17 @@ class PeripheralTypeListActivity : AppCompatActivity() {
 
         if (houseId == -1 || availableTypes.isNullOrEmpty()) {
             Log.e(TAG, "Invalid house data: houseId=$houseId, availableTypes=$availableTypes")
-            Toast.makeText(this, "Invalid house data", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.invalid_house_data), Toast.LENGTH_SHORT).show()
             finish()
             return
         }
 
+        findViewById<TextView>(R.id.titleTextView).text = getString(R.string.peripheral_types)
+
         val adapter = PeripheralTypeAdapter(availableTypes) { selectedType ->
             if (selectedType.lowercase() == "garage door") {
-                // Directly fetch and navigate to PeripheralListActivity
                 fetchAndNavigateToPeripheralList(houseId, selectedType)
             } else {
-                // Navigate to FloorListActivity for other peripheral types
                 val intent = Intent(this, FloorListActivity::class.java)
                 intent.putExtra("houseId", houseId)
                 intent.putExtra("type", selectedType)
@@ -69,7 +70,7 @@ class PeripheralTypeListActivity : AppCompatActivity() {
 
         if (token.isNullOrEmpty()) {
             Log.e(TAG, "Authentication token missing")
-            Toast.makeText(this, "Authentication token missing", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.auth_token_missing), Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -90,8 +91,8 @@ class PeripheralTypeListActivity : AppCompatActivity() {
                         Log.d(TAG, "Filtered peripherals for type '$peripheralType': $filteredPeripherals")
                         navigateToPeripheralList(houseId, peripheralType, filteredPeripherals)
                     } else {
-                        Log.e(TAG, "Failed to fetch peripherals. Response code: $responseCode, Response: $response")
-                        Toast.makeText(this, "Failed to fetch peripherals. Check logs for details.", Toast.LENGTH_SHORT).show()
+                        Log.e(TAG, getString(R.string.failed_fetch_peripherals_log, responseCode))
+                        Toast.makeText(this, getString(R.string.failed_fetch_peripherals), Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -103,7 +104,7 @@ class PeripheralTypeListActivity : AppCompatActivity() {
         val intent = Intent(this, PeripheralListActivity::class.java)
         intent.putExtra("houseId", houseId)
         intent.putExtra("type", type)
-        intent.putExtra("floor", "All")
+        intent.putExtra("floor", getString(R.string.all_floors))
         intent.putExtra("filteredPeripherals", ArrayList(peripherals.map { JSONObject(it).toString() }))
         startActivity(intent)
     }

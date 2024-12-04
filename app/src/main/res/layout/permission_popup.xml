@@ -12,7 +12,7 @@
         android:id="@+id/popupTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Manage Permissions"
+        android:text="@string/manage_permissions"
         android:textColor="@color/primary_text"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -23,7 +23,7 @@
         android:id="@+id/emailEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter email address"
+        android:hint="@string/enter_email_address"
         android:inputType="textEmailAddress"
         android:background="@drawable/edit_text_background"
         android:padding="12dp"
@@ -34,7 +34,7 @@
         android:id="@+id/givePermissionButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Give Permission"
+        android:text="@string/give_permission"
         android:background="@drawable/button_background"
         android:textColor="@color/white"
         android:layout_marginBottom="8dp" />
@@ -43,7 +43,7 @@
         android:id="@+id/removePermissionButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Remove Permission"
+        android:text="@string/remove_permission"
         android:background="@drawable/button_background_secondary"
         android:textColor="@color/white" />
 </LinearLayout>

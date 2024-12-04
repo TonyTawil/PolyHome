@@ -3,26 +3,26 @@
 
     <item
         android:id="@+id/menu_houses"
-        android:title="Houses" />
+        android:title="@string/menu_houses" />
 
     <item
         android:id="@+id/menu_notifications"
-        android:title="Notifications" />
+        android:title="@string/menu_notifications" />
 
     <item
         android:id="@+id/menu_settings"
-        android:title="Settings" />
+        android:title="@string/menu_settings" />
 
     <item
         android:id="@+id/menu_schedules"
-        android:title="Schedules" />
+        android:title="@string/menu_schedules" />
 
     <item
         android:id="@+id/menu_statistics"
-        android:title="Statistics" />
+        android:title="@string/menu_statistics" />
 
     <item
         android:id="@+id/menu_sign_out"
-        android:title="Sign Out" />
+        android:title="@string/menu_sign_out" />
 
 </menu>

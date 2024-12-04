@@ -7,7 +7,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -15,11 +14,11 @@ import com.antoinetawil.polyhome.Adapters.PeripheralListAdapter
 import com.antoinetawil.polyhome.Models.Peripheral
 import com.antoinetawil.polyhome.R
 import com.antoinetawil.polyhome.Utils.Api
+import com.antoinetawil.polyhome.Utils.BaseActivity
 import com.antoinetawil.polyhome.Utils.HeaderUtils
 import org.json.JSONObject
-import java.util.concurrent.Executors
 
-class PeripheralListActivity : AppCompatActivity() {
+class PeripheralListActivity : BaseActivity() {
 
     private val TAG = "PeripheralListActivity"
     private lateinit var drawerLayout: DrawerLayout
@@ -47,21 +46,21 @@ class PeripheralListActivity : AppCompatActivity() {
         actionButtonsContainer = findViewById(R.id.actionButtonsContainer)
 
         val houseId = intent.getIntExtra("houseId", -1)
-        val peripheralType = intent.getStringExtra("type")
-        Log.d(TAG, "Peripheral Type: $peripheralType") // Debugging log
+        val peripheralType = intent.getStringExtra("type") ?: ""
+        Log.d(TAG, "Peripheral Type: $peripheralType")
 
-        if (peripheralType.isNullOrEmpty()) {
-            Toast.makeText(this, "Invalid data", Toast.LENGTH_SHORT).show()
+        if (peripheralType.isEmpty()) {
+            Toast.makeText(this, getString(R.string.invalid_data), Toast.LENGTH_SHORT).show()
             finish()
             return
         }
 
         setupActionButtons(peripheralType)
-        val floor = intent.getStringExtra("floor") ?: "All"
+        val floor = intent.getStringExtra("floor") ?: getString(R.string.all_floors)
         val filteredPeripheralsJson = intent.getStringArrayListExtra("filteredPeripherals")
 
-        if (houseId == -1 || peripheralType.isNullOrEmpty() || filteredPeripheralsJson.isNullOrEmpty()) {
-            Toast.makeText(this, "Invalid data", Toast.LENGTH_SHORT).show()
+        if (houseId == -1 || filteredPeripheralsJson.isNullOrEmpty()) {
+            Toast.makeText(this, getString(R.string.invalid_data), Toast.LENGTH_SHORT).show()
             finish()
             return
         }
@@ -79,25 +78,23 @@ class PeripheralListActivity : AppCompatActivity() {
     }
 
     private fun setupActionButtons(peripheralType: String) {
-        actionButtonsContainer.removeAllViews() // Clear any existing buttons
+        actionButtonsContainer.removeAllViews()
 
         when (peripheralType.lowercase()) {
             "light" -> {
-                addActionButton("Turn On All") { performBulkOperation("TURN ON", "light") }
-                addActionButton("Turn Off All") { performBulkOperation("TURN OFF", "light") }
+                addActionButton(getString(R.string.turn_on_all)) { performBulkOperation("TURN ON", "light") }
+                addActionButton(getString(R.string.turn_off_all)) { performBulkOperation("TURN OFF", "light") }
             }
             "shutter", "garage door" -> {
-                addActionButton("Open All") { performBulkOperation("OPEN", peripheralType.lowercase()) }
-                addActionButton("Close All") { performBulkOperation("CLOSE", peripheralType.lowercase()) }
-                addActionButton("Stop All") { performBulkOperation("STOP", peripheralType.lowercase()) }
+                addActionButton(getString(R.string.open_all)) { performBulkOperation("OPEN", peripheralType.lowercase()) }
+                addActionButton(getString(R.string.close_all)) { performBulkOperation("CLOSE", peripheralType.lowercase()) }
+                addActionButton(getString(R.string.stop_all)) { performBulkOperation("STOP", peripheralType.lowercase()) }
             }
         }
     }
 
-
-
     private fun addActionButton(text: String, action: () -> Unit) {
-        Log.d(TAG, "Adding action button: $text") // Debugging log
+        Log.d(TAG, "Adding action button: $text")
         val button = Button(this).apply {
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -110,7 +107,6 @@ class PeripheralListActivity : AppCompatActivity() {
         }
         actionButtonsContainer.addView(button)
     }
-
 
     private fun setupSearchPopup() {
         val popupView = LayoutInflater.from(this).inflate(R.layout.search_popup, null)
@@ -130,6 +126,7 @@ class PeripheralListActivity : AppCompatActivity() {
             }
         }
 
+        searchEditText.hint = getString(R.string.search_by_id)
         searchEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -150,34 +147,31 @@ class PeripheralListActivity : AppCompatActivity() {
     }
 
     private fun generateTitle(type: String, floor: String): String {
+        val isFrench = resources.configuration.locales[0].language == "fr" // Detect current locale
+
+        if (type.lowercase() == "garagedoor") {
+            return if (isFrench) getString(R.string.garage_door_fr) else getString(R.string.garage_door)
+        }
+
         val pluralType = when (type.lowercase()) {
-            "light" -> "Lights"
-            "rolling shutter" -> "Rolling Shutters"
-            "garage door" -> "Garage Door"
+            "light" -> if (isFrench) getString(R.string.lights_fr) else getString(R.string.lights)
+            "shutter" -> if (isFrench) getString(R.string.rolling_shutters_fr) else getString(R.string.rolling_shutters)
             else -> type + "s"
         }
-        return when (type.lowercase()) {
-            "garage door" -> pluralType
-            else -> when (floor) {
-                "All" -> "All $pluralType"
-                else -> "$floor $pluralType"
-            }
+
+        return when (floor) {
+            getString(R.string.all_floors) -> if (isFrench) "${pluralType} ${getString(R.string.all_floors_fr_suffix)}" else "${getString(R.string.all)} $pluralType"
+            getString(R.string.first_floor) -> if (isFrench) "${pluralType} ${getString(R.string.first_floor_fr_suffix)}" else "$floor $pluralType"
+            getString(R.string.second_floor) -> if (isFrench) "${pluralType} ${getString(R.string.second_floor_fr_suffix)}" else "$floor $pluralType"
+            else -> "$floor $pluralType"
         }
     }
 
+
+
     private fun parsePeripheral(json: JSONObject): Peripheral {
         val id = json.getString("id")
-        val type = if (json.has("type")) {
-            json.getString("type")
-        } else {
-            // Infer type from ID if type is missing
-            when {
-                id.startsWith("Light", ignoreCase = true) -> "Light"
-                id.startsWith("Shutter", ignoreCase = true) -> "Shutter"
-                id.startsWith("GarageDoor", ignoreCase = true) -> "Garage Door"
-                else -> "Unknown"
-            }
-        }
+        val type = json.optString("type", "Unknown")
         val availableCommands = json.getJSONArray("availableCommands").let { array ->
             MutableList(array.length()) { array.getString(it) }
         }
@@ -188,7 +182,6 @@ class PeripheralListActivity : AppCompatActivity() {
         return Peripheral(id, type, availableCommands, opening, openingMode, power)
     }
 
-
     private fun performBulkOperation(command: String, type: String) {
         if (isOperationInProgress) return
 
@@ -197,13 +190,23 @@ class PeripheralListActivity : AppCompatActivity() {
 
         Log.d(TAG, "Performing Bulk Operation: $command for type: $type")
 
+        val normalizedType = when (type.lowercase()) {
+            "shutter" -> "rolling shutter"
+            "garage door" -> "garage door"
+            "light" -> "light"
+            else -> type.lowercase()
+        }
+
         val affectedPeripherals = peripherals.filter {
-            it.type.equals(type, ignoreCase = true) && it.availableCommands.contains(command)
+            it.type.equals(normalizedType, ignoreCase = true) &&
+                    it.availableCommands.any { availableCommand ->
+                        availableCommand.equals(command, ignoreCase = true)
+                    }
         }
 
         if (affectedPeripherals.isEmpty()) {
             runOnUiThread {
-                Toast.makeText(this, "No devices to operate on.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.no_devices_to_operate), Toast.LENGTH_SHORT).show()
                 isOperationInProgress = false
                 toggleButtons(true)
             }
@@ -230,9 +233,15 @@ class PeripheralListActivity : AppCompatActivity() {
                 onSuccess = { responseCode, _ ->
                     if (responseCode == 200) {
                         runOnUiThread {
-                            // Update the power state locally based on the command
                             if (type.equals("light", ignoreCase = true)) {
                                 peripheral.power = if (command == "TURN ON") 1 else 0
+                            } else if (type.equals("shutter", ignoreCase = true) || type.equals("garage door", ignoreCase = true)) {
+                                peripheral.opening = when (command.uppercase()) {
+                                    "OPEN" -> 100
+                                    "CLOSE" -> 0
+                                    "STOP" -> peripheral.opening
+                                    else -> peripheral.opening
+                                }
                             }
                             adapter.notifyDataSetChanged()
                         }
@@ -246,10 +255,9 @@ class PeripheralListActivity : AppCompatActivity() {
         runOnUiThread {
             isOperationInProgress = false
             toggleButtons(true)
-            Toast.makeText(this, "$command completed for all $type", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.operation_completed, type), Toast.LENGTH_SHORT).show()
         }
     }
-
 
     private fun toggleButtons(enable: Boolean) {
         for (i in 0 until actionButtonsContainer.childCount) {

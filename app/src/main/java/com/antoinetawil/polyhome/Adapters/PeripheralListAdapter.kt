@@ -40,8 +40,8 @@ class PeripheralListAdapter(
     override fun onBindViewHolder(holder: PeripheralViewHolder, position: Int) {
         val peripheral = peripheralList[position]
 
-        holder.peripheralIdTextView.text = "ID: ${peripheral.id}"
-        holder.peripheralTypeTextView.text = "Type: ${peripheral.type}"
+        holder.peripheralIdTextView.text = context.getString(R.string.peripheral_id, peripheral.id)
+        holder.peripheralTypeTextView.text = getLocalizedType(peripheral.type)
         holder.commandsContainer.removeAllViews()
 
         when (peripheral.type.lowercase()) {
@@ -74,13 +74,13 @@ class PeripheralListAdapter(
                             setImageResource(if (peripheral.power == 1) R.drawable.ic_light_on else R.drawable.ic_light_off)
                             Toast.makeText(
                                 context,
-                                "Light turned ${if (peripheral.power == 1) "on" else "off"}",
+                                context.getString(if (peripheral.power == 1) R.string.light_turned_on else R.string.light_turned_off),
                                 Toast.LENGTH_SHORT
                             ).show()
                         } else {
                             Toast.makeText(
                                 context,
-                                "Failed to toggle light state",
+                                context.getString(R.string.failed_toggle_light),
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
@@ -92,9 +92,9 @@ class PeripheralListAdapter(
     }
 
     private fun configureShutterAndDoorButtons(holder: PeripheralViewHolder, peripheral: Peripheral) {
-        val openButton = createTextButton("Open", "OPEN", peripheral)
-        val stopButton = createTextButton("Stop", "STOP", peripheral)
-        val closeButton = createTextButton("Close", "CLOSE", peripheral)
+        val openButton = createTextButton(context.getString(R.string.open), "OPEN", peripheral)
+        val stopButton = createTextButton(context.getString(R.string.stop), "STOP", peripheral)
+        val closeButton = createTextButton(context.getString(R.string.close), "CLOSE", peripheral)
 
         holder.commandsContainer.apply {
             addView(openButton)
@@ -120,19 +120,28 @@ class PeripheralListAdapter(
                         if (success) {
                             Toast.makeText(
                                 context,
-                                "Command $command sent successfully to ${peripheral.id}",
+                                context.getString(R.string.command_sent_successfully, command, peripheral.id),
                                 Toast.LENGTH_SHORT
                             ).show()
                         } else {
                             Toast.makeText(
                                 context,
-                                "Failed to send $command to ${peripheral.id}",
+                                context.getString(R.string.failed_command, command, peripheral.id),
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
                     }
                 }
             }
+        }
+    }
+
+    private fun getLocalizedType(type: String): String {
+        return when (type.lowercase()) {
+            "light" -> context.getString(R.string.light)
+            "rolling shutter" -> context.getString(R.string.rolling_shutter)
+            "garage door" -> context.getString(R.string.garage_door)
+            else -> type
         }
     }
 
@@ -168,4 +177,5 @@ class PeripheralListAdapter(
         }
     }
 }
+
 

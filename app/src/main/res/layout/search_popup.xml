@@ -11,7 +11,7 @@
         android:id="@+id/searchEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Search by ID"
+        android:hint="@string/search_by_id"
         android:padding="8dp"
         android:background="@drawable/edit_text_background"
         android:textColor="@color/primary_text"

@@ -38,8 +38,12 @@ class HouseListAdapter(
     override fun onBindViewHolder(holder: HouseViewHolder, position: Int) {
         val house = houseList[position]
 
-        holder.houseIdTextView.text = "ID: ${house.houseId}"
-        holder.ownerStatusTextView.text = if (house.owner) "Owner" else "Guest"
+        holder.houseIdTextView.text = context.getString(R.string.house_id_label, house.houseId)
+        holder.ownerStatusTextView.text = if (house.owner) {
+            context.getString(R.string.owner)
+        } else {
+            context.getString(R.string.guest)
+        }
 
         Log.d(TAG, "Binding house: ${house.houseId}, Owner: ${house.owner}")
 
