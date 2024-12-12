@@ -1,7 +1,12 @@
 package com.antoinetawil.polyhome.Activities
 
+import ScheduleReceiver
+import android.app.AlarmManager
 import android.app.DatePickerDialog
+import android.app.PendingIntent
 import android.app.TimePickerDialog
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.*
@@ -74,6 +79,7 @@ class SchedulesActivity : BaseActivity() {
         dateButton.setOnClickListener { showDatePicker() }
         timeButton.setOnClickListener { showTimePicker() }
         searchButton.setOnClickListener { fetchPeripherals() }
+        saveScheduleButton.setOnClickListener { saveSchedule() }
 
         fetchHouses()
     }
@@ -97,7 +103,11 @@ class SchedulesActivity : BaseActivity() {
     }
 
     private fun setupPeripheralTypeSpinner() {
-        val peripheralTypes = listOf(getString(R.string.light), getString(R.string.shutter), getString(R.string.garage_door))
+        val peripheralTypes = listOf(
+            getString(R.string.light),
+            getString(R.string.shutter),
+            getString(R.string.garage_door)
+        )
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, peripheralTypes)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         peripheralTypeSpinner.adapter = adapter
@@ -126,7 +136,7 @@ class SchedulesActivity : BaseActivity() {
     }
 
     private fun setupRecyclerView() {
-        adapter = PeripheralListAdapter(peripherals, this)
+        adapter = PeripheralListAdapter(peripherals, this, isScheduleMode = true)
         peripheralsRecyclerView.layoutManager = LinearLayoutManager(this)
         peripheralsRecyclerView.adapter = adapter
     }
@@ -200,23 +210,49 @@ class SchedulesActivity : BaseActivity() {
                     if (responseCode == 200 && response != null) {
                         val devices = response["devices"] ?: emptyList()
                         peripherals.clear()
+
                         peripherals.addAll(
-                            devices.map { JSONObject(it).toPeripheral() }.filter { peripheral ->
-                                peripheral.type.equals(type, ignoreCase = true) &&
-                                        (floor == getString(R.string.all_floors) || peripheral.id.contains("$floor.", ignoreCase = true))
+                            devices.mapNotNull { device ->
+                                val json = JSONObject(device)
+                                val id = json.optString("id")
+                                val inferredType = when {
+                                    id.startsWith("Light", ignoreCase = true) -> getString(R.string.light)
+                                    id.startsWith("Shutter", ignoreCase = true) -> getString(R.string.shutter)
+                                    id.startsWith("GarageDoor", ignoreCase = true) -> getString(R.string.garage_door)
+                                    else -> null
+                                }
+
+                                if (inferredType != null &&
+                                    inferredType.equals(type, ignoreCase = true) &&
+                                    (floor == getString(R.string.all_floors) || matchesFloor(id, floor))
+                                ) {
+                                    json.toPeripheral()
+                                } else {
+                                    null
+                                }
                             }
                         )
 
                         if (peripherals.isEmpty()) {
-                            Toast.makeText(this, "No matching peripherals", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, getString(R.string.no_matching_peripherals), Toast.LENGTH_SHORT).show()
                         } else {
                             Toast.makeText(this, getString(R.string.peripherals_fetched), Toast.LENGTH_SHORT).show()
                         }
                         adapter.notifyDataSetChanged()
+                    } else {
+                        Toast.makeText(this, getString(R.string.failed_to_fetch_peripherals), Toast.LENGTH_SHORT).show()
                     }
                 }
             }
         )
+    }
+
+    private fun matchesFloor(id: String, floor: String): Boolean {
+        return when (floor) {
+            getString(R.string.first_floor) -> id.contains("1.", ignoreCase = true)
+            getString(R.string.second_floor) -> id.contains("2.", ignoreCase = true)
+            else -> false
+        }
     }
 
     private fun JSONObject.toPeripheral(): Peripheral {
@@ -230,5 +266,87 @@ class SchedulesActivity : BaseActivity() {
         val power = this.optInt("power", -1).takeIf { it != -1 }
 
         return Peripheral(id, type, availableCommands, opening, openingMode, power)
+    }
+
+    private fun saveSchedule() {
+        if (selectedDate == null || selectedTime == null) {
+            Toast.makeText(this, getString(R.string.select_date_time), Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val selectedPeripherals = peripherals.filter { it.power == 1 || it.opening != null }
+        if (selectedPeripherals.isEmpty()) {
+            Toast.makeText(this, getString(R.string.no_peripherals_selected), Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val scheduleDateTime = "$selectedDate $selectedTime"
+        val scheduleTimeInMillis = getScheduleTimeInMillis(scheduleDateTime)
+
+        if (scheduleTimeInMillis == null || scheduleTimeInMillis <= System.currentTimeMillis()) {
+            Toast.makeText(this, getString(R.string.invalid_schedule_time), Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        selectedPeripherals.forEach { peripheral ->
+            scheduleCommand(peripheral, scheduleTimeInMillis)
+        }
+
+        resetFields()
+        Toast.makeText(this, getString(R.string.schedule_saved), Toast.LENGTH_SHORT).show()
+    }
+
+    private fun resetFields() {
+        selectedDate = null
+        selectedTime = null
+        dateButton.text = getString(R.string.select_date)
+        timeButton.text = getString(R.string.select_time)
+        peripherals.forEach {
+            it.power = 0
+            it.opening = null
+        }
+        adapter.notifyDataSetChanged()
+    }
+
+    private fun getScheduleTimeInMillis(dateTime: String): Long? {
+        return try {
+            val format = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+            val date = format.parse(dateTime)
+            date?.time
+        } catch (e: Exception) {
+            Log.e(TAG, "Error parsing date time: $e")
+            null
+        }
+    }
+
+    private fun scheduleCommand(peripheral: Peripheral, timeInMillis: Long) {
+        val intent = Intent(this, ScheduleReceiver::class.java).apply {
+            putExtra("peripheralId", peripheral.id)
+            putExtra("command", determineCommand(peripheral))
+        }
+
+        val pendingIntent = PendingIntent.getBroadcast(
+            this,
+            peripheral.id.hashCode(),
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent)
+
+        Log.d(TAG, "Scheduled command for ${peripheral.id} at $timeInMillis")
+    }
+
+    private fun determineCommand(peripheral: Peripheral): String {
+        return when (peripheral.type.lowercase()) {
+            "light" -> if (peripheral.power == 1) "TURN ON" else "TURN OFF"
+            "rolling shutter", "garage door" -> when (peripheral.opening) {
+                100 -> "OPEN"
+                0 -> "CLOSE"
+                else -> "STOP"
+            }
+            else -> ""
+        }
     }
 }

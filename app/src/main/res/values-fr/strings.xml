@@ -87,5 +87,8 @@
     <string name="house_id_label2">ID de maison : %1$d</string>
     <string name="search_peripherals">Rechercher des périphériques</string>
     <string name="peripherals_fetched">Périphériques récupérés avec succès</string>
-
+    <string name="select_date_time">Veuillez sélectionner une date et une heure</string>
+    <string name="invalid_schedule_time">Heure de programmation invalide. Veuillez choisir une heure future.</string>
+    <string name="no_peripherals_selected">Aucun périphérique sélectionné à programmer</string>
+    <string name="no_matching_peripherals">Aucun périphérique correspondant trouvé.</string>
 </resources>

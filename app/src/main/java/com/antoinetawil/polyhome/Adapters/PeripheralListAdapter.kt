@@ -23,7 +23,8 @@ import okhttp3.RequestBody.Companion.toRequestBody
 
 class PeripheralListAdapter(
     private val peripheralList: List<Peripheral>,
-    private val context: Context
+    private val context: Context,
+    private val isScheduleMode: Boolean = false // Special behavior for SchedulesActivity
 ) : RecyclerView.Adapter<PeripheralListAdapter.PeripheralViewHolder>() {
 
     class PeripheralViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -45,12 +46,44 @@ class PeripheralListAdapter(
         holder.commandsContainer.removeAllViews()
 
         when (peripheral.type.lowercase()) {
-            "light" -> configureLightToggle(holder, peripheral)
-            "rolling shutter", "garage door" -> configureShutterAndDoorButtons(holder, peripheral)
+            "light" -> {
+                if (isScheduleMode) {
+                    configureLightToggleForSchedule(holder, peripheral)
+                } else {
+                    configureLightToggle(holder, peripheral)
+                }
+            }
+            "rolling shutter", "garage door" -> {
+                if (isScheduleMode) {
+                    configureShutterAndDoorButtonsForSchedule(holder, peripheral)
+                } else {
+                    configureShutterAndDoorButtons(holder, peripheral)
+                }
+            }
         }
     }
 
     override fun getItemCount(): Int = peripheralList.size
+
+    private fun configureLightToggleForSchedule(holder: PeripheralViewHolder, peripheral: Peripheral) {
+        val lightToggleButton = ImageButton(context).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(8, 8, 8, 8)
+            }
+            setPadding(16, 16, 16, 16)
+            setBackgroundResource(android.R.color.transparent)
+            setImageResource(if (peripheral.power == 1) R.drawable.ic_light_on else R.drawable.ic_light_off)
+
+            setOnClickListener {
+                peripheral.power = if (peripheral.power == 1) 0 else 1
+                setImageResource(if (peripheral.power == 1) R.drawable.ic_light_on else R.drawable.ic_light_off)
+            }
+        }
+        holder.commandsContainer.addView(lightToggleButton)
+    }
 
     private fun configureLightToggle(holder: PeripheralViewHolder, peripheral: Peripheral) {
         val lightToggleButton = ImageButton(context).apply {
@@ -89,6 +122,43 @@ class PeripheralListAdapter(
             }
         }
         holder.commandsContainer.addView(lightToggleButton)
+    }
+
+    private fun configureShutterAndDoorButtonsForSchedule(holder: PeripheralViewHolder, peripheral: Peripheral) {
+        val openButton = createStyledButton(context.getString(R.string.open))
+        val stopButton = createStyledButton(context.getString(R.string.stop))
+        val closeButton = createStyledButton(context.getString(R.string.close))
+
+        holder.commandsContainer.apply {
+            addView(openButton)
+            addView(stopButton)
+            addView(closeButton)
+        }
+    }
+
+    private fun createStyledButton(text: String): Button {
+        return Button(context).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(8, 8, 8, 8)
+            }
+            this.text = text
+            this.setBackgroundResource(R.drawable.button_background_secondary)
+
+            setOnClickListener {
+                this.setBackgroundResource(R.drawable.button_background)
+                (parent as? LinearLayout)?.let { container ->
+                    for (i in 0 until container.childCount) {
+                        val sibling = container.getChildAt(i) as? Button
+                        if (sibling != this) {
+                            sibling?.setBackgroundResource(R.drawable.button_background_secondary)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun configureShutterAndDoorButtons(holder: PeripheralViewHolder, peripheral: Peripheral) {
@@ -177,5 +247,4 @@ class PeripheralListAdapter(
         }
     }
 }
-
 

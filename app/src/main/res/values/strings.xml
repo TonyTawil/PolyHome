@@ -87,5 +87,9 @@
     <string name="house_id_label2">House ID: %1$d</string>
     <string name="search_peripherals">Search for peripherals</string>
     <string name="peripherals_fetched">Peripherals fetched successfully</string>
+    <string name="select_date_time">Please select both date and time</string>
+    <string name="invalid_schedule_time">Invalid schedule time. Please choose a future time.</string>
+    <string name="no_peripherals_selected">No peripherals selected to schedule</string>
+    <string name="no_matching_peripherals">No matching peripherals found.</string>
 
 </resources>
