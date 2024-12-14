@@ -87,10 +87,18 @@ class PeripheralListAdapter(
                     )
 
                     setOnClickListener {
-                        peripheral.power = if (peripheral.power == 1) 0 else 1
+                        peripheral.power =
+                                when (peripheral.power) {
+                                    1 -> -1 // ON -> OFF
+                                    -1 -> 0 // OFF -> unselected
+                                    else -> 1 // unselected -> ON
+                                }
                         setImageResource(
-                                if (peripheral.power == 1) R.drawable.ic_light_on
-                                else R.drawable.ic_light_off
+                                when (peripheral.power) {
+                                    1 -> R.drawable.ic_light_on
+                                    -1 -> R.drawable.ic_light_off
+                                    else -> R.drawable.ic_light_off
+                                }
                         )
                     }
                 }

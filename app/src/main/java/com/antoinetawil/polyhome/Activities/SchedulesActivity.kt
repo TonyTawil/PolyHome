@@ -376,7 +376,7 @@ class SchedulesActivity : BaseActivity() {
         val selectedPeripherals =
                 peripherals.filter { peripheral ->
                     when (peripheral.type.lowercase()) {
-                        "light" -> peripheral.power == 1
+                        "light" -> peripheral.power != 0
                         "rolling shutter", "garage door" -> peripheral.opening != null
                         else -> false
                     }
@@ -417,13 +417,9 @@ class SchedulesActivity : BaseActivity() {
             }
 
             withContext(Dispatchers.Main) {
-                resetFields()
-                Toast.makeText(
-                                this@SchedulesActivity,
-                                getString(R.string.schedule_saved),
-                                Toast.LENGTH_SHORT
-                        )
-                        .show()
+                val intent = Intent(this@SchedulesActivity, SchedulesListActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                startActivity(intent)
                 finish()
             }
         }

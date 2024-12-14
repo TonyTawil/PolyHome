@@ -49,6 +49,11 @@ class SchedulesListActivity : BaseActivity() {
         showEmptyState()
     }
 
+    override fun onResume() {
+        super.onResume()
+        loadSchedules() // Refresh the list when returning to this activity
+    }
+
     private fun setupRecyclerView() {
         adapter = ScheduleListAdapter { schedule -> deleteSchedule(schedule) }
         schedulesRecyclerView.layoutManager = LinearLayoutManager(this)
