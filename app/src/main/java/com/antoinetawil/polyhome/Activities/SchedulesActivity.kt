@@ -14,11 +14,14 @@ import android.util.Log
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.antoinetawil.polyhome.Adapters.PeripheralListAdapter
+import com.antoinetawil.polyhome.Database.DatabaseHelper
 import com.antoinetawil.polyhome.Models.House
 import com.antoinetawil.polyhome.Models.Peripheral
+import com.antoinetawil.polyhome.Models.Schedule
 import com.antoinetawil.polyhome.R
 import com.antoinetawil.polyhome.Utils.Api
 import com.antoinetawil.polyhome.Utils.BaseActivity
@@ -26,6 +29,9 @@ import com.antoinetawil.polyhome.Utils.HeaderUtils
 import com.antoinetawil.polyhome.Utils.ScheduleReceiver
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
 class SchedulesActivity : BaseActivity() {
@@ -52,6 +58,8 @@ class SchedulesActivity : BaseActivity() {
     private var selectedFloor: String? = null
     private var selectedDate: String? = null
     private var selectedTime: String? = null
+
+    private lateinit var dbHelper: DatabaseHelper
 
     companion object {
         private const val ALARM_PERMISSION_REQUEST_CODE = 123
@@ -95,6 +103,8 @@ class SchedulesActivity : BaseActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             requestAlarmPermission()
         }
+
+        dbHelper = DatabaseHelper(this)
     }
 
     @RequiresApi(Build.VERSION_CODES.S)
@@ -392,12 +402,31 @@ class SchedulesActivity : BaseActivity() {
             apply()
         }
 
-        selectedPeripherals.forEach { peripheral ->
-            scheduleCommand(peripheral, scheduleTimeInMillis)
-        }
+        lifecycleScope.launch(Dispatchers.IO) {
+            selectedPeripherals.forEach { peripheral ->
+                val schedule =
+                        Schedule(
+                                dateTime = scheduleDateTime,
+                                peripheralId = peripheral.id,
+                                peripheralType = peripheral.type,
+                                command = determineCommand(peripheral),
+                                houseId = selectedHouse?.houseId ?: -1
+                        )
+                dbHelper.insertSchedule(schedule)
+                scheduleCommand(peripheral, scheduleTimeInMillis)
+            }
 
-        resetFields()
-        Toast.makeText(this, getString(R.string.schedule_saved), Toast.LENGTH_SHORT).show()
+            withContext(Dispatchers.Main) {
+                resetFields()
+                Toast.makeText(
+                                this@SchedulesActivity,
+                                getString(R.string.schedule_saved),
+                                Toast.LENGTH_SHORT
+                        )
+                        .show()
+                finish()
+            }
+        }
     }
 
     private fun resetFields() {

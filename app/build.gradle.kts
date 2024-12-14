@@ -49,4 +49,5 @@ dependencies {
     implementation("com.google.android.material:material:1.9.0")
     implementation("androidx.biometric:biometric:1.2.0-alpha05")
     implementation("com.google.code.gson:gson:2.10")
+
 }

@@ -91,5 +91,8 @@
     <string name="invalid_schedule_time">Invalid schedule time. Please choose a future time.</string>
     <string name="no_peripherals_selected">No peripherals selected to schedule</string>
     <string name="no_matching_peripherals">No matching peripherals found.</string>
+    <string name="no_schedules">No schedules yet</string>
+    <string name="add_schedule">Add Schedule</string>
+    <string name="delete_schedule">Delete Schedule</string>
 
 </resources>

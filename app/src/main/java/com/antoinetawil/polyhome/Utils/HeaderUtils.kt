@@ -6,22 +6,20 @@ import android.view.Gravity
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
-import com.antoinetawil.polyhome.R
 import com.antoinetawil.polyhome.Activities.HouseListActivity
 import com.antoinetawil.polyhome.Activities.LoginActivity
-import com.antoinetawil.polyhome.Activities.SettingsActivity
 import com.antoinetawil.polyhome.Activities.NotificationsActivity
-import com.antoinetawil.polyhome.Activities.SchedulesActivity
+import com.antoinetawil.polyhome.Activities.SchedulesListActivity
+import com.antoinetawil.polyhome.Activities.SettingsActivity
 import com.antoinetawil.polyhome.Activities.StatisticsActivity
+import com.antoinetawil.polyhome.R
 import com.google.android.material.navigation.NavigationView
 
 object HeaderUtils {
 
     fun setupHeaderWithDrawer(activity: AppCompatActivity, drawerLayout: DrawerLayout) {
         val menuButton: View? = activity.findViewById(R.id.menuButton)
-        menuButton?.setOnClickListener {
-            drawerLayout.openDrawer(Gravity.START)
-        }
+        menuButton?.setOnClickListener { drawerLayout.openDrawer(Gravity.START) }
 
         setupDrawerMenu(activity, drawerLayout)
     }
@@ -43,7 +41,7 @@ object HeaderUtils {
                     activity.startActivity(intent)
                 }
                 R.id.menu_schedules -> {
-                    val intent = Intent(activity, SchedulesActivity::class.java)
+                    val intent = Intent(activity, SchedulesListActivity::class.java)
                     activity.startActivity(intent)
                 }
                 R.id.menu_statistics -> {
