@@ -15,16 +15,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.antoinetawil.polyhome.Activities.PeripheralListActivity
 import com.antoinetawil.polyhome.Models.Peripheral
 import com.antoinetawil.polyhome.R
-import okhttp3.*
-import org.json.JSONObject
 import java.io.IOException
+import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
 
 class PeripheralListAdapter(
-    private val peripheralList: List<Peripheral>,
-    private val context: Context,
-    private val isScheduleMode: Boolean = false // Special behavior for SchedulesActivity
+        private val peripheralList: List<Peripheral>,
+        private val context: Context,
+        private val isScheduleMode: Boolean = false // Special behavior for SchedulesActivity
 ) : RecyclerView.Adapter<PeripheralListAdapter.PeripheralViewHolder>() {
 
     class PeripheralViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -34,7 +34,9 @@ class PeripheralListAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PeripheralViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.peripheral_list_item, parent, false)
+        val view =
+                LayoutInflater.from(parent.context)
+                        .inflate(R.layout.peripheral_list_item, parent, false)
         return PeripheralViewHolder(view)
     }
 
@@ -65,69 +67,122 @@ class PeripheralListAdapter(
 
     override fun getItemCount(): Int = peripheralList.size
 
-    private fun configureLightToggleForSchedule(holder: PeripheralViewHolder, peripheral: Peripheral) {
-        val lightToggleButton = ImageButton(context).apply {
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply {
-                setMargins(8, 8, 8, 8)
-            }
-            setPadding(16, 16, 16, 16)
-            setBackgroundResource(android.R.color.transparent)
-            setImageResource(if (peripheral.power == 1) R.drawable.ic_light_on else R.drawable.ic_light_off)
+    private fun configureLightToggleForSchedule(
+            holder: PeripheralViewHolder,
+            peripheral: Peripheral
+    ) {
+        val lightToggleButton =
+                ImageButton(context).apply {
+                    layoutParams =
+                            LinearLayout.LayoutParams(
+                                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                                            LinearLayout.LayoutParams.WRAP_CONTENT
+                                    )
+                                    .apply { setMargins(8, 8, 8, 8) }
+                    setPadding(16, 16, 16, 16)
+                    setBackgroundResource(android.R.color.transparent)
+                    setImageResource(
+                            if (peripheral.power == 1) R.drawable.ic_light_on
+                            else R.drawable.ic_light_off
+                    )
 
-            setOnClickListener {
-                peripheral.power = if (peripheral.power == 1) 0 else 1
-                setImageResource(if (peripheral.power == 1) R.drawable.ic_light_on else R.drawable.ic_light_off)
-            }
-        }
+                    setOnClickListener {
+                        peripheral.power = if (peripheral.power == 1) 0 else 1
+                        setImageResource(
+                                if (peripheral.power == 1) R.drawable.ic_light_on
+                                else R.drawable.ic_light_off
+                        )
+                    }
+                }
         holder.commandsContainer.addView(lightToggleButton)
     }
 
     private fun configureLightToggle(holder: PeripheralViewHolder, peripheral: Peripheral) {
-        val lightToggleButton = ImageButton(context).apply {
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply {
-                setMargins(8, 8, 8, 8)
-            }
-            setPadding(16, 16, 16, 16)
-            setBackgroundResource(android.R.color.transparent)
-            setImageResource(if (peripheral.power == 1) R.drawable.ic_light_on else R.drawable.ic_light_off)
+        val lightToggleButton =
+                ImageButton(context).apply {
+                    layoutParams =
+                            LinearLayout.LayoutParams(
+                                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                                            LinearLayout.LayoutParams.WRAP_CONTENT
+                                    )
+                                    .apply { setMargins(8, 8, 8, 8) }
+                    setPadding(16, 16, 16, 16)
+                    setBackgroundResource(android.R.color.transparent)
+                    setImageResource(
+                            if (peripheral.power == 1) R.drawable.ic_light_on
+                            else R.drawable.ic_light_off
+                    )
 
-            setOnClickListener {
-                val isCurrentlyOn = peripheral.power == 1
-                val command = if (isCurrentlyOn) "TURN OFF" else "TURN ON"
-                sendCommandToPeripheral(peripheral.id, command) { success ->
-                    (context as PeripheralListActivity).runOnUiThread {
-                        if (success) {
-                            peripheral.power = if (isCurrentlyOn) 0 else 1
-                            setImageResource(if (peripheral.power == 1) R.drawable.ic_light_on else R.drawable.ic_light_off)
-                            Toast.makeText(
-                                context,
-                                context.getString(if (peripheral.power == 1) R.string.light_turned_on else R.string.light_turned_off),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        } else {
-                            Toast.makeText(
-                                context,
-                                context.getString(R.string.failed_toggle_light),
-                                Toast.LENGTH_SHORT
-                            ).show()
+                    setOnClickListener {
+                        val isCurrentlyOn = peripheral.power == 1
+                        val command = if (isCurrentlyOn) "TURN OFF" else "TURN ON"
+                        sendCommandToPeripheral(peripheral.id, command) { success ->
+                            (context as PeripheralListActivity).runOnUiThread {
+                                if (success) {
+                                    peripheral.power = if (isCurrentlyOn) 0 else 1
+                                    setImageResource(
+                                            if (peripheral.power == 1) R.drawable.ic_light_on
+                                            else R.drawable.ic_light_off
+                                    )
+                                    Toast.makeText(
+                                                    context,
+                                                    context.getString(
+                                                            if (peripheral.power == 1)
+                                                                    R.string.light_turned_on
+                                                            else R.string.light_turned_off
+                                                    ),
+                                                    Toast.LENGTH_SHORT
+                                            )
+                                            .show()
+                                } else {
+                                    Toast.makeText(
+                                                    context,
+                                                    context.getString(R.string.failed_toggle_light),
+                                                    Toast.LENGTH_SHORT
+                                            )
+                                            .show()
+                                }
+                            }
                         }
                     }
                 }
-            }
-        }
         holder.commandsContainer.addView(lightToggleButton)
     }
 
-    private fun configureShutterAndDoorButtonsForSchedule(holder: PeripheralViewHolder, peripheral: Peripheral) {
-        val openButton = createStyledButton(context.getString(R.string.open))
-        val stopButton = createStyledButton(context.getString(R.string.stop))
-        val closeButton = createStyledButton(context.getString(R.string.close))
+    private fun configureShutterAndDoorButtonsForSchedule(
+            holder: PeripheralViewHolder,
+            peripheral: Peripheral
+    ) {
+        val openButton =
+                createStyledButton(context.getString(R.string.open)).apply {
+                    setOnClickListener {
+                        peripheral.opening = 100
+                        updateButtonStates(holder.commandsContainer, this)
+                    }
+                }
+
+        val stopButton =
+                createStyledButton(context.getString(R.string.stop)).apply {
+                    setOnClickListener {
+                        peripheral.opening = 50
+                        updateButtonStates(holder.commandsContainer, this)
+                    }
+                }
+
+        val closeButton =
+                createStyledButton(context.getString(R.string.close)).apply {
+                    setOnClickListener {
+                        peripheral.opening = 0
+                        updateButtonStates(holder.commandsContainer, this)
+                    }
+                }
+
+        // Set initial state if exists
+        when (peripheral.opening) {
+            100 -> updateButtonStates(holder.commandsContainer, openButton)
+            0 -> updateButtonStates(holder.commandsContainer, closeButton)
+            50 -> updateButtonStates(holder.commandsContainer, stopButton)
+        }
 
         holder.commandsContainer.apply {
             addView(openButton)
@@ -136,14 +191,24 @@ class PeripheralListAdapter(
         }
     }
 
+    private fun updateButtonStates(container: LinearLayout, selectedButton: Button) {
+        selectedButton.setBackgroundResource(R.drawable.button_background)
+        for (i in 0 until container.childCount) {
+            val button = container.getChildAt(i) as? Button
+            if (button != selectedButton) {
+                button?.setBackgroundResource(R.drawable.button_background_secondary)
+            }
+        }
+    }
+
     private fun createStyledButton(text: String): Button {
         return Button(context).apply {
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply {
-                setMargins(8, 8, 8, 8)
-            }
+            layoutParams =
+                    LinearLayout.LayoutParams(
+                                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                                    LinearLayout.LayoutParams.WRAP_CONTENT
+                            )
+                            .apply { setMargins(8, 8, 8, 8) }
             this.text = text
             this.setBackgroundResource(R.drawable.button_background_secondary)
 
@@ -161,7 +226,10 @@ class PeripheralListAdapter(
         }
     }
 
-    private fun configureShutterAndDoorButtons(holder: PeripheralViewHolder, peripheral: Peripheral) {
+    private fun configureShutterAndDoorButtons(
+            holder: PeripheralViewHolder,
+            peripheral: Peripheral
+    ) {
         val openButton = createTextButton(context.getString(R.string.open), "OPEN", peripheral)
         val stopButton = createTextButton(context.getString(R.string.stop), "STOP", peripheral)
         val closeButton = createTextButton(context.getString(R.string.close), "CLOSE", peripheral)
@@ -175,12 +243,12 @@ class PeripheralListAdapter(
 
     private fun createTextButton(text: String, command: String, peripheral: Peripheral): Button {
         return Button(context).apply {
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply {
-                setMargins(8, 8, 8, 8)
-            }
+            layoutParams =
+                    LinearLayout.LayoutParams(
+                                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                                    LinearLayout.LayoutParams.WRAP_CONTENT
+                            )
+                            .apply { setMargins(8, 8, 8, 8) }
             this.text = text
             isEnabled = peripheral.availableCommands.contains(command)
 
@@ -189,16 +257,26 @@ class PeripheralListAdapter(
                     (context as PeripheralListActivity).runOnUiThread {
                         if (success) {
                             Toast.makeText(
-                                context,
-                                context.getString(R.string.command_sent_successfully, command, peripheral.id),
-                                Toast.LENGTH_SHORT
-                            ).show()
+                                            context,
+                                            context.getString(
+                                                    R.string.command_sent_successfully,
+                                                    command,
+                                                    peripheral.id
+                                            ),
+                                            Toast.LENGTH_SHORT
+                                    )
+                                    .show()
                         } else {
                             Toast.makeText(
-                                context,
-                                context.getString(R.string.failed_command, command, peripheral.id),
-                                Toast.LENGTH_SHORT
-                            ).show()
+                                            context,
+                                            context.getString(
+                                                    R.string.failed_command,
+                                                    command,
+                                                    peripheral.id
+                                            ),
+                                            Toast.LENGTH_SHORT
+                                    )
+                                    .show()
                         }
                     }
                 }
@@ -215,36 +293,45 @@ class PeripheralListAdapter(
         }
     }
 
-    private fun sendCommandToPeripheral(deviceId: String, command: String, callback: (Boolean) -> Unit) {
+    private fun sendCommandToPeripheral(
+            deviceId: String,
+            command: String,
+            callback: (Boolean) -> Unit
+    ) {
         val sharedPreferences = context.getSharedPreferences("PolyHomePrefs", Context.MODE_PRIVATE)
         val token = sharedPreferences.getString("auth_token", null)
         val houseId = (context as PeripheralListActivity).intent.getIntExtra("houseId", -1)
 
         if (token != null && houseId != -1) {
-            val url = "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/devices/$deviceId/command"
+            val url =
+                    "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/devices/$deviceId/command"
             val client = OkHttpClient()
             val jsonObject = JSONObject().apply { put("command", command) }
-            val requestBody = jsonObject.toString().toRequestBody("application/json".toMediaTypeOrNull())
+            val requestBody =
+                    jsonObject.toString().toRequestBody("application/json".toMediaTypeOrNull())
 
-            val request = Request.Builder()
-                .url(url)
-                .post(requestBody)
-                .addHeader("Authorization", "Bearer $token")
-                .build()
+            val request =
+                    Request.Builder()
+                            .url(url)
+                            .post(requestBody)
+                            .addHeader("Authorization", "Bearer $token")
+                            .build()
 
-            client.newCall(request).enqueue(object : Callback {
-                override fun onFailure(call: Call, e: IOException) {
-                    Log.e(TAG, "Command $command failed for $deviceId")
-                    callback(false)
-                }
+            client.newCall(request)
+                    .enqueue(
+                            object : Callback {
+                                override fun onFailure(call: Call, e: IOException) {
+                                    Log.e(TAG, "Command $command failed for $deviceId")
+                                    callback(false)
+                                }
 
-                override fun onResponse(call: Call, response: Response) {
-                    callback(response.isSuccessful)
-                }
-            })
+                                override fun onResponse(call: Call, response: Response) {
+                                    callback(response.isSuccessful)
+                                }
+                            }
+                    )
         } else {
             callback(false)
         }
     }
 }
-
