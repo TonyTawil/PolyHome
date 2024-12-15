@@ -107,5 +107,13 @@
     <string name="schedule_will_run_hours_minutes">Schedule will run in %1$d hours and %2$d minutes</string>
     <string name="schedule_will_run_minutes">Schedule will run in %1$d minutes</string>
     <string name="schedule_will_run_soon">Schedule will run very soon</string>
+    <string name="schedule_executed_success">Schedule Executed Successfully</string>
+    <string name="schedule_executed_failure">Schedule Execution Failed</string>
+    <string name="schedule_execution_details">Command %1$s for device %2$s</string>
+    <string name="schedule_execution_complete">Schedule execution completed</string>
+    <string name="notification_permission_title">Enable Notifications</string>
+    <string name="notification_permission_message">Allow PolyHome to send you notifications about your scheduled commands</string>
+    <string name="allow">Allow</string>
+    <string name="deny">Deny</string>
 
 </resources>

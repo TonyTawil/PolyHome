@@ -412,7 +412,7 @@ class SchedulesActivity : BaseActivity() {
             val selectedDays = getSelectedDays()
             if (selectedDays.isEmpty()) {
                 selectedPeripherals.forEach { peripheral ->
-                    scheduleCommand(peripheral, scheduleTimeInMillis)
+                    scheduleCommand(peripheral, scheduleTimeInMillis, true)
                 }
             } else {
                 selectedPeripherals.forEach { peripheral ->
@@ -450,7 +450,11 @@ class SchedulesActivity : BaseActivity() {
         }
     }
 
-    private fun scheduleCommand(peripheral: Peripheral, timeInMillis: Long) {
+    private fun scheduleCommand(
+            peripheral: Peripheral,
+            timeInMillis: Long,
+            isLastCommand: Boolean
+    ) {
         val command = determineCommand(peripheral)
         Log.d(
                 TAG,
@@ -461,6 +465,7 @@ class SchedulesActivity : BaseActivity() {
                 Intent(this, ScheduleReceiver::class.java).apply {
                     putExtra("peripheralId", peripheral.id)
                     putExtra("command", command)
+                    putExtra("isLastCommand", isLastCommand)
                     data = Uri.parse("custom://${System.currentTimeMillis()}")
                 }
 
