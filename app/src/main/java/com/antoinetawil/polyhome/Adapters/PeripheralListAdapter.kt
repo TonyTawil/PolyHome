@@ -28,38 +28,40 @@ class PeripheralListAdapter(
 ) : RecyclerView.Adapter<PeripheralListAdapter.PeripheralViewHolder>() {
 
     class PeripheralViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val peripheralIdTextView: TextView = itemView.findViewById(R.id.peripheralIdTextView)
-        val peripheralTypeTextView: TextView = itemView.findViewById(R.id.peripheralTypeTextView)
-        val commandsContainer: LinearLayout = itemView.findViewById(R.id.commandsContainer)
+        val peripheralIdText: TextView = itemView.findViewById(R.id.peripheralIdTextView)
+        val controlsContainer: LinearLayout = itemView.findViewById(R.id.commandsContainer)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PeripheralViewHolder {
-        val view =
-                LayoutInflater.from(parent.context)
-                        .inflate(R.layout.peripheral_list_item, parent, false)
+        val layoutId =
+                if (isScheduleMode) {
+                    R.layout.schedule_peripheral_list_item
+                } else {
+                    R.layout.peripheral_list_item
+                }
+        val view = LayoutInflater.from(parent.context).inflate(layoutId, parent, false)
         return PeripheralViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: PeripheralViewHolder, position: Int) {
         val peripheral = peripheralList[position]
+        holder.peripheralIdText.text = peripheral.id
 
-        holder.peripheralIdTextView.text = context.getString(R.string.peripheral_id, peripheral.id)
-        holder.peripheralTypeTextView.text = getLocalizedType(peripheral.type)
-        holder.commandsContainer.removeAllViews()
+        holder.controlsContainer.removeAllViews()
 
         when (peripheral.type.lowercase()) {
             "light" -> {
                 if (isScheduleMode) {
-                    configureLightToggleForSchedule(holder, peripheral)
+                    configureLightToggleForSchedule(holder.controlsContainer, peripheral)
                 } else {
-                    configureLightToggle(holder, peripheral)
+                    configureLightToggle(holder.controlsContainer, peripheral)
                 }
             }
             "rolling shutter", "garage door" -> {
                 if (isScheduleMode) {
-                    configureShutterAndDoorButtonsForSchedule(holder, peripheral)
+                    configureShutterAndDoorButtonsForSchedule(holder.controlsContainer, peripheral)
                 } else {
-                    configureShutterAndDoorButtons(holder, peripheral)
+                    configureShutterAndDoorButtons(holder.controlsContainer, peripheral)
                 }
             }
         }
@@ -67,10 +69,7 @@ class PeripheralListAdapter(
 
     override fun getItemCount(): Int = peripheralList.size
 
-    private fun configureLightToggleForSchedule(
-            holder: PeripheralViewHolder,
-            peripheral: Peripheral
-    ) {
+    private fun configureLightToggleForSchedule(container: LinearLayout, peripheral: Peripheral) {
         val lightToggleButton =
                 ImageButton(context).apply {
                     layoutParams =
@@ -102,10 +101,10 @@ class PeripheralListAdapter(
                         )
                     }
                 }
-        holder.commandsContainer.addView(lightToggleButton)
+        container.addView(lightToggleButton)
     }
 
-    private fun configureLightToggle(holder: PeripheralViewHolder, peripheral: Peripheral) {
+    private fun configureLightToggle(container: LinearLayout, peripheral: Peripheral) {
         val lightToggleButton =
                 ImageButton(context).apply {
                     layoutParams =
@@ -154,26 +153,18 @@ class PeripheralListAdapter(
                         }
                     }
                 }
-        holder.commandsContainer.addView(lightToggleButton)
+        container.addView(lightToggleButton)
     }
 
     private fun configureShutterAndDoorButtonsForSchedule(
-            holder: PeripheralViewHolder,
+            container: LinearLayout,
             peripheral: Peripheral
     ) {
         val openButton =
                 createStyledButton(context.getString(R.string.open)).apply {
                     setOnClickListener {
                         peripheral.opening = 100
-                        updateButtonStates(holder.commandsContainer, this)
-                    }
-                }
-
-        val stopButton =
-                createStyledButton(context.getString(R.string.stop)).apply {
-                    setOnClickListener {
-                        peripheral.opening = 50
-                        updateButtonStates(holder.commandsContainer, this)
+                        updateButtonStates(container, this)
                     }
                 }
 
@@ -181,20 +172,18 @@ class PeripheralListAdapter(
                 createStyledButton(context.getString(R.string.close)).apply {
                     setOnClickListener {
                         peripheral.opening = 0
-                        updateButtonStates(holder.commandsContainer, this)
+                        updateButtonStates(container, this)
                     }
                 }
 
         // Set initial state if exists
         when (peripheral.opening) {
-            100 -> updateButtonStates(holder.commandsContainer, openButton)
-            0 -> updateButtonStates(holder.commandsContainer, closeButton)
-            50 -> updateButtonStates(holder.commandsContainer, stopButton)
+            100 -> updateButtonStates(container, openButton)
+            0 -> updateButtonStates(container, closeButton)
         }
 
-        holder.commandsContainer.apply {
+        container.apply {
             addView(openButton)
-            addView(stopButton)
             addView(closeButton)
         }
     }
@@ -213,36 +202,33 @@ class PeripheralListAdapter(
         return Button(context).apply {
             layoutParams =
                     LinearLayout.LayoutParams(
-                                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                                    0, // Width will be 0 with weight for equal sizing
                                     LinearLayout.LayoutParams.WRAP_CONTENT
                             )
-                            .apply { setMargins(8, 8, 8, 8) }
+                            .apply {
+                                weight = 1f // Equal width for both buttons
+                                marginStart = 8.dpToPx()
+                                marginEnd = 8.dpToPx()
+                            }
             this.text = text
-            this.setBackgroundResource(R.drawable.button_background_secondary)
-
-            setOnClickListener {
-                this.setBackgroundResource(R.drawable.button_background)
-                (parent as? LinearLayout)?.let { container ->
-                    for (i in 0 until container.childCount) {
-                        val sibling = container.getChildAt(i) as? Button
-                        if (sibling != this) {
-                            sibling?.setBackgroundResource(R.drawable.button_background_secondary)
-                        }
-                    }
-                }
-            }
+            setBackgroundResource(R.drawable.button_background_secondary)
+            elevation = 0f // Remove button shadow
+            textSize = 14f
+            minimumHeight = 48.dpToPx() // Standard button height
         }
     }
 
-    private fun configureShutterAndDoorButtons(
-            holder: PeripheralViewHolder,
-            peripheral: Peripheral
-    ) {
+    // Add extension function for dp conversion
+    private fun Int.dpToPx(): Int {
+        return (this * context.resources.displayMetrics.density).toInt()
+    }
+
+    private fun configureShutterAndDoorButtons(container: LinearLayout, peripheral: Peripheral) {
         val openButton = createTextButton(context.getString(R.string.open), "OPEN", peripheral)
         val stopButton = createTextButton(context.getString(R.string.stop), "STOP", peripheral)
         val closeButton = createTextButton(context.getString(R.string.close), "CLOSE", peripheral)
 
-        holder.commandsContainer.apply {
+        container.apply {
             addView(openButton)
             addView(stopButton)
             addView(closeButton)

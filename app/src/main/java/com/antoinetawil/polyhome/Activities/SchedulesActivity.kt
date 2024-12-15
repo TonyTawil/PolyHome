@@ -1,9 +1,8 @@
 package com.antoinetawil.polyhome.Activities
 
 import android.app.AlarmManager
-import android.app.DatePickerDialog
+import android.app.Dialog
 import android.app.PendingIntent
-import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -11,17 +10,17 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.antoinetawil.polyhome.Adapters.PeripheralListAdapter
 import com.antoinetawil.polyhome.Database.DatabaseHelper
 import com.antoinetawil.polyhome.Models.House
 import com.antoinetawil.polyhome.Models.Peripheral
 import com.antoinetawil.polyhome.Models.Schedule
+import com.antoinetawil.polyhome.Models.ScheduleCommand
 import com.antoinetawil.polyhome.R
 import com.antoinetawil.polyhome.Utils.Api
 import com.antoinetawil.polyhome.Utils.BaseActivity
@@ -39,19 +38,16 @@ class SchedulesActivity : BaseActivity() {
     private val TAG = "SchedulesActivity"
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var houseSpinner: Spinner
-    private lateinit var dateButton: Button
-    private lateinit var timeButton: Button
     private lateinit var peripheralTypeSpinner: Spinner
     private lateinit var floorsSpinner: Spinner
     private lateinit var searchButton: Button
-    private lateinit var peripheralsRecyclerView: RecyclerView
+    private lateinit var peripheralsContainer: LinearLayout
     private lateinit var saveScheduleButton: Button
 
     private val houses = mutableListOf<House>()
     private lateinit var floors: List<String>
     private val peripherals = mutableListOf<Peripheral>()
     private val api = Api()
-    private lateinit var adapter: PeripheralListAdapter
 
     private var selectedHouse: House? = null
     private var selectedPeripheralType: String? = null
@@ -60,6 +56,12 @@ class SchedulesActivity : BaseActivity() {
     private var selectedTime: String? = null
 
     private lateinit var dbHelper: DatabaseHelper
+
+    private lateinit var dayToggles: List<ToggleButton>
+
+    private lateinit var hourPicker: NumberPicker
+    private lateinit var minutePicker: NumberPicker
+    private lateinit var calendarButton: Button
 
     companion object {
         private const val ALARM_PERMISSION_REQUEST_CODE = 123
@@ -80,21 +82,22 @@ class SchedulesActivity : BaseActivity() {
         HeaderUtils.setupHeaderWithDrawer(this, drawerLayout)
 
         houseSpinner = findViewById(R.id.houseSpinner)
-        dateButton = findViewById(R.id.dateButton)
-        timeButton = findViewById(R.id.timeButton)
         peripheralTypeSpinner = findViewById(R.id.peripheralTypeSpinner)
         floorsSpinner = findViewById(R.id.floorsSpinner)
         searchButton = findViewById(R.id.searchButton)
-        peripheralsRecyclerView = findViewById(R.id.peripheralsRecyclerView)
+        peripheralsContainer = findViewById(R.id.peripheralsContainer)
         saveScheduleButton = findViewById(R.id.saveScheduleButton)
+
+        hourPicker = findViewById(R.id.hourPicker)
+        minutePicker = findViewById(R.id.minutePicker)
+        calendarButton = findViewById(R.id.calendarButton)
+        calendarButton.setOnClickListener { showCalendarDialog() }
 
         setupHouseSpinner()
         setupPeripheralTypeSpinner()
         setupFloorsSpinner()
-        setupRecyclerView()
+        setupPeripheralsList()
 
-        dateButton.setOnClickListener { showDatePicker() }
-        timeButton.setOnClickListener { showTimePicker() }
         searchButton.setOnClickListener { fetchPeripherals() }
         saveScheduleButton.setOnClickListener { saveSchedule() }
 
@@ -105,6 +108,29 @@ class SchedulesActivity : BaseActivity() {
         }
 
         dbHelper = DatabaseHelper(this)
+
+        dayToggles =
+                listOf(
+                        findViewById(R.id.mondayToggle),
+                        findViewById(R.id.tuesdayToggle),
+                        findViewById(R.id.wednesdayToggle),
+                        findViewById(R.id.thursdayToggle),
+                        findViewById(R.id.fridayToggle),
+                        findViewById(R.id.saturdayToggle),
+                        findViewById(R.id.sundayToggle)
+                )
+
+        hourPicker.apply {
+            minValue = 0
+            maxValue = 23
+            value = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+        }
+
+        minutePicker.apply {
+            minValue = 0
+            maxValue = 59
+            value = Calendar.getInstance().get(Calendar.MINUTE)
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.S)
@@ -195,46 +221,8 @@ class SchedulesActivity : BaseActivity() {
                 }
     }
 
-    private fun setupRecyclerView() {
-        adapter = PeripheralListAdapter(peripherals, this, isScheduleMode = true)
-        peripheralsRecyclerView.layoutManager = LinearLayoutManager(this)
-        peripheralsRecyclerView.adapter = adapter
-    }
-
-    private fun showDatePicker() {
-        val calendar = Calendar.getInstance()
-        val datePicker =
-                DatePickerDialog(
-                        this,
-                        { _, year, month, dayOfMonth ->
-                            val selectedDate = Calendar.getInstance()
-                            selectedDate.set(year, month, dayOfMonth)
-                            this.selectedDate =
-                                    SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                                            .format(selectedDate.time)
-                            dateButton.text = this.selectedDate
-                        },
-                        calendar.get(Calendar.YEAR),
-                        calendar.get(Calendar.MONTH),
-                        calendar.get(Calendar.DAY_OF_MONTH)
-                )
-        datePicker.show()
-    }
-
-    private fun showTimePicker() {
-        val calendar = Calendar.getInstance()
-        val timePicker =
-                TimePickerDialog(
-                        this,
-                        { _, hourOfDay, minute ->
-                            selectedTime = String.format("%02d:%02d", hourOfDay, minute)
-                            timeButton.text = selectedTime
-                        },
-                        calendar.get(Calendar.HOUR_OF_DAY),
-                        calendar.get(Calendar.MINUTE),
-                        true
-                )
-        timePicker.show()
+    private fun setupPeripheralsList() {
+        peripheralsContainer.removeAllViews()
     }
 
     private fun fetchHouses() {
@@ -330,7 +318,7 @@ class SchedulesActivity : BaseActivity() {
                                         )
                                         .show()
                             }
-                            adapter.notifyDataSetChanged()
+                            updatePeripheralsList()
                         } else {
                             Toast.makeText(
                                             this,
@@ -368,7 +356,8 @@ class SchedulesActivity : BaseActivity() {
     }
 
     private fun saveSchedule() {
-        if (selectedDate == null || selectedTime == null) {
+        val scheduleDateTime = getSelectedDateTime()
+        if (scheduleDateTime == null) {
             Toast.makeText(this, getString(R.string.select_date_time), Toast.LENGTH_SHORT).show()
             return
         }
@@ -388,10 +377,8 @@ class SchedulesActivity : BaseActivity() {
             return
         }
 
-        val scheduleDateTime = "$selectedDate $selectedTime"
         val scheduleTimeInMillis = getScheduleTimeInMillis(scheduleDateTime)
-
-        if (scheduleTimeInMillis == null || scheduleTimeInMillis <= System.currentTimeMillis()) {
+        if (scheduleTimeInMillis == null) {
             Toast.makeText(this, getString(R.string.invalid_schedule_time), Toast.LENGTH_SHORT)
                     .show()
             return
@@ -403,17 +390,34 @@ class SchedulesActivity : BaseActivity() {
         }
 
         lifecycleScope.launch(Dispatchers.IO) {
-            selectedPeripherals.forEach { peripheral ->
-                val schedule =
-                        Schedule(
-                                dateTime = scheduleDateTime,
+            val commands =
+                    selectedPeripherals.map { peripheral ->
+                        ScheduleCommand(
                                 peripheralId = peripheral.id,
                                 peripheralType = peripheral.type,
-                                command = determineCommand(peripheral),
-                                houseId = selectedHouse?.houseId ?: -1
+                                command = determineCommand(peripheral)
                         )
-                dbHelper.insertSchedule(schedule)
-                scheduleCommand(peripheral, scheduleTimeInMillis)
+                    }
+
+            val schedule =
+                    Schedule(
+                            dateTime = scheduleDateTime,
+                            houseId = selectedHouse?.houseId ?: -1,
+                            commands = commands,
+                            recurringDays = getSelectedDays()
+                    )
+
+            dbHelper.insertSchedule(schedule)
+
+            val selectedDays = getSelectedDays()
+            if (selectedDays.isEmpty()) {
+                selectedPeripherals.forEach { peripheral ->
+                    scheduleCommand(peripheral, scheduleTimeInMillis)
+                }
+            } else {
+                selectedPeripherals.forEach { peripheral ->
+                    scheduleRecurringCommand(peripheral, scheduleTimeInMillis, selectedDays)
+                }
             }
 
             withContext(Dispatchers.Main) {
@@ -428,13 +432,11 @@ class SchedulesActivity : BaseActivity() {
     private fun resetFields() {
         selectedDate = null
         selectedTime = null
-        dateButton.text = getString(R.string.select_date)
-        timeButton.text = getString(R.string.select_time)
         peripherals.forEach {
             it.power = 0
             it.opening = null
         }
-        adapter.notifyDataSetChanged()
+        updatePeripheralsList()
     }
 
     private fun getScheduleTimeInMillis(dateTime: String): Long? {
@@ -503,5 +505,243 @@ class SchedulesActivity : BaseActivity() {
                     }
             else -> ""
         }
+    }
+
+    private fun getSelectedDays(): List<Int> {
+        return dayToggles.mapIndexedNotNull { index, toggle ->
+            if (toggle.isChecked) index + 1 else null
+        }
+    }
+
+    private fun getSelectedDateTime(): String? {
+        val calendar = Calendar.getInstance()
+        val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
+        val currentMinute = calendar.get(Calendar.MINUTE)
+
+        if (selectedDate == null) {
+            val selectedHour = hourPicker.value
+            val selectedMinute = minutePicker.value
+
+            if (selectedHour < currentHour ||
+                            (selectedHour == currentHour && selectedMinute <= currentMinute)
+            ) {
+                calendar.add(Calendar.DAY_OF_MONTH, 1)
+            }
+
+            selectedDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
+        }
+
+        val hour = String.format("%02d", hourPicker.value)
+        val minute = String.format("%02d", minutePicker.value)
+        return "$selectedDate $hour:$minute"
+    }
+
+    private fun showCalendarDialog() {
+        val dialog = Dialog(this)
+        dialog.setContentView(R.layout.dialog_calendar)
+
+        val calendarView = dialog.findViewById<CalendarView>(R.id.calendarView)
+        calendarView.apply {
+            minDate = System.currentTimeMillis()
+            setOnDateChangeListener { _, year, month, dayOfMonth ->
+                val calendar = Calendar.getInstance()
+                calendar.set(year, month, dayOfMonth)
+                selectedDate =
+                        SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
+                calendarButton.text = selectedDate
+                dialog.dismiss()
+            }
+        }
+
+        dialog.show()
+    }
+
+    private fun scheduleRecurringCommand(
+            peripheral: Peripheral,
+            baseTimeInMillis: Long,
+            days: List<Int>
+    ) {
+        val command = determineCommand(peripheral)
+        val calendar = Calendar.getInstance().apply { timeInMillis = baseTimeInMillis }
+
+        days.forEach { dayOfWeek ->
+            val currentDay = calendar.get(Calendar.DAY_OF_WEEK)
+            var daysToAdd = dayOfWeek - currentDay
+            if (daysToAdd <= 0) daysToAdd += 7
+
+            val adjustedCalendar =
+                    Calendar.getInstance().apply {
+                        timeInMillis = baseTimeInMillis
+                        add(Calendar.DAY_OF_MONTH, daysToAdd)
+                    }
+
+            val intent =
+                    Intent(this, ScheduleReceiver::class.java).apply {
+                        putExtra("peripheralId", peripheral.id)
+                        putExtra("command", command)
+                        putExtra("recurring", true)
+                        putExtra("dayOfWeek", dayOfWeek)
+                        data = Uri.parse("custom://${peripheral.id}/$dayOfWeek")
+                    }
+
+            val flags =
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                    } else {
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                    }
+
+            val pendingIntent =
+                    PendingIntent.getBroadcast(
+                            this,
+                            "${peripheral.id}$dayOfWeek".hashCode(),
+                            intent,
+                            flags
+                    )
+
+            val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarmManager.setRepeating(
+                        AlarmManager.RTC_WAKEUP,
+                        adjustedCalendar.timeInMillis,
+                        AlarmManager.INTERVAL_DAY * 7,
+                        pendingIntent
+                )
+            } else {
+                alarmManager.setRepeating(
+                        AlarmManager.RTC_WAKEUP,
+                        adjustedCalendar.timeInMillis,
+                        AlarmManager.INTERVAL_DAY * 7,
+                        pendingIntent
+                )
+            }
+        }
+    }
+
+    private fun updatePeripheralsList() {
+        peripheralsContainer.removeAllViews()
+        peripherals.forEach { peripheral ->
+            val view =
+                    LayoutInflater.from(this)
+                            .inflate(
+                                    R.layout.schedule_peripheral_list_item,
+                                    peripheralsContainer,
+                                    false
+                            )
+
+            val idText = view.findViewById<TextView>(R.id.peripheralIdTextView)
+            val controlsContainer = view.findViewById<LinearLayout>(R.id.commandsContainer)
+
+            idText.text = peripheral.id
+
+            when (peripheral.type.lowercase()) {
+                "light" -> configureLightToggleForSchedule(controlsContainer, peripheral)
+                "rolling shutter", "garage door" ->
+                        configureShutterAndDoorButtonsForSchedule(controlsContainer, peripheral)
+            }
+
+            peripheralsContainer.addView(view)
+        }
+    }
+
+    private fun configureLightToggleForSchedule(container: LinearLayout, peripheral: Peripheral) {
+        val lightToggleButton =
+                ImageButton(this).apply {
+                    layoutParams =
+                            LinearLayout.LayoutParams(
+                                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                                            LinearLayout.LayoutParams.WRAP_CONTENT
+                                    )
+                                    .apply { setMargins(8, 8, 8, 8) }
+                    setPadding(16, 16, 16, 16)
+                    setBackgroundResource(android.R.color.transparent)
+                    setImageResource(
+                            if (peripheral.power == 1) R.drawable.ic_light_on
+                            else R.drawable.ic_light_off
+                    )
+
+                    setOnClickListener {
+                        peripheral.power =
+                                when (peripheral.power) {
+                                    1 -> -1 // ON -> OFF
+                                    -1 -> 0 // OFF -> unselected
+                                    else -> 1 // unselected -> ON
+                                }
+                        setImageResource(
+                                when (peripheral.power) {
+                                    1 -> R.drawable.ic_light_on
+                                    -1 -> R.drawable.ic_light_off
+                                    else -> R.drawable.ic_light_off
+                                }
+                        )
+                    }
+                }
+        container.addView(lightToggleButton)
+    }
+
+    private fun configureShutterAndDoorButtonsForSchedule(
+            container: LinearLayout,
+            peripheral: Peripheral
+    ) {
+        val openButton =
+                createStyledButton(getString(R.string.open)).apply {
+                    setOnClickListener {
+                        peripheral.opening = 100
+                        updateButtonStates(container, this)
+                    }
+                }
+
+        val closeButton =
+                createStyledButton(getString(R.string.close)).apply {
+                    setOnClickListener {
+                        peripheral.opening = 0
+                        updateButtonStates(container, this)
+                    }
+                }
+
+        // Set initial state if exists
+        when (peripheral.opening) {
+            100 -> updateButtonStates(container, openButton)
+            0 -> updateButtonStates(container, closeButton)
+        }
+
+        container.apply {
+            addView(openButton)
+            addView(closeButton)
+        }
+    }
+
+    private fun createStyledButton(text: String): Button {
+        return Button(this).apply {
+            layoutParams =
+                    LinearLayout.LayoutParams(
+                                    0, // Width will be 0 with weight for equal sizing
+                                    LinearLayout.LayoutParams.WRAP_CONTENT
+                            )
+                            .apply {
+                                weight = 1f // Equal width for both buttons
+                                marginStart = 8.dpToPx()
+                                marginEnd = 8.dpToPx()
+                            }
+            this.text = text
+            setBackgroundResource(R.drawable.button_background_secondary)
+            elevation = 0f // Remove button shadow
+            textSize = 14f
+            minimumHeight = 48.dpToPx()
+        }
+    }
+
+    private fun updateButtonStates(container: LinearLayout, selectedButton: Button) {
+        selectedButton.setBackgroundResource(R.drawable.button_background)
+        for (i in 0 until container.childCount) {
+            val button = container.getChildAt(i) as? Button
+            if (button != selectedButton) {
+                button?.setBackgroundResource(R.drawable.button_background_secondary)
+            }
+        }
+    }
+
+    private fun Int.dpToPx(): Int {
+        return (this * resources.displayMetrics.density).toInt()
     }
 }

@@ -91,4 +91,7 @@
     <string name="invalid_schedule_time">Heure de programmation invalide. Veuillez choisir une heure future.</string>
     <string name="no_peripherals_selected">Aucun périphérique sélectionné à programmer</string>
     <string name="no_matching_peripherals">Aucun périphérique correspondant trouvé.</string>
+    <string name="schedule_settings">Paramètres de planification</string>
+    <string name="available_peripherals">Périphériques disponibles</string>
+    <string name="expand_commands">Développer les commandes</string>
 </resources>

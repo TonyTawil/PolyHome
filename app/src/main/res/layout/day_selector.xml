@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:padding="16dp">
+
+    <ToggleButton
+        android:id="@+id/sundayToggle"
+        style="@style/DayToggleButton"
+        android:textOff="@string/sunday_short"
+        android:textOn="@string/sunday_short" />
+
+    <ToggleButton
+        android:id="@+id/mondayToggle"
+        style="@style/DayToggleButton"
+        android:textOff="@string/monday_short"
+        android:textOn="@string/monday_short" />
+
+    <ToggleButton
+        android:id="@+id/tuesdayToggle"
+        style="@style/DayToggleButton"
+        android:textOff="@string/tuesday_short"
+        android:textOn="@string/tuesday_short" />
+
+    <ToggleButton
+        android:id="@+id/wednesdayToggle"
+        style="@style/DayToggleButton"
+        android:textOff="@string/wednesday_short"
+        android:textOn="@string/wednesday_short" />
+
+    <ToggleButton
+        android:id="@+id/thursdayToggle"
+        style="@style/DayToggleButton"
+        android:textOff="@string/thursday_short"
+        android:textOn="@string/thursday_short" />
+
+    <ToggleButton
+        android:id="@+id/fridayToggle"
+        style="@style/DayToggleButton"
+        android:textOff="@string/friday_short"
+        android:textOn="@string/friday_short" />
+
+    <ToggleButton
+        android:id="@+id/saturdayToggle"
+        style="@style/DayToggleButton"
+        android:textOff="@string/saturday_short"
+        android:textOn="@string/saturday_short" />
+
+</LinearLayout> 
