@@ -3,7 +3,7 @@ package com.antoinetawil.polyhome.Activities
 import android.os.Bundle
 import androidx.drawerlayout.widget.DrawerLayout
 import com.antoinetawil.polyhome.R
-import com.antoinetawil.polyhome.Utils.BaseActivity
+import com.antoinetawil.polyhome.Activities.BaseActivity
 import com.antoinetawil.polyhome.Utils.HeaderUtils
 
 class NotificationsActivity : BaseActivity() {

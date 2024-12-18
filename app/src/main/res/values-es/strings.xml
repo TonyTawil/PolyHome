@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PolyHome</string>
+    <string-array name="language_options">
+        <item>Inglés</item>
+        <item>Francés</item>
+        <item>Español</item>
+        <item>Árabe</item>
+    </string-array>
+    
+    <!-- Navigation -->
+    <string name="menu_houses">Casas</string>
+    <string name="menu_notifications">Notificaciones</string>
+    <string name="menu_settings">Ajustes</string>
+    <string name="menu_schedules">Programaciones</string>
+    <string name="menu_statistics">Estadísticas</string>
+    <string name="menu_sign_out">Cerrar Sesión</string>
+
+    <!-- Settings -->
+    <string name="settings">Ajustes</string>
+    <string name="theme">Tema</string>
+    <string name="enable_dark_mode">Activar Modo Oscuro</string>
+    <string name="language">Idioma</string>
+    <string name="security">Seguridad</string>
+    <string name="enable_biometric_auth">Activar Autenticación Biométrica</string>
+    <string name="about">Acerca de</string>
+    <string name="app_version">Versión de la App: 1.0.0</string>
+    <string name="general">General</string>
+
+    <!-- Floors -->
+    <string name="all_floors">Todos los Pisos</string>
+    <string name="first_floor">Primer Piso</string>
+    <string name="second_floor">Segundo Piso</string>
+
+    <!-- House List -->
+    <string name="all_houses">Todas las Casas</string>
+    <string name="owner_status">Propietario</string>
+    <string name="guest_status">Invitado</string>
+    <string name="house_id_label">ID: %1$d</string>
+    <string name="manage_permissions">Gestionar Permisos</string>
+
+    <!-- Peripherals -->
+    <string name="light">Luz</string>
+    <string name="lights">Luces</string>
+    <string name="shutter">Persiana</string>
+    <string name="rolling_shutter">Persiana</string>
+    <string name="rolling_shutters">Persianas</string>
+    <string name="garage_door">Puerta de Garaje</string>
+    <string name="garage_doors">Puertas de Garaje</string>
+
+    <!-- Commands -->
+    <string name="open">Abrir</string>
+    <string name="close">Cerrar</string>
+    <string name="stop">Parar</string>
+    <string name="open_all">Abrir Todo</string>
+    <string name="close_all">Cerrar Todo</string>
+    <string name="stop_all">Parar Todo</string>
+    <string name="turn_on_all">Encender Todo</string>
+    <string name="turn_off_all">Apagar Todo</string>
+
+    <!-- Status -->
+    <string name="status_open">Estado: Abierto</string>
+    <string name="status_closed">Estado: Cerrado</string>
+    <string name="status_stopped">Parado</string>
+    <string name="status_percentage">Apertura: %d%%</string>
+    <string name="status_on">Encendido</string>
+    <string name="status_off">Apagado</string>
+
+    <!-- Messages -->
+    <string name="invalid_data">Datos inválidos</string>
+    <string name="fetch_failed">Error al obtener datos</string>
+    <string name="auth_token_missing">Token de autenticación faltante</string>
+    <string name="command_sent_successfully">Comando %1$s enviado con éxito a %2$s</string>
+    <string name="failed_command">Error al enviar %1$s a %2$s</string>
+    <string name="light_turned_on">Luz encendida</string>
+    <string name="light_turned_off">Luz apagada</string>
+    <string name="failed_toggle_light">Error al cambiar el estado de la luz</string>
+    <string name="operation_completed">Operación completada para %1$s.</string>
+    <string name="no_devices_to_operate">No hay dispositivos para operar.</string>
+
+    <!-- Search -->
+    <string name="search_by_id">Buscar por ID</string>
+</resources> 

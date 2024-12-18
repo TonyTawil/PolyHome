@@ -14,7 +14,7 @@ import com.antoinetawil.polyhome.Adapters.PeripheralListAdapter
 import com.antoinetawil.polyhome.Models.Peripheral
 import com.antoinetawil.polyhome.R
 import com.antoinetawil.polyhome.Utils.Api
-import com.antoinetawil.polyhome.Utils.BaseActivity
+import com.antoinetawil.polyhome.Activities.BaseActivity
 import com.antoinetawil.polyhome.Utils.HeaderUtils
 import org.json.JSONObject
 

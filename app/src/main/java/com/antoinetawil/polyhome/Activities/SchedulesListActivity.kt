@@ -13,7 +13,7 @@ import com.antoinetawil.polyhome.Adapters.ScheduleListAdapter
 import com.antoinetawil.polyhome.Database.DatabaseHelper
 import com.antoinetawil.polyhome.Models.Schedule
 import com.antoinetawil.polyhome.R
-import com.antoinetawil.polyhome.Utils.BaseActivity
+import com.antoinetawil.polyhome.Activities.BaseActivity
 import com.antoinetawil.polyhome.Utils.HeaderUtils
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.text.SimpleDateFormat

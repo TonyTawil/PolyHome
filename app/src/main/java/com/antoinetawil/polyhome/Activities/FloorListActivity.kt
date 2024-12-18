@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.antoinetawil.polyhome.Adapters.FloorListAdapter
 import com.antoinetawil.polyhome.R
 import com.antoinetawil.polyhome.Utils.Api
-import com.antoinetawil.polyhome.Utils.BaseActivity
 import com.antoinetawil.polyhome.Utils.HeaderUtils
 import org.json.JSONObject
 

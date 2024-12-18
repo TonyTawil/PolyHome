@@ -23,7 +23,7 @@ import com.antoinetawil.polyhome.Models.Schedule
 import com.antoinetawil.polyhome.Models.ScheduleCommand
 import com.antoinetawil.polyhome.R
 import com.antoinetawil.polyhome.Utils.Api
-import com.antoinetawil.polyhome.Utils.BaseActivity
+import com.antoinetawil.polyhome.Activities.BaseActivity
 import com.antoinetawil.polyhome.Utils.HeaderUtils
 import com.antoinetawil.polyhome.Utils.ScheduleReceiver
 import java.text.SimpleDateFormat

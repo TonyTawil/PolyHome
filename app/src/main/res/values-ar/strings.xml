@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PolyHome</string>
+    <string-array name="language_options">
+        <item>الإنجليزية</item>
+        <item>الفرنسية</item>
+        <item>الإسبانية</item>
+        <item>العربية</item>
+    </string-array>
+
+    <!-- Navigation -->
+    <string name="menu_houses">المنازل</string>
+    <string name="menu_notifications">الإشعارات</string>
+    <string name="menu_settings">الإعدادات</string>
+    <string name="menu_schedules">الجداول</string>
+    <string name="menu_statistics">الإحصائيات</string>
+    <string name="menu_sign_out">تسجيل الخروج</string>
+
+    <!-- Settings -->
+    <string name="settings">الإعدادات</string>
+    <string name="theme">المظهر</string>
+    <string name="enable_dark_mode">تفعيل الوضع الليلي</string>
+    <string name="language">اللغة</string>
+    <string name="security">الأمان</string>
+    <string name="enable_biometric_auth">تفعيل المصادقة البيومترية</string>
+    <string name="about">حول</string>
+    <string name="app_version">إصدار التطبيق: 1.0.0</string>
+    <string name="general">عام</string>
+
+    <!-- Floors -->
+    <string name="all_floors">جميع الطوابق</string>
+    <string name="first_floor">الطابق الأول</string>
+    <string name="second_floor">الطابق الثاني</string>
+
+    <!-- Commands -->
+    <string name="open">فتح</string>
+    <string name="close">إغلاق</string>
+    <string name="stop">إيقاف</string>
+    <string name="open_all">فتح الكل</string>
+    <string name="close_all">إغلاق الكل</string>
+    <string name="stop_all">إيقاف الكل</string>
+    <string name="turn_on_all">تشغيل الكل</string>
+    <string name="turn_off_all">إطفاء الكل</string>
+
+    <!-- Status -->
+    <string name="status_open">الحالة: مفتوح</string>
+    <string name="status_closed">الحالة: مغلق</string>
+    <string name="status_stopped">متوقف</string>
+    <string name="status_percentage">الفتح: %d%%</string>
+    <string name="status_on">مشغل</string>
+    <string name="status_off">مطفأ</string>
+
+    <!-- Peripherals -->
+    <string name="light">إضاءة</string>
+    <string name="lights">إضاءات</string>
+    <string name="shutter">ستارة</string>
+    <string name="rolling_shutter">ستارة</string>
+    <string name="rolling_shutters">ستائر</string>
+    <string name="garage_door">باب المرآب</string>
+    <string name="garage_doors">أبواب المرآب</string>
+
+    <!-- Search -->
+    <string name="search_by_id">البحث بالمعرف</string>
+</resources> 

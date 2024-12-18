@@ -12,7 +12,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.antoinetawil.polyhome.Models.House
 import com.antoinetawil.polyhome.R
 import com.antoinetawil.polyhome.Utils.Api
-import com.antoinetawil.polyhome.Utils.BaseActivity
+import com.antoinetawil.polyhome.Activities.BaseActivity
 import com.antoinetawil.polyhome.Utils.HeaderUtils
 import com.google.android.material.progressindicator.LinearProgressIndicator
 
