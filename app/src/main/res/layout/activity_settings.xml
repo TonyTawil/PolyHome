@@ -78,8 +78,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
-                            android:thumbTint="@color/PolytechBlue"
-                            android:trackTint="@color/gray"
+                            android:thumbTint="@color/thumb_color"
                             android:layout_centerVertical="true" />
                     </RelativeLayout>
                 </LinearLayout>
@@ -119,8 +118,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
-                            android:thumbTint="@color/PolytechBlue"
-                            android:trackTint="@color/gray"
+                            android:thumbTint="@color/thumb_color"
                             android:layout_centerVertical="true" />
                     </RelativeLayout>
                 </LinearLayout>

@@ -40,6 +40,7 @@
                 android:id="@+id/scheduleSwitch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:thumbTint="@color/thumb_color"
                 android:layout_marginEnd="8dp" />
 
             <ImageButton
