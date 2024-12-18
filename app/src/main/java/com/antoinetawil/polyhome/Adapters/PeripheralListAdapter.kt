@@ -11,7 +11,6 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.antoinetawil.polyhome.Activities.PeripheralListActivity
 import com.antoinetawil.polyhome.Models.Peripheral
@@ -30,6 +29,7 @@ class PeripheralListAdapter(
 
     class PeripheralViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val peripheralIdText: TextView = itemView.findViewById(R.id.peripheralIdTextView)
+        val statusText: TextView = itemView.findViewById(R.id.statusTextView)
         val controlsContainer: LinearLayout = itemView.findViewById(R.id.commandsContainer)
     }
 
@@ -47,6 +47,27 @@ class PeripheralListAdapter(
     override fun onBindViewHolder(holder: PeripheralViewHolder, position: Int) {
         val peripheral = peripheralList[position]
         holder.peripheralIdText.text = peripheral.id
+
+        // Update status text based on peripheral type
+        when (peripheral.type.lowercase()) {
+            "light" -> {
+                holder.statusText.text =
+                        if (peripheral.power == 1) context.getString(R.string.status_on)
+                        else context.getString(R.string.status_off)
+            }
+            "rolling shutter", "garage door" -> {
+                holder.statusText.text =
+                        when {
+                            peripheral.opening == 1.0 -> context.getString(R.string.status_open)
+                            peripheral.opening == 0.0 -> context.getString(R.string.status_closed)
+                            else ->
+                                    context.getString(
+                                            R.string.status_percentage,
+                                            ((peripheral.opening ?: 0.0) * 100).toInt()
+                                    )
+                        }
+            }
+        }
 
         holder.controlsContainer.removeAllViews()
 
@@ -113,7 +134,10 @@ class PeripheralListAdapter(
                                             LinearLayout.LayoutParams.WRAP_CONTENT,
                                             LinearLayout.LayoutParams.WRAP_CONTENT
                                     )
-                                    .apply { setMargins(8, 8, 8, 8) }
+                                    .apply {
+                                        setMargins(8, 8, 8, 8)
+                                        gravity = android.view.Gravity.END
+                                    }
                     setPadding(16, 16, 16, 16)
                     setBackgroundResource(android.R.color.transparent)
                     setImageResource(
@@ -132,6 +156,14 @@ class PeripheralListAdapter(
                                             if (peripheral.power == 1) R.drawable.ic_light_on
                                             else R.drawable.ic_light_off
                                     )
+
+                                    // Update the status text
+                                    val parentView = parent.parent as? View
+                                    parentView?.findViewById<TextView>(R.id.statusTextView)?.text =
+                                            if (peripheral.power == 1)
+                                                    context.getString(R.string.status_on)
+                                            else context.getString(R.string.status_off)
+
                                     Toast.makeText(
                                                     context,
                                                     context.getString(
@@ -226,93 +258,138 @@ class PeripheralListAdapter(
     }
 
     private fun configureShutterAndDoorButtons(container: LinearLayout, peripheral: Peripheral) {
-        // Add status text to show opening percentage
-        val statusText =
-                TextView(context).apply {
-                    layoutParams =
-                            LinearLayout.LayoutParams(
-                                            LinearLayout.LayoutParams.WRAP_CONTENT,
-                                            LinearLayout.LayoutParams.WRAP_CONTENT
-                                    )
-                                    .apply { setMargins(8, 8, 8, 8) }
+        // Inflate the shutter buttons layout
+        val buttonsView =
+                LayoutInflater.from(context)
+                        .inflate(R.layout.shutter_buttons_layout, container, false)
 
-                    text =
-                            when {
-                                peripheral.type.equals("garage door", ignoreCase = true) -> {
-                                    if (peripheral.isShutterOpen)
-                                            context.getString(R.string.status_open)
-                                    else context.getString(R.string.status_closed)
-                                }
-                                peripheral.openingMode == 2 -> {
-                                    context.getString(
-                                            R.string.status_percentage,
-                                            peripheral.shutterOpeningPercentage
-                                    )
-                                }
-                                else -> {
-                                    if (peripheral.isShutterOpen)
-                                            context.getString(R.string.status_open)
-                                    else context.getString(R.string.status_closed)
-                                }
-                            }
+        val openButton = buttonsView.findViewById<Button>(R.id.openButton)
+        val stopButton = buttonsView.findViewById<Button>(R.id.stopButton)
+        val closeButton = buttonsView.findViewById<Button>(R.id.closeButton)
 
-                    setTextColor(ContextCompat.getColor(context, R.color.secondary_text))
-                }
-        container.addView(statusText)
+        // Set initial button states
+        openButton.isEnabled = peripheral.availableCommands.contains("OPEN")
+        stopButton.isEnabled = peripheral.availableCommands.contains("STOP")
+        closeButton.isEnabled = peripheral.availableCommands.contains("CLOSE")
 
-        // Add the control buttons
-        val openButton = createTextButton(context.getString(R.string.open), "OPEN", peripheral)
-        val stopButton = createTextButton(context.getString(R.string.stop), "STOP", peripheral)
-        val closeButton = createTextButton(context.getString(R.string.close), "CLOSE", peripheral)
-
-        container.apply {
-            addView(openButton)
-            addView(stopButton)
-            addView(closeButton)
-        }
-    }
-
-    private fun createTextButton(text: String, command: String, peripheral: Peripheral): Button {
-        return Button(context).apply {
-            layoutParams =
-                    LinearLayout.LayoutParams(
-                                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                                    LinearLayout.LayoutParams.WRAP_CONTENT
-                            )
-                            .apply { setMargins(8, 8, 8, 8) }
-            this.text = text
-            isEnabled = peripheral.availableCommands.contains(command)
-
-            setOnClickListener {
-                sendCommandToPeripheral(peripheral.id, command) { success ->
-                    (context as PeripheralListActivity).runOnUiThread {
-                        if (success) {
-                            Toast.makeText(
-                                            context,
-                                            context.getString(
-                                                    R.string.command_sent_successfully,
-                                                    command,
-                                                    peripheral.id
-                                            ),
-                                            Toast.LENGTH_SHORT
-                                    )
-                                    .show()
-                        } else {
-                            Toast.makeText(
-                                            context,
-                                            context.getString(
-                                                    R.string.failed_command,
-                                                    command,
-                                                    peripheral.id
-                                            ),
-                                            Toast.LENGTH_SHORT
-                                    )
-                                    .show()
-                        }
+        openButton.setOnClickListener {
+            sendCommandToPeripheral(peripheral.id, "OPEN") { success ->
+                (context as PeripheralListActivity).runOnUiThread {
+                    if (success) {
+                        peripheral.opening = 1.0
+                        updateShutterStatus(peripheral, container.parent as View, "OPEN")
+                        Toast.makeText(
+                                        context,
+                                        context.getString(
+                                                R.string.command_sent_successfully,
+                                                "OPEN",
+                                                peripheral.id
+                                        ),
+                                        Toast.LENGTH_SHORT
+                                )
+                                .show()
+                    } else {
+                        Toast.makeText(
+                                        context,
+                                        context.getString(
+                                                R.string.failed_command,
+                                                "OPEN",
+                                                peripheral.id
+                                        ),
+                                        Toast.LENGTH_SHORT
+                                )
+                                .show()
                     }
                 }
             }
         }
+
+        stopButton.setOnClickListener {
+            sendCommandToPeripheral(peripheral.id, "STOP") { success ->
+                (context as PeripheralListActivity).runOnUiThread {
+                    if (success) {
+                        // When stopped, show "Stopped" status
+                        val parentView = (container.parent as? View)?.parent as? View
+                        parentView?.findViewById<TextView>(R.id.statusTextView)?.text =
+                                context.getString(R.string.status_stopped)
+                        Toast.makeText(
+                                        context,
+                                        context.getString(
+                                                R.string.command_sent_successfully,
+                                                "STOP",
+                                                peripheral.id
+                                        ),
+                                        Toast.LENGTH_SHORT
+                                )
+                                .show()
+                    } else {
+                        Toast.makeText(
+                                        context,
+                                        context.getString(
+                                                R.string.failed_command,
+                                                "STOP",
+                                                peripheral.id
+                                        ),
+                                        Toast.LENGTH_SHORT
+                                )
+                                .show()
+                    }
+                }
+            }
+        }
+
+        closeButton.setOnClickListener {
+            sendCommandToPeripheral(peripheral.id, "CLOSE") { success ->
+                (context as PeripheralListActivity).runOnUiThread {
+                    if (success) {
+                        peripheral.opening = 0.0
+                        updateShutterStatus(peripheral, container.parent as View, "CLOSE")
+                        Toast.makeText(
+                                        context,
+                                        context.getString(
+                                                R.string.command_sent_successfully,
+                                                "CLOSE",
+                                                peripheral.id
+                                        ),
+                                        Toast.LENGTH_SHORT
+                                )
+                                .show()
+                    } else {
+                        Toast.makeText(
+                                        context,
+                                        context.getString(
+                                                R.string.failed_command,
+                                                "CLOSE",
+                                                peripheral.id
+                                        ),
+                                        Toast.LENGTH_SHORT
+                                )
+                                .show()
+                    }
+                }
+            }
+        }
+
+        container.addView(buttonsView)
+    }
+
+    private fun updateShutterStatus(
+            peripheral: Peripheral,
+            parentView: View,
+            command: String? = null
+    ) {
+        val statusText = parentView.findViewById<TextView>(R.id.statusTextView)
+        statusText?.text =
+                when {
+                    peripheral.opening == 1.0 -> context.getString(R.string.status_open)
+                    peripheral.opening == 0.0 -> context.getString(R.string.status_closed)
+                    command == "STOP" -> context.getString(R.string.status_stopped)
+                    else ->
+                            context.getString(
+                                    R.string.status_percentage,
+                                    ((peripheral.opening ?: 0.0) * 100).toInt()
+                            )
+                }
     }
 
     private fun getLocalizedType(type: String): String {

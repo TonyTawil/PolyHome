@@ -6,7 +6,6 @@ import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -14,7 +13,6 @@ import androidx.core.content.ContextCompat
 import com.antoinetawil.polyhome.R
 import com.antoinetawil.polyhome.Utils.Api
 import com.google.android.material.textfield.TextInputEditText
-import org.json.JSONObject
 
 class LoginActivity : AppCompatActivity() {
 
@@ -35,23 +33,30 @@ class LoginActivity : AppCompatActivity() {
         val emailEditText: TextInputEditText = findViewById(R.id.editTextEmailAddress)
         val passwordEditText: TextInputEditText = findViewById(R.id.editTextPassword)
         val loginButton: androidx.appcompat.widget.AppCompatButton = findViewById(R.id.loginButton)
-        val registerTextView: androidx.appcompat.widget.AppCompatTextView = findViewById(R.id.linkToRegisterTextView)
+        val registerTextView: androidx.appcompat.widget.AppCompatTextView =
+                findViewById(R.id.linkToRegisterTextView)
 
         val fullText = "No account yet? Register"
         val spannableString = SpannableString(fullText)
 
-        val clickableSpan = object : ClickableSpan() {
-            override fun onClick(widget: View) {
-                val intent = Intent(this@LoginActivity, SignupActivity::class.java)
-                startActivity(intent)
-            }
-        }
+        val clickableSpan =
+                object : ClickableSpan() {
+                    override fun onClick(widget: View) {
+                        val intent = Intent(this@LoginActivity, SignupActivity::class.java)
+                        startActivity(intent)
+                    }
+                }
 
         val colorSpan = ForegroundColorSpan(ContextCompat.getColor(this, R.color.PolytechBlue))
         val startIndex = fullText.indexOf("Register")
         val endIndex = startIndex + "Register".length
 
-        spannableString.setSpan(clickableSpan, startIndex, endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        spannableString.setSpan(
+                clickableSpan,
+                startIndex,
+                endIndex,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
         spannableString.setSpan(colorSpan, startIndex, endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
 
         registerTextView.text = spannableString
@@ -71,29 +76,31 @@ class LoginActivity : AppCompatActivity() {
 
     private fun login(email: String, password: String) {
         val url = "https://polyhome.lesmoulinsdudev.com/api/users/auth"
-        val requestData = mapOf(
-            "login" to email,
-            "password" to password
-        )
+        val requestData = mapOf("login" to email, "password" to password)
 
         api.post<Map<String, String>, Map<String, String>>(
-            path = url,
-            data = requestData,
-            onSuccess = { responseCode, response ->
-                runOnUiThread {
-                    if (responseCode == 200 && response != null) {
-                        val token = response["token"]
-                        if (!token.isNullOrEmpty()) {
-                            saveAuthToken(token)
-                            navigateToHouseList()
+                path = url,
+                data = requestData,
+                onSuccess = { responseCode, response ->
+                    runOnUiThread {
+                        if (responseCode == 200 && response != null) {
+                            val token = response["token"]
+                            if (!token.isNullOrEmpty()) {
+                                saveAuthToken(token)
+                                navigateToHouseList()
+                            } else {
+                                Toast.makeText(
+                                                this,
+                                                "Invalid response from server",
+                                                Toast.LENGTH_SHORT
+                                        )
+                                        .show()
+                            }
                         } else {
-                            Toast.makeText(this, "Invalid response from server", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "Invalid credentials", Toast.LENGTH_SHORT).show()
                         }
-                    } else {
-                        Toast.makeText(this, "Invalid credentials", Toast.LENGTH_SHORT).show()
                     }
                 }
-            }
         )
     }
 

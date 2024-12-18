@@ -155,5 +155,8 @@
     <string name="status_open">Status: Open</string>
     <string name="status_closed">Status: Closed</string>
     <string name="status_percentage">Opening: %d%%</string>
+    <string name="status_on">On</string>
+    <string name="status_off">Off</string>
+    <string name="status_stopped">Stopped</string>
 
 </resources>

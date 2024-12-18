@@ -26,17 +26,19 @@ class FloorListActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_floor_list)
 
-        val drawerLayout = findViewById<androidx.drawerlayout.widget.DrawerLayout>(R.id.drawer_layout)
+        val drawerLayout =
+                findViewById<androidx.drawerlayout.widget.DrawerLayout>(R.id.drawer_layout)
         HeaderUtils.setupHeaderWithDrawer(this, drawerLayout)
 
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        floors = listOf(
-            getString(R.string.all_floors),
-            getString(R.string.first_floor),
-            getString(R.string.second_floor)
-        )
+        floors =
+                listOf(
+                        getString(R.string.all_floors),
+                        getString(R.string.first_floor),
+                        getString(R.string.second_floor)
+                )
 
         val houseId = intent.getIntExtra("houseId", -1)
         val peripheralType = intent.getStringExtra("type")
@@ -60,8 +62,11 @@ class FloorListActivity : BaseActivity() {
         fetchPeripherals(houseId, peripheralType)
     }
 
-
-    private fun fetchPeripherals(houseId: Int, peripheralType: String, skipFloorSelection: Boolean = false) {
+    private fun fetchPeripherals(
+            houseId: Int,
+            peripheralType: String,
+            skipFloorSelection: Boolean = false
+    ) {
         val url = "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/devices"
 
         val sharedPreferences = getSharedPreferences("PolyHomePrefs", MODE_PRIVATE)
@@ -76,35 +81,48 @@ class FloorListActivity : BaseActivity() {
         Log.d(TAG, "Fetching peripherals from URL: $url with token: $token")
 
         api.get<Map<String, List<Map<String, Any>>>>(
-            path = url,
-            securityToken = token,
-            onSuccess = { responseCode, response ->
-                runOnUiThread {
-                    Log.d(TAG, "API response code: $responseCode")
-                    if (responseCode == 200 && response != null) {
-                        val devices = response["devices"] ?: emptyList()
-                        Log.d(TAG, "Fetched devices: $devices")
+                path = url,
+                securityToken = token,
+                onSuccess = { responseCode, response ->
+                    runOnUiThread {
+                        Log.d(TAG, "API response code: $responseCode")
+                        if (responseCode == 200 && response != null) {
+                            val devices = response["devices"] ?: emptyList()
+                            Log.d(TAG, "Fetched devices: $devices")
 
-                        peripherals = parsePeripherals(devices, peripheralType)
+                            peripherals = parsePeripherals(devices, peripheralType)
 
-                        if (skipFloorSelection) {
-                            Log.d(TAG, "Navigating directly to PeripheralListActivity for GarageDoor")
-                            navigateToPeripheralList(houseId, peripheralType, getString(R.string.all_floors), peripherals)
-                            return@runOnUiThread
+                            if (skipFloorSelection) {
+                                Log.d(
+                                        TAG,
+                                        "Navigating directly to PeripheralListActivity for GarageDoor"
+                                )
+                                navigateToPeripheralList(
+                                        peripheralType,
+                                        getString(R.string.all_floors)
+                                )
+                                return@runOnUiThread
+                            }
+
+                            setupFloorAdapter(houseId, peripheralType)
+                        } else {
+                            Log.e(TAG, "Failed to fetch peripherals. Response: $response")
+                            Toast.makeText(
+                                            this,
+                                            getString(R.string.fetch_failed),
+                                            Toast.LENGTH_SHORT
+                                    )
+                                    .show()
                         }
-
-                        setupFloorAdapter(houseId, peripheralType)
-                    } else {
-                        Log.e(TAG, "Failed to fetch peripherals. Response: $response")
-                        Toast.makeText(this, getString(R.string.fetch_failed), Toast.LENGTH_SHORT).show()
                     }
                 }
-            }
         )
     }
 
-
-    private fun parsePeripherals(devices: List<Map<String, Any>>, expectedType: String): MutableList<JSONObject> {
+    private fun parsePeripherals(
+            devices: List<Map<String, Any>>,
+            expectedType: String
+    ): MutableList<JSONObject> {
         val filteredPeripherals = mutableListOf<JSONObject>()
 
         for (device in devices) {
@@ -113,12 +131,13 @@ class FloorListActivity : BaseActivity() {
                 val id = jsonObject.getString("id")
 
                 // Infer type from the prefix of `id` (e.g., "Light", "Shutter", "GarageDoor")
-                val inferredType = when {
-                    id.startsWith("Light", ignoreCase = true) -> "Light"
-                    id.startsWith("Shutter", ignoreCase = true) -> "Shutter"
-                    id.startsWith("GarageDoor", ignoreCase = true) -> "GarageDoor"
-                    else -> null
-                }
+                val inferredType =
+                        when {
+                            id.startsWith("Light", ignoreCase = true) -> "Light"
+                            id.startsWith("Shutter", ignoreCase = true) -> "Shutter"
+                            id.startsWith("GarageDoor", ignoreCase = true) -> "GarageDoor"
+                            else -> null
+                        }
 
                 if (inferredType != null && inferredType.equals(expectedType, ignoreCase = true)) {
                     filteredPeripherals.add(jsonObject)
@@ -131,37 +150,45 @@ class FloorListActivity : BaseActivity() {
         return filteredPeripherals
     }
 
-
     private fun setupFloorAdapter(houseId: Int, peripheralType: String) {
         Log.d(TAG, "Setting up floor adapter for houseId=$houseId, peripheralType=$peripheralType")
 
-        val adapter = FloorListAdapter(floors, peripheralType) { selectedFloor ->
-            Log.d(TAG, "Floor selected: $selectedFloor")
-            val filteredPeripherals = when (selectedFloor) {
-                getString(R.string.first_floor) -> peripherals.filter { it.getString("id").contains("1.") }
-                getString(R.string.second_floor) -> peripherals.filter { it.getString("id").contains("2.") }
-                else -> peripherals
-            }
+        val adapter =
+                FloorListAdapter(floors, peripheralType) { selectedFloor ->
+                    Log.d(TAG, "Floor selected: $selectedFloor")
+                    val filteredPeripherals =
+                            when (selectedFloor) {
+                                getString(R.string.first_floor) ->
+                                        peripherals.filter { it.getString("id").contains("1.") }
+                                getString(R.string.second_floor) ->
+                                        peripherals.filter { it.getString("id").contains("2.") }
+                                else -> peripherals
+                            }
 
-            Log.d(TAG, "Filtered peripherals for floor '$selectedFloor': $filteredPeripherals")
+                    Log.d(
+                            TAG,
+                            "Filtered peripherals for floor '$selectedFloor': $filteredPeripherals"
+                    )
 
-            if (filteredPeripherals.isEmpty()) {
-                Log.w(TAG, "No peripherals found for floor '$selectedFloor'")
-            }
+                    if (filteredPeripherals.isEmpty()) {
+                        Log.w(TAG, "No peripherals found for floor '$selectedFloor'")
+                    }
 
-            navigateToPeripheralList(houseId, peripheralType, selectedFloor, filteredPeripherals)
-        }
+                    navigateToPeripheralList(peripheralType, selectedFloor)
+                }
         recyclerView.adapter = adapter
     }
 
-
-    private fun navigateToPeripheralList(houseId: Int, type: String, floor: String, filteredPeripherals: List<JSONObject>) {
-        Log.d(TAG, "Navigating to PeripheralListActivity with houseId=$houseId, type=$type, floor=$floor, peripherals=$filteredPeripherals")
-        val intent = Intent(this, PeripheralListActivity::class.java)
-        intent.putExtra("houseId", houseId)
-        intent.putExtra("type", type)
-        intent.putExtra("floor", floor)
-        intent.putExtra("filteredPeripherals", ArrayList(filteredPeripherals.map { it.toString() }))
-        startActivity(intent)
+    private fun navigateToPeripheralList(type: String, floor: String) {
+        val houseId = intent.getIntExtra("houseId", -1)
+        if (houseId != -1) {
+            val intent =
+                    Intent(this, PeripheralListActivity::class.java).apply {
+                        putExtra("houseId", houseId)
+                        putExtra("type", type)
+                        putExtra("floor", floor)
+                    }
+            startActivity(intent)
+        }
     }
 }

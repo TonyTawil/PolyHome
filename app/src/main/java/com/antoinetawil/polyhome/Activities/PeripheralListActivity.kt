@@ -47,34 +47,80 @@ class PeripheralListActivity : BaseActivity() {
 
         val houseId = intent.getIntExtra("houseId", -1)
         val peripheralType = intent.getStringExtra("type") ?: ""
-        Log.d(TAG, "Peripheral Type: $peripheralType")
-
-        if (peripheralType.isEmpty()) {
-            Toast.makeText(this, getString(R.string.invalid_data), Toast.LENGTH_SHORT).show()
-            finish()
-            return
-        }
-
-        setupActionButtons(peripheralType)
         val floor = intent.getStringExtra("floor") ?: getString(R.string.all_floors)
-        val filteredPeripheralsJson = intent.getStringArrayListExtra("filteredPeripherals")
 
-        if (houseId == -1 || filteredPeripheralsJson.isNullOrEmpty()) {
+        if (peripheralType.isEmpty() || houseId == -1) {
             Toast.makeText(this, getString(R.string.invalid_data), Toast.LENGTH_SHORT).show()
             finish()
             return
         }
 
-        peripherals.clear()
-        peripherals.addAll(filteredPeripheralsJson.map { parsePeripheral(JSONObject(it)) })
-        filteredPeripherals.addAll(peripherals)
+        // Fetch fresh data
+        val token =
+                getSharedPreferences("PolyHomePrefs", MODE_PRIVATE).getString("auth_token", null)
+        if (token != null) {
+            api.get<Map<String, List<Map<String, Any>>>>(
+                    path = "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/devices",
+                    securityToken = token,
+                    onSuccess = { responseCode, response ->
+                        if (responseCode == 200 && response != null) {
+                            val devices = response["devices"] ?: emptyList()
+                            val filteredDevices =
+                                    devices.filter { device ->
+                                        val id = device["id"] as? String ?: ""
+                                        val inferredType =
+                                                when {
+                                                    id.startsWith("Light", ignoreCase = true) ->
+                                                            "Light"
+                                                    id.startsWith("Shutter", ignoreCase = true) ->
+                                                            "Shutter"
+                                                    id.startsWith(
+                                                            "GarageDoor",
+                                                            ignoreCase = true
+                                                    ) -> "GarageDoor"
+                                                    else -> null
+                                                }
+                                        inferredType?.equals(peripheralType, ignoreCase = true) ==
+                                                true &&
+                                                (floor == getString(R.string.all_floors) ||
+                                                        id.contains("${floor.first()}."))
+                                    }
 
-        titleTextView.text = generateTitle(peripheralType, floor)
+                            // Convert to Peripheral objects
+                            val newPeripherals =
+                                    filteredDevices.map { device ->
+                                        parsePeripheral(JSONObject(device))
+                                    }
 
-        adapter = PeripheralListAdapter(filteredPeripherals, this)
-        recyclerView.adapter = adapter
+                            runOnUiThread {
+                                peripherals.clear()
+                                peripherals.addAll(newPeripherals)
+                                filteredPeripherals.clear()
+                                filteredPeripherals.addAll(newPeripherals)
 
-        setupSearchPopup()
+                                setupActionButtons(peripheralType)
+                                titleTextView.text = generateTitle(peripheralType, floor)
+                                adapter = PeripheralListAdapter(filteredPeripherals, this)
+                                recyclerView.adapter = adapter
+                                setupSearchPopup()
+                            }
+                        } else {
+                            runOnUiThread {
+                                Toast.makeText(
+                                                this,
+                                                getString(R.string.fetch_failed),
+                                                Toast.LENGTH_SHORT
+                                        )
+                                        .show()
+                                finish()
+                            }
+                        }
+                    }
+            )
+        } else {
+            Toast.makeText(this, getString(R.string.auth_token_missing), Toast.LENGTH_SHORT).show()
+            finish()
+        }
     }
 
     private fun setupActionButtons(peripheralType: String) {
@@ -82,41 +128,62 @@ class PeripheralListActivity : BaseActivity() {
 
         when (peripheralType.lowercase()) {
             "light" -> {
-                addActionButton(getString(R.string.turn_on_all)) {
+                // Use the light bulk action buttons layout
+                val buttonsView =
+                        LayoutInflater.from(this)
+                                .inflate(
+                                        R.layout.light_bulk_action_buttons_layout,
+                                        actionButtonsContainer,
+                                        false
+                                )
+
+                buttonsView.findViewById<Button>(R.id.turnOnAllButton).setOnClickListener {
                     performBulkOperation("TURN ON", "light")
                 }
-                addActionButton(getString(R.string.turn_off_all)) {
+
+                buttonsView.findViewById<Button>(R.id.turnOffAllButton).setOnClickListener {
                     performBulkOperation("TURN OFF", "light")
                 }
+
+                actionButtonsContainer.addView(buttonsView)
             }
             "shutter", "garage door" -> {
-                addActionButton(getString(R.string.open_all)) {
+                // Use the bulk action buttons layout
+                val buttonsView =
+                        LayoutInflater.from(this)
+                                .inflate(
+                                        R.layout.bulk_action_buttons_layout,
+                                        actionButtonsContainer,
+                                        false
+                                )
+
+                buttonsView.findViewById<Button>(R.id.openAllButton).setOnClickListener {
                     performBulkOperation("OPEN", peripheralType.lowercase())
                 }
-                addActionButton(getString(R.string.close_all)) {
-                    performBulkOperation("CLOSE", peripheralType.lowercase())
-                }
-                addActionButton(getString(R.string.stop_all)) {
+
+                buttonsView.findViewById<Button>(R.id.stopAllButton).setOnClickListener {
                     performBulkOperation("STOP", peripheralType.lowercase())
                 }
+
+                buttonsView.findViewById<Button>(R.id.closeAllButton).setOnClickListener {
+                    performBulkOperation("CLOSE", peripheralType.lowercase())
+                }
+
+                actionButtonsContainer.addView(buttonsView)
             }
         }
     }
 
-    private fun addActionButton(text: String, action: () -> Unit) {
-        Log.d(TAG, "Adding action button: $text")
-        val button =
-                Button(this).apply {
-                    layoutParams =
-                            LinearLayout.LayoutParams(
-                                            LinearLayout.LayoutParams.WRAP_CONTENT,
-                                            LinearLayout.LayoutParams.WRAP_CONTENT
-                                    )
-                                    .apply { setMargins(8, 8, 8, 8) }
-                    this.text = text
-                    setOnClickListener { action() }
-                }
-        actionButtonsContainer.addView(button)
+    private fun Button.styledAsOutlinedButton() {
+        setBackgroundResource(R.drawable.outlined_button_background)
+        setTextColor(context.getColor(R.color.primary_text))
+        textSize = 12f
+        minimumHeight = 32.dpToPx()
+        setPadding(8.dpToPx(), 0, 8.dpToPx(), 0)
+    }
+
+    private fun Int.dpToPx(): Int {
+        return (this * resources.displayMetrics.density).toInt()
     }
 
     private fun setupSearchPopup() {
