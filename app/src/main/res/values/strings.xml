@@ -115,5 +115,25 @@
     <string name="notification_permission_message">Allow PolyHome to send you notifications about your scheduled commands</string>
     <string name="allow">Allow</string>
     <string name="deny">Deny</string>
+    <string name="total_devices">Total Devices: %1$d</string>
+    <string name="energy_usage">Energy Usage: %1$.1f kWh</string>
+    <string name="co2_consumption">CO2 Emission: %1$.1f kg</string>
+    <string name="system_efficiency">System Efficiency: %1$d%%</string>
+    <string name="total_devices_placeholder">Total Devices: Loading...</string>
+    <string name="energy_usage_placeholder">Energy Usage: Loading...</string>
+    <string name="co2_consumption_placeholder">CO2 Emission: Loading...</string>
+    <string name="system_efficiency_placeholder">System Efficiency: Loading...</string>
+    <string name="total_houses">Total Houses: %1$d</string>
+    <string name="active_devices">Active Devices: %1$d</string>
+    <string name="daily_co2">Daily CO2: %1$.1f kg</string>
+    <string name="water_usage">Water Usage: %1$.1f L</string>
+    <string name="avg_efficiency">Average Efficiency: %1$d%%</string>
+    <string name="peak_time_usage">Peak Time Usage: %1$s</string>
+    <string name="total_houses_placeholder">Total Houses: Loading...</string>
+    <string name="active_devices_placeholder">Active Devices: Loading...</string>
+    <string name="daily_co2_placeholder">Daily CO2: Loading...</string>
+    <string name="water_usage_placeholder">Water Usage: Loading...</string>
+    <string name="avg_efficiency_placeholder">Average Efficiency: Loading...</string>
+    <string name="peak_time_usage_placeholder">Peak Time Usage: Loading...</string>
 
 </resources>

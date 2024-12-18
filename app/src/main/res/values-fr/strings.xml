@@ -94,4 +94,36 @@
     <string name="schedule_settings">Paramètres de planification</string>
     <string name="available_peripherals">Périphériques disponibles</string>
     <string name="expand_commands">Développer les commandes</string>
+    <string name="schedule_will_run_hours_minutes">Le programme s\'exécutera dans %1$d heures et %2$d minutes</string>
+    <string name="schedule_will_run_minutes">Le programme s\'exécutera dans %1$d minutes</string>
+    <string name="schedule_will_run_soon">Le programme s\'exécutera très bientôt</string>
+    <string name="schedule_executed_success">Programme exécuté avec succès</string>
+    <string name="schedule_executed_failure">Échec de l\'exécution du programme</string>
+    <string name="schedule_execution_details">Commande %1$s pour l\'appareil %2$s</string>
+    <string name="schedule_execution_complete">Exécution du programme terminée</string>
+    <string name="notification_permission_title">Activer les notifications</string>
+    <string name="notification_permission_message">Autorisez PolyHome à vous envoyer des notifications concernant vos commandes planifiées</string>
+    <string name="allow">Autoriser</string>
+    <string name="deny">Refuser</string>
+    <string name="total_devices">Appareils totaux : %1$d</string>
+    <string name="energy_usage">Consommation d\'énergie : %1$.1f kWh</string>
+    <string name="co2_consumption">Émission de CO2 : %1$.1f kg</string>
+    <string name="system_efficiency">Efficacité du système : %1$d%%</string>
+    <string name="total_devices_placeholder">Appareils totaux : Chargement...</string>
+    <string name="energy_usage_placeholder">Consommation d\'énergie : Chargement...</string>
+    <string name="co2_consumption_placeholder">Émission de CO2 : Chargement...</string>
+    <string name="system_efficiency_placeholder">Efficacité du système : Chargement...</string>
+    <string name="total_houses">Maisons totales : %1$d</string>
+    <string name="active_devices">Appareils actifs : %1$d</string>
+    <string name="daily_co2">CO2 journalier : %1$.1f kg</string>
+    <string name="water_usage">Consommation d\'eau : %1$.1f L</string>
+    <string name="avg_efficiency">Efficacité moyenne : %1$d%%</string>
+    <string name="peak_time_usage">Heures de pointe : %1$s</string>
+    <string name="total_houses_placeholder">Maisons totales : Chargement...</string>
+    <string name="active_devices_placeholder">Appareils actifs : Chargement...</string>
+    <string name="daily_co2_placeholder">CO2 journalier : Chargement...</string>
+    <string name="water_usage_placeholder">Consommation d\'eau : Chargement...</string>
+    <string name="avg_efficiency_placeholder">Efficacité moyenne : Chargement...</string>
+    <string name="peak_time_usage_placeholder">Heures de pointe : Chargement...</string>
+
 </resources>
