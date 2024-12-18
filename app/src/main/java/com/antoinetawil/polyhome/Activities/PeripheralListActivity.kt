@@ -82,8 +82,13 @@ class PeripheralListActivity : BaseActivity() {
                                                 }
                                         inferredType?.equals(peripheralType, ignoreCase = true) ==
                                                 true &&
-                                                (floor == getString(R.string.all_floors) ||
-                                                        id.contains("${floor.first()}."))
+                                                when (floor) {
+                                                    getString(R.string.first_floor) ->
+                                                            id.contains("1.")
+                                                    getString(R.string.second_floor) ->
+                                                            id.contains("2.")
+                                                    else -> true // All floors
+                                                }
                                     }
 
                             // Convert to Peripheral objects
