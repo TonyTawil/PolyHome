@@ -348,11 +348,11 @@ class SchedulesActivity : BaseActivity() {
                     MutableList(array.length()) { array.getString(it) }
                 }
                         ?: emptyList()
-        val opening = this.optInt("opening", -1).takeIf { it != -1 }
+        val opening = this.optDouble("opening")
         val openingMode = this.optInt("openingMode", -1).takeIf { it != -1 }
         val power = this.optInt("power", -1).takeIf { it != -1 }
 
-        return Peripheral(id, type, availableCommands, opening, openingMode, power)
+        return Peripheral(id, type, availableCommands, power, opening, openingMode)
     }
 
     private fun saveSchedule() {
@@ -366,7 +366,7 @@ class SchedulesActivity : BaseActivity() {
                 peripherals.filter { peripheral ->
                     when (peripheral.type.lowercase()) {
                         "light" -> peripheral.power != 0
-                        "rolling shutter", "garage door" -> peripheral.opening != null
+                        "rolling shutter", "garage door" -> peripheral.opening != 0.0
                         else -> false
                     }
                 }
@@ -434,7 +434,7 @@ class SchedulesActivity : BaseActivity() {
         selectedTime = null
         peripherals.forEach {
             it.power = 0
-            it.opening = null
+            it.opening = 0.0
         }
         updatePeripheralsList()
     }
@@ -502,10 +502,10 @@ class SchedulesActivity : BaseActivity() {
         return when (peripheral.type.lowercase()) {
             "light" -> if (peripheral.power == 1) "TURN ON" else "TURN OFF"
             "rolling shutter", "garage door" ->
-                    when (peripheral.opening) {
-                        100 -> "OPEN"
-                        0 -> "CLOSE"
-                        50 -> "STOP"
+                    when {
+                        peripheral.opening == 1.0 -> "OPEN"
+                        peripheral.opening == 0.0 -> "CLOSE"
+                        peripheral.opening == 0.5 -> "STOP"
                         else -> "STOP"
                     }
             else -> ""
@@ -691,7 +691,7 @@ class SchedulesActivity : BaseActivity() {
         val openButton =
                 createStyledButton(getString(R.string.open)).apply {
                     setOnClickListener {
-                        peripheral.opening = 100
+                        peripheral.opening = 1.0
                         updateButtonStates(container, this)
                     }
                 }
@@ -699,15 +699,15 @@ class SchedulesActivity : BaseActivity() {
         val closeButton =
                 createStyledButton(getString(R.string.close)).apply {
                     setOnClickListener {
-                        peripheral.opening = 0
+                        peripheral.opening = 0.0
                         updateButtonStates(container, this)
                     }
                 }
 
         // Set initial state if exists
         when (peripheral.opening) {
-            100 -> updateButtonStates(container, openButton)
-            0 -> updateButtonStates(container, closeButton)
+            1.0 -> updateButtonStates(container, openButton)
+            0.0 -> updateButtonStates(container, closeButton)
         }
 
         container.apply {

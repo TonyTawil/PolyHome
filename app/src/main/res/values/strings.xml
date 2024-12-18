@@ -143,5 +143,17 @@
     <string name="failed_to_grant_access">Failed to grant access</string>
     <string name="failed_to_remove_access">Failed to remove access</string>
     <string name="remove_user">Remove User</string>
+    <string name="loading">Loading...</string>
+    <string name="co2_value_format">%s kg</string>
+    <string name="total_houses_format">Total Houses: %d</string>
+    <string name="total_devices_format">Total Devices: %d</string>
+    <string name="daily_co2_format">Daily CO₂: %.1f kg</string>
+    <string name="efficiency_format">System Efficiency: %d%%</string>
+    <string name="active_devices_format">Active Devices: %d</string>
+    <string name="energy_saved_format">Energy Saved: %.1f kWh</string>
+    <string name="shutter_status_format">%d open / %d total</string>
+    <string name="status_open">Status: Open</string>
+    <string name="status_closed">Status: Closed</string>
+    <string name="status_percentage">Opening: %d%%</string>
 
 </resources>

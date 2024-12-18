@@ -8,221 +8,330 @@
     android:layout_height="match_parent"
     tools:context=".Activities.StatisticsActivity">
 
-    <!-- Main Content -->
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/background_color">
+        android:layout_height="match_parent">
 
-        <!-- Include App Header -->
-        <include
-            android:id="@+id/header"
-            layout="@layout/layout_app_bar"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <TextView
-            android:id="@+id/titleTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="Statistics"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:textColor="@color/primary_text"
-            android:gravity="center"
-            android:padding="16dp"
-            app:layout_constraintTop_toBottomOf="@id/header"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <!-- Statistics Section -->
-        <ScrollView
+        <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintTop_toBottomOf="@id/titleTextView"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:padding="16dp">
+            android:layout_height="wrap_content">
+
+            <include
+                android:id="@+id/header"
+                layout="@layout/layout_app_bar"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            app:cardElevation="2dp"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:padding="8dp">
 
-                <!-- Total Houses Card -->
-                <com.google.android.material.card.MaterialCardView
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Select House"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                    android:layout_marginStart="8dp"/>
+
+                <Spinner
+                    android:id="@+id/houseSpinner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    app:cardElevation="4dp"
-                    app:cardCornerRadius="16dp">
+                    android:minHeight="48dp"
+                    android:padding="8dp"/>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="80dp"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Overview Section -->
+                <TextView
+                    style="@style/TextAppearance.MaterialComponents.Headline6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:text="System Overview" />
+
+                <!-- Stats Grid -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="24dp"
+                    android:orientation="horizontal">
+
+                    <!-- Houses Card -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:padding="16dp"
-                        android:gravity="center_vertical">
-
-                        <ImageView
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:src="@drawable/ic_logo"
-                            android:contentDescription="@string/total_houses"
-                            android:tint="@color/primary_text" />
+                        android:layout_margin="4dp"
+                        android:layout_weight="1"
+                        app:cardElevation="2dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
-                            android:layout_marginStart="16dp">
+                            android:padding="16dp">
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/total_houses"
-                                android:textStyle="bold"
-                                android:textColor="@color/primary_text"
-                                android:textSize="18sp" />
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_logo"
+                                app:tint="@color/primary_text" />
 
                             <TextView
                                 android:id="@+id/totalHousesValue"
+                                style="@style/TextAppearance.MaterialComponents.Headline4"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textColor="@color/secondary_text"
-                                android:textSize="16sp" />
+                                android:layout_marginTop="8dp"
+                                android:textColor="@color/primary_text" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Houses"
+                                android:textColor="@color/secondary_text" />
                         </LinearLayout>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
 
-                <!-- Total Devices Card -->
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    app:cardElevation="4dp"
-                    app:cardCornerRadius="16dp">
+                    </com.google.android.material.card.MaterialCardView>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <!-- Devices Card -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:padding="16dp"
-                        android:gravity="center_vertical">
-
-                        <ImageView
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:src="@drawable/ic_arrow"
-                            android:contentDescription="@string/total_devices"
-                            android:tint="@color/primary_text" />
+                        android:layout_margin="4dp"
+                        android:layout_weight="1"
+                        app:cardElevation="2dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
-                            android:layout_marginStart="16dp">
+                            android:padding="16dp">
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/total_devices"
-                                android:textStyle="bold"
-                                android:textColor="@color/primary_text"
-                                android:textSize="18sp" />
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_arrow"
+                                app:tint="@color/primary_text" />
 
                             <TextView
                                 android:id="@+id/totalDevicesValue"
+                                style="@style/TextAppearance.MaterialComponents.Headline4"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textColor="@color/secondary_text"
-                                android:textSize="16sp" />
-                        </LinearLayout>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
+                                android:layout_marginTop="8dp"
+                                android:textColor="@color/primary_text" />
 
-                <!-- Daily CO2 Progress -->
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Devices"
+                                android:textColor="@color/secondary_text" />
+                        </LinearLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                </LinearLayout>
+
+                <!-- Device Status Section -->
+                <TextView
+                    style="@style/TextAppearance.MaterialComponents.Headline6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="Device Status" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="24dp"
+                    android:orientation="horizontal">
+
+                    <!-- Active Lights Card -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="4dp"
+                        android:layout_weight="1"
+                        app:cardElevation="2dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_light_on"
+                                app:tint="@color/primary_text" />
+
+                            <TextView
+                                android:id="@+id/activeLightsValue"
+                                style="@style/TextAppearance.MaterialComponents.Headline5"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:textColor="@color/primary_text" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Active Lights"
+                                android:textColor="@color/secondary_text" />
+                        </LinearLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Active Shutters Card -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="4dp"
+                        android:layout_weight="1"
+                        app:cardElevation="2dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_shutter"
+                                app:tint="@color/primary_text" />
+
+                            <TextView
+                                android:id="@+id/activeShuttersValue"
+                                style="@style/TextAppearance.MaterialComponents.Headline5"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:textColor="@color/primary_text" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Open Shutters"
+                                android:textColor="@color/secondary_text" />
+                        </LinearLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                </LinearLayout>
+
+                <!-- Environmental Impact Section -->
+                <TextView
+                    style="@style/TextAppearance.MaterialComponents.Headline6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="Environmental Impact" />
+
+                <!-- CO2 Card -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    app:cardElevation="4dp"
-                    app:cardCornerRadius="16dp">
+                    android:layout_marginBottom="16dp"
+                    app:cardElevation="2dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:padding="16dp"
-                        android:gravity="center">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/daily_co2"
-                            android:textStyle="bold"
-                            android:textColor="@color/primary_text"
-                            android:textSize="18sp" />
-
-                        <ProgressBar
-                            android:id="@+id/dailyCO2Progress"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            style="?android:attr/progressBarStyleHorizontal"
-                            android:max="100"
-                            android:progress="40"
-                            android:layout_marginTop="8dp"
-                            android:progressTint="@color/PolytechBlue"
-                            android:backgroundTint="@color/gray" />
+                        android:padding="16dp">
 
                         <TextView
                             android:id="@+id/dailyCO2Value"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="15.7 kg"
-                            android:textColor="@color/secondary_text"
-                            android:layout_marginTop="8dp" />
+                            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1" />
+
+                        <com.google.android.material.progressindicator.LinearProgressIndicator
+                            android:id="@+id/dailyCO2Progress"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            app:trackCornerRadius="8dp" />
+
                     </LinearLayout>
+
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Efficiency Progress -->
+                <!-- Efficiency Card -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:cardElevation="4dp"
-                    app:cardCornerRadius="16dp">
+                    android:layout_marginBottom="16dp"
+                    app:cardElevation="2dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:padding="16dp"
-                        android:gravity="center">
+                        android:padding="16dp">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/avg_efficiency"
-                            android:textStyle="bold"
-                            android:textColor="@color/primary_text"
-                            android:textSize="18sp"
-                            android:gravity="center" />
+                            android:text="System Efficiency"
+                            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1" />
 
-                        <ProgressBar
+                        <com.google.android.material.progressindicator.LinearProgressIndicator
                             android:id="@+id/efficiencyProgress"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            style="?android:attr/progressBarStyleHorizontal"
-                            android:max="100"
-                            android:progress="92"
                             android:layout_marginTop="8dp"
-                            android:progressTint="@color/PolytechBlue"
-                            android:backgroundTint="@color/gray" />
+                            app:indicatorColor="@color/PolytechBlue"
+                            app:trackCornerRadius="8dp" />
+
+                        <TextView
+                            android:id="@+id/efficiencyValue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2" />
+
                     </LinearLayout>
+
                 </com.google.android.material.card.MaterialCardView>
+
             </LinearLayout>
-        </ScrollView>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigation_view"

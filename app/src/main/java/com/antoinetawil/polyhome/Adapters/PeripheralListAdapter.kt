@@ -11,6 +11,7 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.antoinetawil.polyhome.Activities.PeripheralListActivity
 import com.antoinetawil.polyhome.Models.Peripheral
@@ -163,7 +164,7 @@ class PeripheralListAdapter(
         val openButton =
                 createStyledButton(context.getString(R.string.open)).apply {
                     setOnClickListener {
-                        peripheral.opening = 100
+                        peripheral.opening = 1.0
                         updateButtonStates(container, this)
                     }
                 }
@@ -171,15 +172,16 @@ class PeripheralListAdapter(
         val closeButton =
                 createStyledButton(context.getString(R.string.close)).apply {
                     setOnClickListener {
-                        peripheral.opening = 0
+                        peripheral.opening = 0.0
                         updateButtonStates(container, this)
                     }
                 }
 
-        // Set initial state if exists
-        when (peripheral.opening) {
-            100 -> updateButtonStates(container, openButton)
-            0 -> updateButtonStates(container, closeButton)
+        // Set initial state based on current opening state
+        if (peripheral.isShutterOpen) {
+            updateButtonStates(container, openButton)
+        } else {
+            updateButtonStates(container, closeButton)
         }
 
         container.apply {
@@ -224,6 +226,41 @@ class PeripheralListAdapter(
     }
 
     private fun configureShutterAndDoorButtons(container: LinearLayout, peripheral: Peripheral) {
+        // Add status text to show opening percentage
+        val statusText =
+                TextView(context).apply {
+                    layoutParams =
+                            LinearLayout.LayoutParams(
+                                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                                            LinearLayout.LayoutParams.WRAP_CONTENT
+                                    )
+                                    .apply { setMargins(8, 8, 8, 8) }
+
+                    text =
+                            when {
+                                peripheral.type.equals("garage door", ignoreCase = true) -> {
+                                    if (peripheral.isShutterOpen)
+                                            context.getString(R.string.status_open)
+                                    else context.getString(R.string.status_closed)
+                                }
+                                peripheral.openingMode == 2 -> {
+                                    context.getString(
+                                            R.string.status_percentage,
+                                            peripheral.shutterOpeningPercentage
+                                    )
+                                }
+                                else -> {
+                                    if (peripheral.isShutterOpen)
+                                            context.getString(R.string.status_open)
+                                    else context.getString(R.string.status_closed)
+                                }
+                            }
+
+                    setTextColor(ContextCompat.getColor(context, R.color.secondary_text))
+                }
+        container.addView(statusText)
+
+        // Add the control buttons
         val openButton = createTextButton(context.getString(R.string.open), "OPEN", peripheral)
         val stopButton = createTextButton(context.getString(R.string.stop), "STOP", peripheral)
         val closeButton = createTextButton(context.getString(R.string.close), "CLOSE", peripheral)
