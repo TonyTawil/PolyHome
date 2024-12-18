@@ -13,11 +13,13 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.antoinetawil.polyhome.Adapters.HouseListAdapter
+import com.antoinetawil.polyhome.Adapters.HouseUsersAdapter
 import com.antoinetawil.polyhome.Models.House
 import com.antoinetawil.polyhome.R
 import com.antoinetawil.polyhome.Utils.Api
 import com.antoinetawil.polyhome.Utils.BaseActivity
 import com.antoinetawil.polyhome.Utils.HeaderUtils
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class HouseListActivity : BaseActivity() {
 
@@ -48,10 +50,13 @@ class HouseListActivity : BaseActivity() {
         findViewById<TextView>(R.id.titleTextView).text = getString(R.string.all_houses)
 
         recyclerView = findViewById(R.id.recyclerView)
-        adapter = HouseListAdapter(filteredHouses, this,
-            onManagePermission = { houseId, view -> showPermissionPopup(houseId, view) },
-            onHouseSelected = { houseId -> fetchPeripheralTypes(houseId) }
-        )
+        adapter =
+                HouseListAdapter(
+                        filteredHouses,
+                        this,
+                        onManagePermission = { house, view -> showUsersPopup(house, view) },
+                        onHouseSelected = { houseId -> fetchPeripheralTypes(houseId) }
+                )
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
 
@@ -72,12 +77,13 @@ class HouseListActivity : BaseActivity() {
         val popupView = LayoutInflater.from(this).inflate(R.layout.search_popup, null)
         searchEditText = popupView.findViewById(R.id.searchEditText)
 
-        searchPopup = PopupWindow(
-            popupView,
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-            true
-        )
+        searchPopup =
+                PopupWindow(
+                        popupView,
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        true
+                )
 
         val searchButton: View? = findViewById(R.id.searchIcon)
         searchButton?.setOnClickListener {
@@ -86,14 +92,26 @@ class HouseListActivity : BaseActivity() {
             }
         }
 
-        searchEditText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                filterHouses(s.toString())
-            }
+        searchEditText.addTextChangedListener(
+                object : TextWatcher {
+                    override fun beforeTextChanged(
+                            s: CharSequence?,
+                            start: Int,
+                            count: Int,
+                            after: Int
+                    ) {}
+                    override fun onTextChanged(
+                            s: CharSequence?,
+                            start: Int,
+                            before: Int,
+                            count: Int
+                    ) {
+                        filterHouses(s.toString())
+                    }
 
-            override fun afterTextChanged(s: Editable?) {}
-        })
+                    override fun afterTextChanged(s: Editable?) {}
+                }
+        )
     }
 
     private fun filterHouses(query: String) {
@@ -101,7 +119,9 @@ class HouseListActivity : BaseActivity() {
         if (query.isEmpty()) {
             filteredHouses.addAll(houses)
         } else {
-            filteredHouses.addAll(houses.filter { it.houseId.toString().contains(query, ignoreCase = true) })
+            filteredHouses.addAll(
+                    houses.filter { it.houseId.toString().contains(query, ignoreCase = true) }
+            )
         }
         adapter.notifyDataSetChanged()
     }
@@ -110,23 +130,28 @@ class HouseListActivity : BaseActivity() {
         val url = "https://polyhome.lesmoulinsdudev.com/api/houses"
 
         api.get<List<House>>(
-            path = url,
-            securityToken = token,
-            onSuccess = { responseCode, response ->
-                runOnUiThread {
-                    if (responseCode == 200 && response != null) {
-                        Log.d(TAG, "Fetched house list successfully.")
-                        houses.clear()
-                        houses.addAll(response)
-                        filteredHouses.clear()
-                        filteredHouses.addAll(houses)
-                        adapter.notifyDataSetChanged()
-                    } else {
-                        Log.e(TAG, getString(R.string.failed_to_fetch_houses))
-                        Toast.makeText(this, getString(R.string.failed_to_fetch_houses), Toast.LENGTH_SHORT).show()
+                path = url,
+                securityToken = token,
+                onSuccess = { responseCode, response ->
+                    runOnUiThread {
+                        if (responseCode == 200 && response != null) {
+                            Log.d(TAG, "Fetched house list successfully.")
+                            houses.clear()
+                            houses.addAll(response)
+                            filteredHouses.clear()
+                            filteredHouses.addAll(houses)
+                            adapter.notifyDataSetChanged()
+                        } else {
+                            Log.e(TAG, getString(R.string.failed_to_fetch_houses))
+                            Toast.makeText(
+                                            this,
+                                            getString(R.string.failed_to_fetch_houses),
+                                            Toast.LENGTH_SHORT
+                                    )
+                                    .show()
+                        }
                     }
                 }
-            }
         )
     }
 
@@ -144,28 +169,41 @@ class HouseListActivity : BaseActivity() {
         }
 
         api.get<Map<String, Any>>(
-            path = url,
-            securityToken = token,
-            onSuccess = { responseCode, response ->
-                runOnUiThread {
-                    if (responseCode == 200 && response != null) {
-                        val devices = response["devices"] as? List<Map<String, Any>>
-                        if (devices != null) {
-                            val types = devices.mapNotNull { device ->
-                                val id = device["id"] as? String
-                                id?.split(" ")?.firstOrNull()
-                            }.distinct()
-                            navigateToPeripheralTypeList(houseId, types)
+                path = url,
+                securityToken = token,
+                onSuccess = { responseCode, response ->
+                    runOnUiThread {
+                        if (responseCode == 200 && response != null) {
+                            val devices = response["devices"] as? List<Map<String, Any>>
+                            if (devices != null) {
+                                val types =
+                                        devices
+                                                .mapNotNull { device ->
+                                                    val id = device["id"] as? String
+                                                    id?.split(" ")?.firstOrNull()
+                                                }
+                                                .distinct()
+                                navigateToPeripheralTypeList(houseId, types)
+                            } else {
+                                Log.e(TAG, getString(R.string.invalid_response))
+                                Toast.makeText(
+                                                this,
+                                                getString(R.string.invalid_response),
+                                                Toast.LENGTH_SHORT
+                                        )
+                                        .show()
+                            }
                         } else {
-                            Log.e(TAG, getString(R.string.invalid_response))
-                            Toast.makeText(this, getString(R.string.invalid_response), Toast.LENGTH_SHORT).show()
+                            Log.e(TAG, getString(R.string.failed_to_fetch_peripherals))
+                            Toast.makeText(
+                                            this,
+                                            getString(R.string.failed_to_fetch_peripherals),
+                                            Toast.LENGTH_SHORT
+                                    )
+                                    .show()
                         }
-                    } else {
-                        Log.e(TAG, getString(R.string.failed_to_fetch_peripherals))
-                        Toast.makeText(this, getString(R.string.failed_to_fetch_peripherals), Toast.LENGTH_SHORT).show()
                     }
                 }
-            }
         )
     }
 
@@ -176,100 +214,165 @@ class HouseListActivity : BaseActivity() {
         startActivity(intent)
     }
 
-    private fun showPermissionPopup(houseId: Int, anchorView: View) {
-        Log.d(TAG, "Displaying permission popup for houseId=$houseId") // Add log for debugging
+    private fun showUsersPopup(house: House, anchorView: View) {
+        val popupView = LayoutInflater.from(this).inflate(R.layout.users_list_popup, null)
+        val popupWindow =
+                PopupWindow(
+                        popupView,
+                        (resources.displayMetrics.widthPixels * 0.8).toInt(),
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        true
+                )
 
-        val popupView = LayoutInflater.from(this).inflate(R.layout.permission_popup, null)
-
-        val popupWindow = PopupWindow(
-            popupView,
-            (resources.displayMetrics.widthPixels * 0.7).toInt(), // Ensure proper width
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-            true
-        )
-
+        val usersRecyclerView = popupView.findViewById<RecyclerView>(R.id.usersRecyclerView)
         val emailEditText = popupView.findViewById<EditText>(R.id.emailEditText)
-        val givePermissionButton = popupView.findViewById<Button>(R.id.givePermissionButton)
-        val removePermissionButton = popupView.findViewById<Button>(R.id.removePermissionButton)
+        val addUserButton = popupView.findViewById<FloatingActionButton>(R.id.addUserButton)
+        val addUserSection = popupView.findViewById<View>(R.id.addUserSection)
 
-        givePermissionButton.setOnClickListener {
+        // Only show add user section if current user is the owner
+        addUserSection.visibility = if (house.owner) View.VISIBLE else View.GONE
+
+        usersRecyclerView.layoutManager = LinearLayoutManager(this)
+
+        // Create a mutable property to hold the adapter reference
+        lateinit var usersAdapter: HouseUsersAdapter
+
+        // Initialize the adapter with a reference to itself
+        usersAdapter =
+                HouseUsersAdapter(
+                        users = mutableListOf(),
+                        isOwner = house.owner,
+                        onRemoveUser = { userLogin ->
+                            removeUserAccess(house.houseId, userLogin, usersAdapter)
+                        }
+                )
+
+        // Set the adapter
+        usersRecyclerView.adapter = usersAdapter
+
+        // Fetch and display users
+        fetchHouseUsers(house.houseId) { users -> usersAdapter.updateUsers(users) }
+
+        addUserButton.setOnClickListener {
             val email = emailEditText.text.toString()
             if (email.isNotEmpty()) {
-                managePermission(houseId, email, true)
-                popupWindow.dismiss()
+                giveUserAccess(house.houseId, email, usersAdapter)
+                emailEditText.text.clear()
             } else {
                 Toast.makeText(this, getString(R.string.enter_email), Toast.LENGTH_SHORT).show()
             }
         }
 
-        removePermissionButton.setOnClickListener {
-            val email = emailEditText.text.toString()
-            if (email.isNotEmpty()) {
-                managePermission(houseId, email, false)
-                popupWindow.dismiss()
-            } else {
-                Toast.makeText(this, getString(R.string.enter_email), Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        // Set popup elevation and animation
         popupWindow.elevation = 8f
         popupWindow.animationStyle = android.R.style.Animation_Dialog
-
-        // Show the popup below the anchor view
-        popupWindow.showAsDropDown(anchorView, 50, 80)
-
-        Log.d(TAG, "Permission popup displayed") // Add log for debugging
+        popupWindow.showAsDropDown(anchorView)
     }
 
-
-    private fun managePermission(houseId: Int, email: String, isGrant: Boolean) {
+    private fun fetchHouseUsers(
+            houseId: Int,
+            onSuccess: (List<HouseUsersAdapter.HouseUser>) -> Unit
+    ) {
         val url = "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/users"
-        val sharedPreferences = getSharedPreferences("PolyHomePrefs", MODE_PRIVATE)
-        val token = sharedPreferences.getString("auth_token", null)
+        val token =
+                getSharedPreferences("PolyHomePrefs", MODE_PRIVATE).getString("auth_token", null)
 
         if (token != null) {
-            val requestData = mapOf("userLogin" to email)
-
-            if (isGrant) {
-                api.post<Map<String, String>>(
+            api.get<List<HouseUsersAdapter.HouseUser>>(
                     path = url,
-                    data = requestData,
                     securityToken = token,
-                    onSuccess = { responseCode ->
-                        handlePermissionResponse(responseCode, isGrant)
+                    onSuccess = { responseCode, response ->
+                        if (responseCode == 200 && response != null) {
+                            runOnUiThread { onSuccess(response) }
+                        } else {
+                            runOnUiThread {
+                                Toast.makeText(
+                                                this,
+                                                getString(R.string.failed_to_fetch_users),
+                                                Toast.LENGTH_SHORT
+                                        )
+                                        .show()
+                            }
+                        }
                     }
-                )
-            } else {
-                api.delete<Map<String, String>>(
-                    path = url,
-                    data = requestData,
-                    securityToken = token,
-                    onSuccess = { responseCode ->
-                        handlePermissionResponse(responseCode, isGrant)
-                    }
-                )
-            }
-        } else {
-            Toast.makeText(this, getString(R.string.auth_token_missing), Toast.LENGTH_SHORT).show()
+            )
         }
     }
 
-    private fun handlePermissionResponse(responseCode: Int, isGrant: Boolean) {
-        runOnUiThread {
-            if (responseCode == 200) {
-                Toast.makeText(
-                    this,
-                    getString(if (isGrant) R.string.permission_granted else R.string.permission_removed),
-                    Toast.LENGTH_SHORT
-                ).show()
-            } else {
-                Toast.makeText(
-                    this,
-                    getString(R.string.failed_permission),
-                    Toast.LENGTH_LONG
-                ).show()
-            }
+    private fun giveUserAccess(houseId: Int, email: String, adapter: HouseUsersAdapter) {
+        val url = "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/users"
+        val token =
+                getSharedPreferences("PolyHomePrefs", MODE_PRIVATE).getString("auth_token", null)
+
+        if (token != null) {
+            api.post<Map<String, String>, Unit>(
+                    path = url,
+                    data = mapOf("userLogin" to email),
+                    securityToken = token,
+                    onSuccess = { responseCode, _ ->
+                        runOnUiThread {
+                            if (responseCode == 200) {
+                                Toast.makeText(
+                                                this,
+                                                getString(R.string.access_granted),
+                                                Toast.LENGTH_SHORT
+                                        )
+                                        .show()
+
+                                // Add the new user to the list immediately
+                                adapter.addUser(HouseUsersAdapter.HouseUser(email, 0))
+
+                                // Also refresh the full list in case of any changes
+                                fetchHouseUsers(houseId) { users -> adapter.updateUsers(users) }
+                            } else {
+                                Toast.makeText(
+                                                this,
+                                                getString(R.string.failed_to_grant_access),
+                                                Toast.LENGTH_SHORT
+                                        )
+                                        .show()
+                            }
+                        }
+                    }
+            )
+        }
+    }
+
+    private fun removeUserAccess(houseId: Int, userLogin: String, adapter: HouseUsersAdapter) {
+        val url = "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/users"
+        val token =
+                getSharedPreferences("PolyHomePrefs", MODE_PRIVATE).getString("auth_token", null)
+
+        if (token != null) {
+            // Remove the user immediately from the list before making the API call
+            adapter.removeUser(userLogin)
+
+            api.delete(
+                    path = url,
+                    data = mapOf("userLogin" to userLogin),
+                    securityToken = token,
+                    onSuccess = { responseCode ->
+                        runOnUiThread {
+                            if (responseCode == 200) {
+                                Toast.makeText(
+                                                this,
+                                                getString(R.string.access_removed),
+                                                Toast.LENGTH_SHORT
+                                        )
+                                        .show()
+                            } else {
+                                Toast.makeText(
+                                                this,
+                                                getString(R.string.failed_to_remove_access),
+                                                Toast.LENGTH_SHORT
+                                        )
+                                        .show()
+                                // If the API call failed, refresh the list to restore the original
+                                // state
+                                fetchHouseUsers(houseId) { users -> adapter.updateUsers(users) }
+                            }
+                        }
+                    }
+            )
         }
     }
 }

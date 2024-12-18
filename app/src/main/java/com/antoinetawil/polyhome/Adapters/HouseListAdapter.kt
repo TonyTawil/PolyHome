@@ -13,10 +13,10 @@ import com.antoinetawil.polyhome.Models.House
 import com.antoinetawil.polyhome.R
 
 class HouseListAdapter(
-    private val houseList: List<House>,
-    private val context: Context,
-    private val onManagePermission: (houseId: Int, view: View) -> Unit,
-    private val onHouseSelected: (houseId: Int) -> Unit
+        private val houseList: List<House>,
+        private val context: Context,
+        private val onManagePermission: (house: House, view: View) -> Unit,
+        private val onHouseSelected: (houseId: Int) -> Unit
 ) : RecyclerView.Adapter<HouseListAdapter.HouseViewHolder>() {
 
     companion object {
@@ -31,7 +31,8 @@ class HouseListAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HouseViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.house_list_item, parent, false)
+        val view =
+                LayoutInflater.from(parent.context).inflate(R.layout.house_list_item, parent, false)
         return HouseViewHolder(view)
     }
 
@@ -39,11 +40,12 @@ class HouseListAdapter(
         val house = houseList[position]
 
         holder.houseIdTextView.text = context.getString(R.string.house_id_label, house.houseId)
-        holder.ownerStatusTextView.text = if (house.owner) {
-            context.getString(R.string.owner)
-        } else {
-            context.getString(R.string.guest)
-        }
+        holder.ownerStatusTextView.text =
+                if (house.owner) {
+                    context.getString(R.string.owner)
+                } else {
+                    context.getString(R.string.guest)
+                }
 
         Log.d(TAG, "Binding house: ${house.houseId}, Owner: ${house.owner}")
 
@@ -52,9 +54,11 @@ class HouseListAdapter(
             onHouseSelected(house.houseId)
         }
 
+        holder.managePermissionButton.visibility = if (house.owner) View.VISIBLE else View.GONE
+
         holder.managePermissionButton.setOnClickListener {
             Log.d(TAG, "Manage permission clicked for house: ${house.houseId}")
-            onManagePermission(house.houseId, holder.managePermissionButton)
+            onManagePermission(house, holder.managePermissionButton)
         }
     }
 

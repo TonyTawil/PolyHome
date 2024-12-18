@@ -12,4 +12,5 @@
     <color name="on_surface">@color/primary_text</color> <!-- Text on surfaces -->
     <color name="drawer_text_color">@color/primary_text</color>
     <color name="secondary_text">#757575</color>
+    <color name="red">#FF5252</color>
 </resources>

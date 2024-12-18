@@ -135,5 +135,13 @@
     <string name="water_usage_placeholder">Water Usage: Loading...</string>
     <string name="avg_efficiency_placeholder">Average Efficiency: Loading...</string>
     <string name="peak_time_usage_placeholder">Peak Time Usage: Loading...</string>
+    <string name="manage_users">Manage Users</string>
+    <string name="add_user">Add User</string>
+    <string name="access_granted">Access granted successfully</string>
+    <string name="access_removed">Access removed successfully</string>
+    <string name="failed_to_fetch_users">Failed to fetch users</string>
+    <string name="failed_to_grant_access">Failed to grant access</string>
+    <string name="failed_to_remove_access">Failed to remove access</string>
+    <string name="remove_user">Remove User</string>
 
 </resources>
