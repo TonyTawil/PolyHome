@@ -159,4 +159,71 @@
     <string name="arabic">아랍어</string>
     <string name="korean">한국어</string>
     <string name="all_schedules">모든 일정</string>
-</resources> 
+        <!-- Messages -->
+        <string name="operation_completed">모든 %1$s에 대한 작업이 완료되었습니다.</string>
+        <string name="light_turned_on">조명이 켜졌습니다</string>
+        <string name="light_turned_off">조명이 꺼졌습니다</string>
+        <string name="failed_toggle_light">조명 상태 전환 실패</string>
+        <string name="command_sent_successfully">%2$s에 명령 %1$s이(가) 성공적으로 전송되었습니다.</string>
+        <string name="failed_command">%2$s에 %1$s 명령 전송 실패</string>
+
+        <!-- Schedules -->
+        <string name="select_date">날짜 선택</string>
+        <string name="select_time">시간 선택</string>
+        <string name="save_schedule">일정 저장</string>
+        <string name="schedule_saved">일정이 성공적으로 저장되었습니다</string>
+        <string name="select_date_time">날짜와 시간을 모두 선택해주세요</string>
+        <string name="invalid_schedule_time">잘못된 일정 시간입니다. 미래의 시간을 선택해주세요.</string>
+        <string name="no_peripherals_selected">일정을 예약할 주변기기가 선택되지 않았습니다</string>
+        <string name="no_matching_peripherals">일치하는 주변기기가 없습니다.</string>
+        <string name="no_schedules">일정이 없습니다</string>
+        <string name="add_schedule">일정 추가</string>
+        <string name="delete_schedule">일정 삭제</string>
+        <string name="schedule_settings">일정 설정</string>
+        <string name="available_peripherals">사용 가능한 주변기기</string>
+        <string name="expand_commands">명령 확장</string>
+        <string name="schedule_will_run_hours_minutes">일정이 %1$d시간 %2$d분 후 실행됩니다</string>
+        <string name="schedule_will_run_minutes">일정이 %1$d분 후 실행됩니다</string>
+        <string name="schedule_will_run_soon">일정이 곧 실행됩니다</string>
+
+        <!-- Notifications -->
+        <string name="notification_permission_title">알림 활성화</string>
+        <string name="notification_permission_message">예약된 명령에 대한 알림을 받으려면 PolyHome의 알림을 허용해주세요</string>
+        <string name="allow">허용</string>
+        <string name="deny">거부</string>
+
+        <!-- Statistics and Overview -->
+        <string name="total_houses">전체 집: %1$d</string>
+        <string name="active_devices">활성 기기: %1$d</string>
+        <string name="daily_co2">일일 CO2 배출량: %1$.1f kg</string>
+        <string name="avg_efficiency">평균 효율: %1$d%%</string>
+        <string name="peak_time_usage">피크 시간 사용량: %1$s</string>
+        <string name="co2_value_format">%s kg</string>
+        <string name="total_houses_format">전체 집: %d</string>
+        <string name="total_devices_format">전체 기기: %d</string>
+        <string name="daily_co2_format">일일 CO₂: %.1f kg</string>
+        <string name="efficiency_format">시스템 효율: %d%%</string>
+        <string name="active_devices_format">활성 기기: %d</string>
+        <string name="energy_saved_format">절약된 에너지: %.1f kWh</string>
+        <string name="shutter_status_format">%d 열림 / %d 전체</string>
+
+        <!-- User Management -->
+        <string name="manage_users">사용자 관리</string>
+        <string name="add_user">사용자 추가</string>
+        <string name="access_granted">접근 권한이 성공적으로 부여되었습니다</string>
+        <string name="access_removed">접근 권한이 성공적으로 제거되었습니다</string>
+        <string name="failed_to_fetch_users">사용자 가져오기 실패</string>
+        <string name="failed_to_grant_access">접근 권한 부여 실패</string>
+        <string name="failed_to_remove_access">접근 권한 제거 실패</string>
+        <string name="remove_user">사용자 제거</string>
+
+        <!-- Loading -->
+        <string name="loading">로드 중...</string>
+
+        <!-- Peripherals -->
+        <string name="peripheral_light">조명 %s</string>
+        <string name="peripheral_shutter">셔터 %s</string>
+        <string name="peripheral_garage">차고 문 %s</string>
+        <string name="select_house">집 선택</string>
+
+</resources>
