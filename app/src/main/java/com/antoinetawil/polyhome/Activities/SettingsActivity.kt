@@ -52,8 +52,7 @@ class SettingsActivity : BaseActivity() {
     }
 
     private fun getCurrentLanguage(): String {
-        val sharedPreferences = getSharedPreferences("PolyHomePrefs", MODE_PRIVATE)
-        return sharedPreferences.getString("LANGUAGE", "en") ?: "en"
+        return getLanguagePreference(this)
     }
 
     private fun setupLanguageSpinner() {
@@ -67,7 +66,6 @@ class SettingsActivity : BaseActivity() {
         val currentLanguage = getCurrentLanguage()
         val position =
                 when (currentLanguage) {
-                    "en" -> 0
                     "fr" -> 1
                     "es" -> 2
                     "ar" -> 3
@@ -85,7 +83,6 @@ class SettingsActivity : BaseActivity() {
                     ) {
                         val newLocale =
                                 when (pos) {
-                                    0 -> "en"
                                     1 -> "fr"
                                     2 -> "es"
                                     3 -> "ar"

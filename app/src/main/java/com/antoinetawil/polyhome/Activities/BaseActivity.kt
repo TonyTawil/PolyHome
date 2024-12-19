@@ -7,6 +7,11 @@ import java.util.Locale
 
 open class BaseActivity : AppCompatActivity() {
 
+    companion object {
+        const val PREFS_NAME = "PolyHomePrefs"
+        const val LANGUAGE_KEY = "LANGUAGE"
+    }
+
     override fun attachBaseContext(newBase: Context) {
         val locale = Locale(getLanguagePreference(newBase))
         val config = Configuration(newBase.resources.configuration)
@@ -16,15 +21,15 @@ open class BaseActivity : AppCompatActivity() {
         super.attachBaseContext(context)
     }
 
-    private fun getLanguagePreference(context: Context): String {
-        val sharedPreferences = context.getSharedPreferences("PolyHomePrefs", MODE_PRIVATE)
-        return sharedPreferences.getString("LANGUAGE", "en") ?: "en"
+    protected fun getLanguagePreference(context: Context): String {
+        val sharedPreferences = context.getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+        return sharedPreferences.getString(LANGUAGE_KEY, "en") ?: "en"
     }
 
     protected fun setLocalePreference(languageCode: String) {
-        getSharedPreferences("PolyHomePrefs", MODE_PRIVATE)
+        getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
                 .edit()
-                .putString("LANGUAGE", languageCode)
+                .putString(LANGUAGE_KEY, languageCode)
                 .apply()
         recreate()
     }

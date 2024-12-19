@@ -1,7 +1,6 @@
 package com.antoinetawil.polyhome.Activities
 
 import android.content.Intent
-import android.content.res.Configuration
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
@@ -12,14 +11,13 @@ import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.antoinetawil.polyhome.R
 import com.antoinetawil.polyhome.Utils.Api
 import com.google.android.material.textfield.TextInputEditText
 import java.util.*
 
-class SignupActivity : AppCompatActivity() {
+class SignupActivity : BaseActivity() {
 
     companion object {
         private const val TAG = "SignupActivity"
@@ -28,7 +26,6 @@ class SignupActivity : AppCompatActivity() {
     private val api = Api()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setLocale(getCurrentLanguage())
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
 
@@ -156,22 +153,11 @@ class SignupActivity : AppCompatActivity() {
     }
 
     private fun getCurrentLanguage(): String {
-        return getSharedPreferences("Settings", MODE_PRIVATE).getString("language", "en") ?: "en"
+        return getLanguagePreference(this)
     }
 
     private fun setLocale(languageCode: String) {
-        val locale = Locale(languageCode)
-        Locale.setDefault(locale)
-
-        val config = Configuration()
-        config.setLocale(locale)
-
-        resources.updateConfiguration(config, resources.displayMetrics)
-
-        getSharedPreferences("Settings", MODE_PRIVATE)
-                .edit()
-                .putString("language", languageCode)
-                .apply()
+        setLocalePreference(languageCode)
     }
 
     private fun signup(email: String, password: String) {

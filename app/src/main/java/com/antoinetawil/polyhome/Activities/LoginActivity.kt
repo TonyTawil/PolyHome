@@ -1,7 +1,6 @@
 package com.antoinetawil.polyhome.Activities
 
 import android.content.Intent
-import android.content.res.Configuration
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
@@ -15,7 +14,6 @@ import androidx.core.content.ContextCompat
 import com.antoinetawil.polyhome.R
 import com.antoinetawil.polyhome.Utils.Api
 import com.google.android.material.textfield.TextInputEditText
-import java.util.Locale
 
 class LoginActivity : BaseActivity() {
 
@@ -26,7 +24,6 @@ class LoginActivity : BaseActivity() {
     private val api = Api()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setLocale(getCurrentLanguage())
         super.onCreate(savedInstanceState)
         if (isUserLoggedIn()) {
             navigateToHouseList()
@@ -148,23 +145,11 @@ class LoginActivity : BaseActivity() {
     }
 
     private fun getCurrentLanguage(): String {
-        return getSharedPreferences("Settings", MODE_PRIVATE).getString("language", "en") ?: "en"
+        return getLanguagePreference(this)
     }
 
     private fun setLocale(languageCode: String) {
-        val locale = Locale(languageCode)
-        Locale.setDefault(locale)
-
-        val config = Configuration()
-        config.setLocale(locale)
-
-        resources.updateConfiguration(config, resources.displayMetrics)
-
-        // Save selected language
-        getSharedPreferences("Settings", MODE_PRIVATE)
-                .edit()
-                .putString("language", languageCode)
-                .apply()
+        setLocalePreference(languageCode)
     }
 
     private fun login(email: String, password: String) {

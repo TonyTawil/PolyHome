@@ -48,8 +48,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/email_address"
+            android:textColorHint="@color/primary_text"
             android:inputType="textEmailAddress"
             android:padding="12dp"
+            android:textColor="@color/primary_text"
             android:text="veronicahoyek1@gmail.com" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -72,6 +74,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/password"
+            android:textColor="@color/primary_text"
+            android:textColorHint="@color/primary_text"
             android:inputType="textPassword"
             android:padding="12dp"
             android:text="12345678" />
