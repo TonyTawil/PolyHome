@@ -28,10 +28,20 @@ open class BaseActivity : AppCompatActivity() {
     }
 
     override fun attachBaseContext(newBase: Context) {
-        val locale = Locale(getLanguagePreference(newBase))
+        val languageCode = getLanguagePreference(newBase)
+        val locale = if (languageCode == "ar") {
+            // For Arabic, only force Western Arabic numerals while keeping Arabic text
+            Locale.Builder()
+                .setLanguage("ar")
+                .setExtension('u', "nu-latn") // This only sets numeric type to Latin
+                .build()
+        } else {
+            Locale(languageCode)
+        }
+
         val config = Configuration(newBase.resources.configuration)
 
-        // Support RTL languages (Arabic) and Korean
+        // Support RTL layout for Arabic
         if (locale.language == "ar") {
             config.setLayoutDirection(Locale("ar"))
         } else {
