@@ -54,18 +54,20 @@ class ScheduleListAdapter(private val onDeleteClick: (Schedule) -> Unit) :
                 }
         holder.daysText.text = daysText
 
-        // Create summary text
+        // Create summary text - Show house ID and number of commands
         val totalCommands = schedule.commands.size
-        val firstCommand = schedule.commands.first()
         holder.commandsSummaryText.text =
-                if (totalCommands > 1) {
-                    "${formatCommand(firstCommand.command)} and ${totalCommands - 1} more commands"
-                } else {
-                    formatCommand(firstCommand.command)
-                }
+                holder.itemView.context.getString(
+                        R.string.house_tag_with_commands,
+                        schedule.houseId,
+                        totalCommands,
+                        if (totalCommands > 1) "s" else ""
+                )
 
         // Setup commands display
         holder.commandsContainer.removeAllViews()
+
+        // Add command views (remove house ID view since it's now in the summary)
         schedule.commands.forEach { command ->
             val commandView =
                     TextView(holder.itemView.context).apply {
