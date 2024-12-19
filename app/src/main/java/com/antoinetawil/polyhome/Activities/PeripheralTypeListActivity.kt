@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.antoinetawil.polyhome.Adapters.PeripheralTypeAdapter
 import com.antoinetawil.polyhome.R
 import com.antoinetawil.polyhome.Utils.Api
-import com.antoinetawil.polyhome.Activities.BaseActivity
 import com.antoinetawil.polyhome.Utils.HeaderUtils
 import org.json.JSONObject
 
@@ -48,16 +47,17 @@ class PeripheralTypeListActivity : BaseActivity() {
 
         findViewById<TextView>(R.id.titleTextView).text = getString(R.string.peripheral_types)
 
-        val adapter = PeripheralTypeAdapter(availableTypes) { selectedType ->
-            if (selectedType.lowercase() == "garage door") {
-                fetchAndNavigateToPeripheralList(houseId, selectedType)
-            } else {
-                val intent = Intent(this, FloorListActivity::class.java)
-                intent.putExtra("houseId", houseId)
-                intent.putExtra("type", selectedType)
-                startActivity(intent)
-            }
-        }
+        val adapter =
+                PeripheralTypeAdapter(availableTypes) { selectedType ->
+                    if (selectedType.equals("GarageDoor", ignoreCase = true)) {
+                        fetchAndNavigateToPeripheralList(houseId, selectedType)
+                    } else {
+                        val intent = Intent(this, FloorListActivity::class.java)
+                        intent.putExtra("houseId", houseId)
+                        intent.putExtra("type", selectedType)
+                        startActivity(intent)
+                    }
+                }
 
         recyclerView.adapter = adapter
     }
@@ -77,35 +77,59 @@ class PeripheralTypeListActivity : BaseActivity() {
         Log.d(TAG, "Fetching peripherals: URL=$url, Token=$token")
 
         api.get<Map<String, List<Map<String, Any>>>>(
-            path = url,
-            securityToken = token,
-            onSuccess = { responseCode, response ->
-                runOnUiThread {
-                    Log.d(TAG, "API Response Code: $responseCode")
-                    if (responseCode == 200 && response != null) {
-                        val devices = response["devices"] ?: emptyList()
-                        Log.d(TAG, "Fetched devices: $devices")
-                        val filteredPeripherals = devices.filter {
-                            it["type"].toString().equals(peripheralType, ignoreCase = true)
+                path = url,
+                securityToken = token,
+                onSuccess = { responseCode, response ->
+                    runOnUiThread {
+                        Log.d(TAG, "API Response Code: $responseCode")
+                        if (responseCode == 200 && response != null) {
+                            val devices = response["devices"] ?: emptyList()
+                            Log.d(TAG, "Fetched devices: $devices")
+                            val filteredPeripherals =
+                                    devices.filter {
+                                        it["type"]
+                                                .toString()
+                                                .equals(peripheralType, ignoreCase = true)
+                                    }
+                            Log.d(
+                                    TAG,
+                                    "Filtered peripherals for type '$peripheralType': $filteredPeripherals"
+                            )
+                            navigateToPeripheralList(houseId, peripheralType, filteredPeripherals)
+                        } else {
+                            Log.e(
+                                    TAG,
+                                    getString(R.string.failed_fetch_peripherals_log, responseCode)
+                            )
+                            Toast.makeText(
+                                            this,
+                                            getString(R.string.failed_fetch_peripherals),
+                                            Toast.LENGTH_SHORT
+                                    )
+                                    .show()
                         }
-                        Log.d(TAG, "Filtered peripherals for type '$peripheralType': $filteredPeripherals")
-                        navigateToPeripheralList(houseId, peripheralType, filteredPeripherals)
-                    } else {
-                        Log.e(TAG, getString(R.string.failed_fetch_peripherals_log, responseCode))
-                        Toast.makeText(this, getString(R.string.failed_fetch_peripherals), Toast.LENGTH_SHORT).show()
                     }
                 }
-            }
         )
     }
 
-    private fun navigateToPeripheralList(houseId: Int, type: String, peripherals: List<Map<String, Any>>) {
-        Log.d(TAG, "Navigating to PeripheralListActivity with houseId=$houseId, type=$type, peripherals=$peripherals")
+    private fun navigateToPeripheralList(
+            houseId: Int,
+            type: String,
+            peripherals: List<Map<String, Any>>
+    ) {
+        Log.d(
+                TAG,
+                "Navigating to PeripheralListActivity with houseId=$houseId, type=$type, peripherals=$peripherals"
+        )
         val intent = Intent(this, PeripheralListActivity::class.java)
         intent.putExtra("houseId", houseId)
         intent.putExtra("type", type)
         intent.putExtra("floor", getString(R.string.all_floors))
-        intent.putExtra("filteredPeripherals", ArrayList(peripherals.map { JSONObject(it).toString() }))
+        intent.putExtra(
+                "filteredPeripherals",
+                ArrayList(peripherals.map { JSONObject(it).toString() })
+        )
         startActivity(intent)
     }
 }

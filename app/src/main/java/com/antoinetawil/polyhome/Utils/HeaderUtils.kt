@@ -4,11 +4,15 @@ import android.content.Context
 import android.content.Intent
 import android.view.Gravity
 import android.view.View
+import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
+import com.antoinetawil.polyhome.Activities.FloorListActivity
 import com.antoinetawil.polyhome.Activities.HouseListActivity
 import com.antoinetawil.polyhome.Activities.LoginActivity
 import com.antoinetawil.polyhome.Activities.NotificationsActivity
+import com.antoinetawil.polyhome.Activities.PeripheralTypeListActivity
+import com.antoinetawil.polyhome.Activities.SchedulesActivity
 import com.antoinetawil.polyhome.Activities.SchedulesListActivity
 import com.antoinetawil.polyhome.Activities.SettingsActivity
 import com.antoinetawil.polyhome.Activities.StatisticsActivity
@@ -20,6 +24,24 @@ object HeaderUtils {
     fun setupHeaderWithDrawer(activity: AppCompatActivity, drawerLayout: DrawerLayout) {
         val menuButton: View? = activity.findViewById(R.id.menuButton)
         menuButton?.setOnClickListener { drawerLayout.openDrawer(Gravity.START) }
+
+        val searchIcon = activity.findViewById<ImageButton>(R.id.searchIcon)
+
+        // Hide search icon for specific activities
+        when (activity) {
+            is SchedulesListActivity,
+            is SettingsActivity,
+            is SchedulesActivity,
+            is StatisticsActivity,
+            is NotificationsActivity,
+            is FloorListActivity,
+            is PeripheralTypeListActivity -> {
+                searchIcon.visibility = View.GONE
+            }
+            else -> {
+                searchIcon.visibility = View.VISIBLE
+            }
+        }
 
         setupDrawerMenu(activity, drawerLayout)
     }
