@@ -225,5 +225,39 @@
         <string name="peripheral_shutter">셔터 %s</string>
         <string name="peripheral_garage">차고 문 %s</string>
         <string name="select_house">집 선택</string>
+    <string name="peripherals_fetched">주변기기가 성공적으로 가져왔습니다</string>
+    <string name="house_id_label2">집 ID: %1$d</string>
+    <string name="search_peripherals">주변기기 검색</string>
+    <string name="schedule_execution_details">기기 %2$s에 대한 명령 %1$s</string>
+    <string name="energy_usage_placeholder">에너지 사용량: 로드 중...</string>
+    <string name="co2_consumption_placeholder">CO2 배출량: 로드 중...</string>
+    <string name="system_efficiency_placeholder">시스템 효율: 로드 중...</string>
+    <string name="total_houses_placeholder">전체 집: 로드 중...</string>
+    <string name="active_devices_placeholder">활성 기기: 로드 중...</string>
+    <string name="daily_co2_placeholder">일일 CO2 배출량: 로드 중...</string>
+    <string name="water_usage_placeholder">물 사용량: 로드 중...</string>
+    <string name="avg_efficiency_placeholder">평균 효율: 로드 중...</string>
+    <string name="peak_time_usage_placeholder">피크 시간 사용량: 로드 중...</string>
+    <string name="lights">조명</string>
+    <string name="rolling_shutters">롤링 셔터</string>
+    <string name="garage_doors">차고 문</string>
+    <string name="all">전체</string>
+    <string name="peripheral_id">ID: %1$s</string>
+    <string name="rolling_shutter">롤링 셔터</string>
+    <string name="open">열기</string>
+    <string name="stop">정지</string>
+    <string name="close">닫기</string>
+    <string name="lights_fr">조명</string>
+    <string name="rolling_shutters_fr">롤링 셔터</string>
+    <string name="garage_door_fr">차고 문</string>
+    <string name="all_floors_fr_suffix">모든 층</string>
+    <string name="first_floor_fr_suffix">첫 번째 층</string>
+    <string name="second_floor_fr_suffix">두 번째 층</string>
+    <string name="schedules">일정</string>
+    <string name="statistics">통계</string>
+    <string name="total_devices_placeholder">전체 기기: 로드 중...</string>
+    <string name="house_tag">집 %d</string>
+    <string name="house_tag_with_commands">집 %1$d (%2$d 명령%3$s)</string>
+
 
 </resources>
