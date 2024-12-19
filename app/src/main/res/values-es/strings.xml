@@ -6,6 +6,7 @@
         <item>Francés</item>
         <item>Español</item>
         <item>Árabe</item>
+        <item>Coreano</item>
     </string-array>
     
     <!-- Navigation -->
@@ -212,6 +213,7 @@
     <string name="french">Francés</string>
     <string name="spanish">Español</string>
     <string name="arabic">Árabe</string>
+    <string name="korean">Coreano</string>
 
     <!-- Signup -->
     <string name="create_account">Crea tu cuenta</string>
@@ -246,4 +248,7 @@
     <string name="active_lights">Luces Activas</string>
     <string name="open_shutters">Persianas Abiertas</string>
     <string name="system_efficiency">Eficiencia del Sistema</string>
+
+    <string name="all_schedules">Todos los horarios</string>
+=
 </resources> 

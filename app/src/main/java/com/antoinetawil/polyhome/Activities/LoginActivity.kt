@@ -7,6 +7,7 @@ import android.text.Spanned
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.Toast
@@ -101,7 +102,8 @@ class LoginActivity : BaseActivity() {
                         getString(R.string.english),
                         getString(R.string.french),
                         getString(R.string.spanish),
-                        getString(R.string.arabic)
+                        getString(R.string.arabic),
+                        getString(R.string.korean)
                 )
 
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, languages)
@@ -115,14 +117,15 @@ class LoginActivity : BaseActivity() {
                     "fr" -> 1
                     "es" -> 2
                     "ar" -> 3
+                    "ko" -> 4
                     else -> 0
                 }
         spinner.setSelection(position)
 
         spinner.onItemSelectedListener =
-                object : android.widget.AdapterView.OnItemSelectedListener {
+                object : AdapterView.OnItemSelectedListener {
                     override fun onItemSelected(
-                            parent: android.widget.AdapterView<*>?,
+                            parent: AdapterView<*>?,
                             view: View?,
                             position: Int,
                             id: Long
@@ -132,15 +135,16 @@ class LoginActivity : BaseActivity() {
                                     1 -> "fr"
                                     2 -> "es"
                                     3 -> "ar"
+                                    4 -> "ko"
                                     else -> "en"
                                 }
                         if (locale != getCurrentLanguage()) {
-                            setLocale(locale)
+                            setLocalePreference(locale)
                             recreate()
                         }
                     }
 
-                    override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {}
+                    override fun onNothingSelected(parent: AdapterView<*>?) {}
                 }
     }
 

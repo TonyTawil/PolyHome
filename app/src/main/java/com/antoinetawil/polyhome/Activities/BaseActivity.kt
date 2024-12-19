@@ -30,6 +30,14 @@ open class BaseActivity : AppCompatActivity() {
     override fun attachBaseContext(newBase: Context) {
         val locale = Locale(getLanguagePreference(newBase))
         val config = Configuration(newBase.resources.configuration)
+
+        // Support RTL languages (Arabic) and Korean
+        if (locale.language == "ar") {
+            config.setLayoutDirection(Locale("ar"))
+        } else {
+            config.setLayoutDirection(Locale.getDefault())
+        }
+
         Locale.setDefault(locale)
         config.setLocale(locale)
         val context = newBase.createConfigurationContext(config)

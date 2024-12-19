@@ -34,31 +34,32 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
+                <!-- Theme Section -->
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:paddingBottom="16dp"
                     android:text="@string/settings"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
                     android:textColor="@color/primary_text"
-                    android:paddingBottom="16dp" />
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
 
-                <!-- Theme Section -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
+                    android:layout_marginBottom="16dp"
                     android:background="@color/white"
-                    android:padding="16dp"
-                    android:layout_marginBottom="16dp">
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/theme"
+                        android:textColor="@color/primary_text"
                         android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/primary_text" />
+                        android:textStyle="bold" />
 
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -68,18 +69,18 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/enable_dark_mode"
-                            android:textColor="@color/gray"
                             android:layout_alignParentStart="true"
-                            android:layout_centerVertical="true" />
+                            android:layout_centerVertical="true"
+                            android:text="@string/enable_dark_mode"
+                            android:textColor="@color/gray" />
 
                         <Switch
                             android:id="@+id/themeSwitch"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
-                            android:thumbTint="@color/thumb_color"
-                            android:layout_centerVertical="true" />
+                            android:layout_centerVertical="true"
+                            android:thumbTint="@color/thumb_color" />
                     </RelativeLayout>
                 </LinearLayout>
 
@@ -87,18 +88,18 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
+                    android:layout_marginBottom="16dp"
                     android:background="@color/white"
-                    android:padding="16dp"
-                    android:layout_marginBottom="16dp">
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/security"
+                        android:textColor="@color/primary_text"
                         android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/primary_text" />
+                        android:textStyle="bold" />
 
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -108,18 +109,18 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/enable_biometric_auth"
-                            android:textColor="@color/gray"
                             android:layout_alignParentStart="true"
-                            android:layout_centerVertical="true" />
+                            android:layout_centerVertical="true"
+                            android:text="@string/enable_biometric_auth"
+                            android:textColor="@color/gray" />
 
                         <Switch
                             android:id="@+id/biometricSwitch"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
-                            android:thumbTint="@color/thumb_color"
-                            android:layout_centerVertical="true" />
+                            android:layout_centerVertical="true"
+                            android:thumbTint="@color/thumb_color" />
                     </RelativeLayout>
                 </LinearLayout>
 
@@ -127,18 +128,18 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
+                    android:layout_marginBottom="16dp"
                     android:background="@color/white"
-                    android:padding="16dp"
-                    android:layout_marginBottom="16dp">
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/general"
+                        android:textColor="@color/primary_text"
                         android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/primary_text" />
+                        android:textStyle="bold" />
 
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -148,18 +149,18 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/language"
-                            android:textColor="@color/gray"
                             android:layout_alignParentStart="true"
-                            android:layout_centerVertical="true" />
+                            android:layout_centerVertical="true"
+                            android:text="@string/language"
+                            android:textColor="@color/gray" />
 
                         <Spinner
                             android:id="@+id/languageSpinner"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
-                            android:spinnerMode="dropdown"
-                            android:layout_centerVertical="true" />
+                            android:layout_centerVertical="true"
+                            android:spinnerMode="dropdown" />
                     </RelativeLayout>
                 </LinearLayout>
 
@@ -167,24 +168,24 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
                     android:background="@color/white"
+                    android:orientation="vertical"
                     android:padding="16dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/about"
+                        android:textColor="@color/primary_text"
                         android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/primary_text" />
+                        android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:paddingTop="8dp"
                         android:text="@string/app_version"
-                        android:textColor="@color/gray"
-                        android:paddingTop="8dp" />
+                        android:textColor="@color/gray" />
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>

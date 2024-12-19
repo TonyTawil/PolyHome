@@ -60,6 +60,7 @@ class SettingsActivity : BaseActivity() {
                     "fr" -> 1
                     "es" -> 2
                     "ar" -> 3
+                    "ko" -> 4
                     else -> 0
                 }
         languageSpinner.setSelection(position)
@@ -77,6 +78,7 @@ class SettingsActivity : BaseActivity() {
                                     1 -> "fr"
                                     2 -> "es"
                                     3 -> "ar"
+                                    4 -> "ko"
                                     else -> "en"
                                 }
                         if (newLocale != currentLanguage) {

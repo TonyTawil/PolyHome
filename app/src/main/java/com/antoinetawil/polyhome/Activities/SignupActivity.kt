@@ -109,7 +109,8 @@ class SignupActivity : BaseActivity() {
                         getString(R.string.english),
                         getString(R.string.french),
                         getString(R.string.spanish),
-                        getString(R.string.arabic)
+                        getString(R.string.arabic),
+                        getString(R.string.korean)
                 )
 
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, languages)
@@ -123,6 +124,7 @@ class SignupActivity : BaseActivity() {
                     "fr" -> 1
                     "es" -> 2
                     "ar" -> 3
+                    "ko" -> 4
                     else -> 0
                 }
         spinner.setSelection(position)
@@ -140,6 +142,7 @@ class SignupActivity : BaseActivity() {
                                     1 -> "fr"
                                     2 -> "es"
                                     3 -> "ar"
+                                    4 -> "ko"
                                     else -> "en"
                                 }
                         if (locale != getCurrentLanguage()) {

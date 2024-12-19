@@ -5,6 +5,7 @@
         <item>Français</item>
         <item>Espagnol</item>
         <item>Arabe</item>
+        <item>Coréen</item>
     </string-array>
     <string name="settings">Paramètres</string>
     <string name="theme">Thème</string>
@@ -65,7 +66,7 @@
     <string name="light_turned_on">Lumière allumée</string>
     <string name="light_turned_off">Lumière éteinte</string>
     <string name="failed_toggle_light">Échec de l\'activation de la lumière</string>
-    <string name="command_sent_successfully">Commande %1$s envoyée avec succès à %2$s</string>
+    <string name="command_sent_successfully">Commande %1$s envoy��e avec succès à %2$s</string>
     <string name="failed_command">Échec de l\'envoi de %1$s à %2$s</string>
     <string name="lights_fr">Lumières</string>
     <string name="rolling_shutters_fr">Volets</string>
@@ -211,5 +212,8 @@
     <string name="active_lights">Lumières actives</string>
     <string name="open_shutters">Volets ouverts</string>
     <string name="system_efficiency">Efficacité du système</string>
+    <string name="korean">Coréen</string>
+    <string name="all_schedules">Tous les horaires</string>
+
 
 </resources>

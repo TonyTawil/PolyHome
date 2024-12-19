@@ -6,6 +6,7 @@
         <item>الفرنسية</item>
         <item>الإسبانية</item>
         <item>العربية</item>
+        <item>الكورية</item>
     </string-array>
 
     <!-- Navigation -->
@@ -191,7 +192,7 @@
     <string name="daily_co2_placeholder">ثاني أكسيد الكربون اليومي: جارٍ التحميل...</string>
     <string name="app_logo_description">شعار التطبيق</string>
     <string name="welcome_back">مرحباً بعودتك، يرجى تسجيل الدخول</string>
-    <string name="email_address">البريد الإلكترون��</string>
+    <string name="email_address">البريد الإلكتروني</string>
     <string name="password">كلمة المرور</string>
     <string name="login">تسجيل الدخول</string>
     <string name="no_account_register">ليس لديك حساب؟ سجل</string>
@@ -206,6 +207,7 @@
     <string name="french">الفرنسية</string>
     <string name="spanish">الإسبانية</string>
     <string name="arabic">العربية</string>
+    <string name="korean">الكورية</string>
 
     <!-- Signup -->
     <string name="create_account">إنشاء حسابك</string>
@@ -240,4 +242,5 @@
     <string name="active_lights">الأضواء النشطة</string>
     <string name="open_shutters">الستائر المفتوحة</string>
     <string name="system_efficiency">كفاءة النظام</string>
+    <string name="all_schedules">جميع الجداول</string>
 </resources> 

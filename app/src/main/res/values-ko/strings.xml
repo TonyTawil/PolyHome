@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PolyHome</string>
+    <string-array name="language_options">
+        <item>영어</item>
+        <item>프랑스어</item>
+        <item>스페인어</item>
+        <item>아랍어</item>
+        <item>한국어</item>
+    </string-array>
+
+    <!-- Navigation -->
+    <string name="menu_houses">집</string>
+    <string name="menu_notifications">알림</string>
+    <string name="menu_settings">설정</string>
+    <string name="menu_schedules">일정</string>
+    <string name="menu_statistics">통계</string>
+    <string name="menu_sign_out">로그아웃</string>
+
+    <!-- Settings -->
+    <string name="settings">설정</string>
+    <string name="theme">테마</string>
+    <string name="enable_dark_mode">다크 모드 활성화</string>
+    <string name="language">언어</string>
+    <string name="security">보안</string>
+    <string name="enable_biometric_auth">생체 인증 활성화</string>
+    <string name="about">정보</string>
+    <string name="app_version">앱 버전: 1.0.0</string>
+    <string name="general">일반</string>
+
+    <!-- Floors -->
+    <string name="all_floors">전체 층</string>
+    <string name="first_floor">1층</string>
+    <string name="second_floor">2층</string>
+
+    <!-- Messages -->
+    <string name="invalid_data">잘못된 데이터</string>
+    <string name="fetch_failed">주변기기 가져오기 실패</string>
+    <string name="all_houses">전체 집</string>
+    <string name="owner_status">소유자</string>
+    <string name="guest_status">게스트</string>
+    <string name="auth_token_missing">인증 토큰 없음</string>
+    <string name="failed_to_fetch_houses">집 정보 가져오기 실패</string>
+    <string name="failed_to_fetch_peripherals">주변기기 가져오기 실패</string>
+    <string name="invalid_response">잘못된 응답 구조</string>
+    <string name="permission_granted">권한이 성공적으로 부여되었습니다!</string>
+    <string name="permission_removed">권한이 성공적으로 제거되었습니다!</string>
+    <string name="failed_permission">권한 업데이트 실패</string>
+
+    <!-- User Management -->
+    <string name="enter_email">이메일 주소를 입력해주세요</string>
+    <string name="house_id_label">ID: %1$d</string>
+    <string name="owner">소유자</string>
+    <string name="guest">게스트</string>
+    <string name="manage_permissions">권한 관리</string>
+    <string name="enter_email_address">이메일 주소 입력</string>
+    <string name="give_permission">권한 부여</string>
+    <string name="remove_permission">권한 제거</string>
+
+    <!-- Search and Peripherals -->
+    <string name="search_by_id">ID로 검색</string>
+    <string name="peripheral_types">주변기기 유형</string>
+    <string name="invalid_house_data">잘못된 집 데이터</string>
+    <string name="failed_fetch_peripherals">주변기기 가져오기 실패. 로그를 확인하세요.</string>
+    <string name="failed_fetch_peripherals_log">주변기기 가져오기 실패. 응답 코드: %1$d</string>
+
+    <!-- Device Types -->
+    <string name="light">조명</string>
+    <string name="shutter">셔터</string>
+    <string name="garage_door">차고 문</string>
+    <string name="no_devices_to_operate">작동할 기기가 없습니다.</string>
+
+    <!-- Commands -->
+    <string name="turn_on_all">전체 켜기</string>
+    <string name="turn_off_all">전체 끄기</string>
+    <string name="open_all">전체 열기</string>
+    <string name="close_all">전체 닫기</string>
+    <string name="stop_all">전체 정지</string>
+    <string name="command_turn_on">켜기</string>
+    <string name="command_turn_off">끄기</string>
+    <string name="command_open">열기</string>
+    <string name="command_close">닫기</string>
+    <string name="command_stop">정지</string>
+
+    <!-- Status -->
+    <string name="status_open">상태: 열림</string>
+    <string name="status_closed">상태: 닫힘</string>
+    <string name="status_stopped">정지됨</string>
+    <string name="status_percentage">열림: %d%%</string>
+    <string name="status_on">켜짐</string>
+    <string name="status_off">꺼짐</string>
+
+    <!-- Schedule -->
+    <string name="every">매</string>
+    <string name="monday">월요일</string>
+    <string name="tuesday">화요일</string>
+    <string name="wednesday">수요일</string>
+    <string name="thursday">목요일</string>
+    <string name="friday">금요일</string>
+    <string name="saturday">토요일</string>
+    <string name="sunday">일요일</string>
+    <string name="monday_short">월</string>
+    <string name="tuesday_short">화</string>
+    <string name="wednesday_short">수</string>
+    <string name="thursday_short">목</string>
+    <string name="friday_short">금</string>
+    <string name="saturday_short">토</string>
+    <string name="sunday_short">일</string>
+
+    <!-- Notifications -->
+    <string name="notifications">알림</string>
+    <string name="no_notifications">알림이 없습니다</string>
+    <string name="notifications_title">알림</string>
+    <string name="failed_to_load_notifications">알림 로드 실패</string>
+    <string name="clear_notifications">전체 삭제</string>
+
+    <!-- Schedule Notifications -->
+    <string name="schedule_executed_success">일정이 성공적으로 실행되었습니다</string>
+    <string name="schedule_executed_failure">일정 실행 실패</string>
+    <string name="schedule_execution_complete">일정 실행 완료</string>
+    <string name="notification_channel_name">일정 알림</string>
+    <string name="notification_channel_description">예약된 명령에 대한 알림</string>
+
+    <!-- Authentication -->
+    <string name="app_logo_description">앱 로고</string>
+    <string name="welcome_back">다시 오신 것을 환영합니다. 로그인해주세요</string>
+    <string name="email_address">이메일 주소</string>
+    <string name="password">비밀번호</string>
+    <string name="login">로그인</string>
+    <string name="no_account_register">계정이 없으신가요? 가입하기</string>
+    <string name="please_fill_fields">모든 필드를 입력해주세요</string>
+    <string name="invalid_server_response">서버 응답이 잘못되었습니다</string>
+    <string name="invalid_credentials">잘못된 인증 정보</string>
+    <string name="register">가입</string>
+    <string name="create_account">계정 만들기</string>
+    <string name="sign_up">가입하기</string>
+    <string name="have_account_login">이미 계정이 있으신가요? 로그인</string>
+    <string name="signup_successful">가입 성공! 로그인 페이지로 이동합니다.</string>
+    <string name="signup_successful_login">가입 성공! 로그인해주세요.</string>
+
+    <!-- Statistics and Overview -->
+    <string name="system_overview">시스템 개요</string>
+    <string name="device_status">기기 상태</string>
+    <string name="environmental_impact">환경 영향</string>
+    <string name="houses">집</string>
+    <string name="devices">기기</string>
+    <string name="active_lights">활성 조명</string>
+    <string name="open_shutters">열린 셔터</string>
+    <string name="total_devices">전체 기기: %1$d</string>
+    <string name="energy_usage">에너지 사용량: %1$.1f kWh</string>
+    <string name="co2_consumption">CO2 배출량: %1$.1f kg</string>
+    <string name="water_usage">물 사용량: %1$.1f L</string>
+    <string name="system_efficiency">시스템 효율: %1$d%%</string>
+
+    <!-- Language Names -->
+    <string name="english">영어</string>
+    <string name="french">프랑스어</string>
+    <string name="spanish">스페인어</string>
+    <string name="arabic">아랍어</string>
+    <string name="korean">한국어</string>
+    <string name="all_schedules">모든 일정</string>
+</resources> 

@@ -5,6 +5,7 @@
         <item>French</item>
         <item>Spanish</item>
         <item>Arabic</item>
+        <item>Korean</item>
     </string-array>
     <string name="settings">Settings</string>
     <string name="theme">Theme</string>
@@ -211,5 +212,7 @@
     <string name="devices">Devices</string>
     <string name="active_lights">Active Lights</string>
     <string name="open_shutters">Open Shutters</string>
+    <string name="korean">Korean</string>
+    <string name="all_schedules">All schedules</string>
 
 </resources>
