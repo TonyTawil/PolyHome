@@ -98,7 +98,7 @@
     <string name="co2_value_format">%s كجم</string>
     <string name="total_houses_format">إجمالي المنازل: %d</string>
     <string name="total_devices_format">إجمالي الأجهزة: %d</string>
-    <string name="daily_co2_format">ثاني أكسيد الكربون ال��ومي: %.1f كجم</string>
+    <string name="daily_co2_format">ثاني أكسيد الكربون اليومي: %.1f كجم</string>
     <string name="efficiency_format">كفاءة النظام: %d%%</string>
     <string name="active_devices_format">الأجهزة النشطة: %d</string>
     <string name="energy_saved_format">الطاقة الموفرة: %.1f كيلوواط/ساعة</string>
@@ -113,7 +113,7 @@
     <string name="schedule_will_run_minutes">سيتم تنفيذ الجدول خلال %1$d دقيقة</string>
     <string name="schedule_will_run_soon">سيتم تنفيذ الجدول قريباً جداً</string>
     <string name="schedule_execution_details">الأمر %1$s للجهاز %2$s</string>
-    <string name="notification_permission_title">تفعيل الإشع��رات</string>
+    <string name="notification_permission_title">تفعيل الإشعارات</string>
     <string name="notification_permission_message">السماح لـ PolyHome بإرسال إشعارات حول الأوامر المجدولة</string>
     <string name="allow">السماح</string>
     <string name="deny">رفض</string>
@@ -129,7 +129,6 @@
     <string name="total_devices">إجمالي الأجهزة: %1$d</string>
     <string name="energy_usage">استهلاك الطاقة: %1$.1f كيلوواط/ساعة</string>
     <string name="co2_consumption">انبعاثات ثاني أكسيد الكربون: %1$.1f كجم</string>
-    <string name="system_efficiency">كفاءة النظام: %1$d%%</string>
     <string name="total_devices_placeholder">إجمالي الأجهزة: جارٍ التحميل...</string>
     <string name="energy_usage_placeholder">استهلاك الطاقة: جارٍ التحميل...</string>
     <string name="co2_consumption_placeholder">انبعاثات ثاني أكسيد الكربون: جارٍ التحميل...</string>
@@ -143,7 +142,7 @@
     <string name="invalid_house_data">بيانات المنزل غير صالحة</string>
     <string name="failed_fetch_peripherals">فشل في جلب الأجهزة. راجع السجلات للتفاصيل.</string>
     <string name="failed_fetch_peripherals_log">فشل في جلب الأجهزة. رمز الاستجابة: %1$d</string>
-    <string name="peripheral_types">أنو��ع الأجهزة</string>
+    <string name="peripheral_types">أنواع الأجهزة</string>
     <string name="all">الكل</string>
     <string name="peripheral_id">المعرف: %1$s</string>
     <string name="avg_efficiency">متوسط الكفاءة: %1$d%%</string>
@@ -192,7 +191,7 @@
     <string name="daily_co2_placeholder">ثاني أكسيد الكربون اليومي: جارٍ التحميل...</string>
     <string name="app_logo_description">شعار التطبيق</string>
     <string name="welcome_back">مرحباً بعودتك، يرجى تسجيل الدخول</string>
-    <string name="email_address">البريد الإلكتروني</string>
+    <string name="email_address">البريد الإلكترون��</string>
     <string name="password">كلمة المرور</string>
     <string name="login">تسجيل الدخول</string>
     <string name="no_account_register">ليس لديك حساب؟ سجل</string>
@@ -213,5 +212,32 @@
     <string name="sign_up">تسجيل</string>
     <string name="have_account_login">لديك حساب بالفعل؟ تسجيل الدخول</string>
     <string name="signup_successful">تم التسجيل بنجاح! جارٍ إعادة التوجيه لتسجيل الدخول.</string>
-    <string name="signup_successful_login">تم التسجيل بنجاح! ال��جاء تسجيل الدخول.</string>
+    <string name="signup_successful_login">تم التسجيل بنجاح! الجاء تسجيل الدخول.</string>
+
+    <!-- Add these new strings -->
+    <string name="command_turn_on">تشغيل</string>
+    <string name="command_turn_off">إيقاف</string>
+    <string name="command_open">فتح</string>
+    <string name="command_close">إغلاق</string>
+    <string name="command_stop">إيقاف</string>
+    <string name="every">كل</string>
+    <string name="monday">الإثنين</string>
+    <string name="tuesday">الثلاثاء</string>
+    <string name="wednesday">الأربعاء</string>
+    <string name="thursday">الخميس</string>
+    <string name="friday">الجمعة</string>
+    <string name="saturday">السبت</string>
+    <string name="sunday">الأحد</string>
+    <string name="peripheral_light">إضاءة %s</string>
+    <string name="peripheral_shutter">ستارة %s</string>
+    <string name="peripheral_garage">باب المرآب %s</string>
+    <string name="select_house">اختر المنزل</string>
+    <string name="system_overview">نظرة عامة على النظام</string>
+    <string name="device_status">حالة الأجهزة</string>
+    <string name="environmental_impact">الأثر البيئي</string>
+    <string name="houses">المنازل</string>
+    <string name="devices">الأجهزة</string>
+    <string name="active_lights">الأضواء النشطة</string>
+    <string name="open_shutters">الستائر المفتوحة</string>
+    <string name="system_efficiency">كفاءة النظام</string>
 </resources> 

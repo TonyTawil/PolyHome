@@ -12,8 +12,8 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.antoinetawil.polyhome.Models.House
 import com.antoinetawil.polyhome.R
 import com.antoinetawil.polyhome.Utils.Api
-import com.antoinetawil.polyhome.Activities.BaseActivity
 import com.antoinetawil.polyhome.Utils.HeaderUtils
+import com.antoinetawil.polyhome.Utils.StatisticsTranslator
 import com.google.android.material.progressindicator.LinearProgressIndicator
 
 class StatisticsActivity : BaseActivity() {
@@ -30,10 +30,13 @@ class StatisticsActivity : BaseActivity() {
     private lateinit var houseSpinner: Spinner
     private var houses: List<House> = emptyList()
     private var selectedHouseId: Int? = null
+    private lateinit var translator: StatisticsTranslator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_statistics)
+
+        translator = StatisticsTranslator(this)
 
         drawerLayout = findViewById(R.id.drawer_layout)
         HeaderUtils.setupHeaderWithDrawer(this, drawerLayout)
@@ -41,10 +44,7 @@ class StatisticsActivity : BaseActivity() {
         houseSpinner = findViewById(R.id.houseSpinner)
         setupHouseSpinner()
 
-        // Initialize views with loading state
         initializeViews()
-
-        // Fetch houses first
         fetchHouses()
     }
 
@@ -104,8 +104,8 @@ class StatisticsActivity : BaseActivity() {
     }
 
     private fun updateHouseSpinner() {
-        val houseNames = mutableListOf("All Houses")
-        houseNames.addAll(houses.map { "House ${it.houseId}" })
+        val houseNames = mutableListOf(getString(R.string.all_houses))
+        houseNames.addAll(houses.map { translator.getHouseLabel(it.houseId) })
 
         val adapter =
                 ArrayAdapter(this, android.R.layout.simple_spinner_item, houseNames).apply {
@@ -210,44 +210,38 @@ class StatisticsActivity : BaseActivity() {
             efficiency: Int
     ) {
         runOnUiThread {
-            // Update house count with animation
             findViewById<TextView>(R.id.totalHousesValue).apply {
                 text = houseCount.toString()
                 alpha = 0f
                 animate().alpha(1f).setDuration(500).start()
             }
 
-            // Update device count with animation
             findViewById<TextView>(R.id.totalDevicesValue).apply {
                 text = deviceCount.toString()
                 alpha = 0f
                 animate().alpha(1f).setDuration(500).start()
             }
 
-            // Update device type counts with animation
             findViewById<TextView>(R.id.activeLightsValue).apply {
-                text = "$activeLights/$totalLights"
+                text = getString(R.string.shutter_status_format, activeLights, totalLights)
                 alpha = 0f
                 animate().alpha(1f).setDuration(500).start()
             }
 
             findViewById<TextView>(R.id.activeShuttersValue).apply {
-                text = getString(R.string.shutter_status_format, activeShutters, totalShutters)
+                text = translator.formatShutterStatus(activeShutters, totalShutters)
                 alpha = 0f
                 animate().alpha(1f).setDuration(500).start()
             }
 
-            // Update CO2 value and progress
-            findViewById<TextView>(R.id.dailyCO2Value).text =
-                    getString(R.string.daily_co2_format, dailyCO2)
+            findViewById<TextView>(R.id.dailyCO2Value).text = translator.formatDailyCO2(dailyCO2)
 
             findViewById<LinearProgressIndicator>(R.id.dailyCO2Progress).apply {
                 setProgressCompat(((dailyCO2 / MAX_DAILY_CO2) * 100).toInt().coerceIn(0, 100), true)
             }
 
-            // Update efficiency value and progress
             findViewById<TextView>(R.id.efficiencyValue).text =
-                    getString(R.string.efficiency_format, efficiency)
+                    translator.formatEfficiency(efficiency)
 
             findViewById<LinearProgressIndicator>(R.id.efficiencyProgress).apply {
                 setProgressCompat(efficiency, true)
@@ -260,7 +254,7 @@ class StatisticsActivity : BaseActivity() {
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
             findViewById<TextView>(R.id.totalHousesValue).text = "0"
             findViewById<TextView>(R.id.totalDevicesValue).text = "0"
-            findViewById<TextView>(R.id.dailyCO2Value).text = "0 kg"
+            findViewById<TextView>(R.id.dailyCO2Value).text = translator.formatDailyCO2(0.0)
         }
     }
 

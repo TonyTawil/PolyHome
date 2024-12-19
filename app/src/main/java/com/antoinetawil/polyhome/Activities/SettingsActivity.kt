@@ -28,7 +28,7 @@ class SettingsActivity : BaseActivity() {
         languageSpinner = findViewById(R.id.languageSpinner)
 
         themeSwitch.isChecked = isDarkModeEnabled()
-        themeSwitch.setOnCheckedChangeListener { _, isChecked -> setThemePreference(isChecked) }
+        themeSwitch.setOnCheckedChangeListener { _, isChecked -> onThemeChanged(isChecked) }
 
         setupLanguageSpinner()
     }
@@ -38,17 +38,8 @@ class SettingsActivity : BaseActivity() {
         return nightMode == AppCompatDelegate.MODE_NIGHT_YES
     }
 
-    private fun setThemePreference(isDarkMode: Boolean) {
-        AppCompatDelegate.setDefaultNightMode(
-                if (isDarkMode) AppCompatDelegate.MODE_NIGHT_YES
-                else AppCompatDelegate.MODE_NIGHT_NO
-        )
-
-        // Save the theme preference
-        getSharedPreferences("PolyHomePrefs", MODE_PRIVATE)
-                .edit()
-                .putBoolean("DARK_MODE", isDarkMode)
-                .apply()
+    private fun onThemeChanged(isDarkMode: Boolean) {
+        setThemePreference(isDarkMode)
     }
 
     private fun getCurrentLanguage(): String {

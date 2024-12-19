@@ -37,6 +37,7 @@ class ScheduleListAdapter(private val onDeleteClick: (Schedule) -> Unit) :
 
     override fun onBindViewHolder(holder: ScheduleViewHolder, position: Int) {
         val schedule = getItem(position)
+        val context = holder.itemView.context
 
         // Format time
         holder.timeText.text = schedule.dateTime.split(" ")[1]
@@ -45,7 +46,11 @@ class ScheduleListAdapter(private val onDeleteClick: (Schedule) -> Unit) :
         val daysText =
                 when {
                     schedule.recurringDays.isNotEmpty() -> {
-                        "Every " + schedule.recurringDays.joinToString(", ") { getDayName(it) }
+                        context.getString(R.string.every) +
+                                " " +
+                                schedule.recurringDays.joinToString(", ") {
+                                    getDayName(it, context)
+                                }
                     }
                     schedule.isSpecificDate -> {
                         schedule.dateTime.split(" ")[0]
@@ -57,7 +62,7 @@ class ScheduleListAdapter(private val onDeleteClick: (Schedule) -> Unit) :
         // Create summary text - Show house ID and number of commands
         val totalCommands = schedule.commands.size
         holder.commandsSummaryText.text =
-                holder.itemView.context.getString(
+                context.getString(
                         R.string.house_tag_with_commands,
                         schedule.houseId,
                         totalCommands,
@@ -70,16 +75,12 @@ class ScheduleListAdapter(private val onDeleteClick: (Schedule) -> Unit) :
         // Add command views (remove house ID view since it's now in the summary)
         schedule.commands.forEach { command ->
             val commandView =
-                    TextView(holder.itemView.context).apply {
-                        text = "${command.peripheralId}: ${formatCommand(command.command)}"
-                        setTextColor(holder.itemView.context.getColor(R.color.secondary_text))
+                    TextView(context).apply {
+                        text =
+                                "${formatPeripheralId(command.peripheralType, command.peripheralId, context)}: ${formatCommand(command.command, context)}"
+                        setTextColor(context.getColor(R.color.secondary_text))
                         textSize = 14f
-                        setPadding(
-                                0,
-                                4.dpToPx(holder.itemView.context),
-                                0,
-                                4.dpToPx(holder.itemView.context)
-                        )
+                        setPadding(0, 4.dpToPx(context), 0, 4.dpToPx(context))
                     }
             holder.commandsContainer.addView(commandView)
         }
@@ -102,31 +103,55 @@ class ScheduleListAdapter(private val onDeleteClick: (Schedule) -> Unit) :
         }
     }
 
-    private fun formatCommand(command: String): String {
+    private fun formatCommand(command: String, context: Context): String {
         return when (command) {
-            "TURN ON" -> "Turn On"
-            "TURN OFF" -> "Turn Off"
-            "OPEN" -> "Open"
-            "CLOSE" -> "Close"
+            "TURN ON" -> context.getString(R.string.command_turn_on)
+            "TURN OFF" -> context.getString(R.string.command_turn_off)
+            "OPEN" -> context.getString(R.string.command_open)
+            "CLOSE" -> context.getString(R.string.command_close)
+            "STOP" -> context.getString(R.string.command_stop)
             else -> command
         }
     }
 
-    private fun getDayName(day: Int): String {
+    private fun getDayName(day: Int, context: Context): String {
         return when (day) {
-            1 -> "Monday"
-            2 -> "Tuesday"
-            3 -> "Wednesday"
-            4 -> "Thursday"
-            5 -> "Friday"
-            6 -> "Saturday"
-            7 -> "Sunday"
+            1 -> context.getString(R.string.monday)
+            2 -> context.getString(R.string.tuesday)
+            3 -> context.getString(R.string.wednesday)
+            4 -> context.getString(R.string.thursday)
+            5 -> context.getString(R.string.friday)
+            6 -> context.getString(R.string.saturday)
+            7 -> context.getString(R.string.sunday)
             else -> ""
         }
     }
 
     private fun Int.dpToPx(context: Context): Int {
         return (this * context.resources.displayMetrics.density).toInt()
+    }
+
+    private fun formatPeripheralId(type: String, id: String, context: Context): String {
+        // Extract floor and number separately (e.g., "Light_1.1" -> floor "1", number "1")
+        val pattern = """.*?(\d+)\.(\d+)""".toRegex()
+        val matchResult = pattern.find(id)
+
+        val displayNumber =
+                if (matchResult != null) {
+                    // If we found floor.number format, reconstruct it
+                    val (floor, number) = matchResult.destructured
+                    "$floor.$number"
+                } else {
+                    // If no floor.number format, just use any numbers found
+                    id.filter { it.isDigit() }
+                }
+
+        return when (type.uppercase()) {
+            "LIGHT" -> context.getString(R.string.peripheral_light, displayNumber)
+            "SHUTTER" -> context.getString(R.string.peripheral_shutter, displayNumber)
+            "GARAGE" -> context.getString(R.string.peripheral_garage, displayNumber)
+            else -> id
+        }
     }
 }
 

@@ -110,7 +110,6 @@
     <string name="total_devices">Appareils totaux : %1$d</string>
     <string name="energy_usage">Consommation d\'énergie : %1$.1f kWh</string>
     <string name="co2_consumption">Émission de CO2 : %1$.1f kg</string>
-    <string name="system_efficiency">Efficacité du système : %1$d%%</string>
     <string name="total_devices_placeholder">Appareils totaux : Chargement...</string>
     <string name="energy_usage_placeholder">Consommation d\'énergie : Chargement...</string>
     <string name="co2_consumption_placeholder">Émission de CO2 : Chargement...</string>
@@ -187,5 +186,30 @@
     <string name="have_account_login">Déjà un compte ? Connectez-vous</string>
     <string name="signup_successful">Inscription réussie ! Redirection vers la connexion.</string>
     <string name="signup_successful_login">Inscription réussie ! Veuillez vous connecter.</string>
+    <string name="command_turn_on">Allumer</string>
+    <string name="command_turn_off">Éteindre</string>
+    <string name="command_open">Ouvrir</string>
+    <string name="command_close">Fermer</string>
+    <string name="command_stop">Arrêter</string>
+    <string name="every">Chaque</string>
+    <string name="monday">Lundi</string>
+    <string name="tuesday">Mardi</string>
+    <string name="wednesday">Mercredi</string>
+    <string name="thursday">Jeudi</string>
+    <string name="friday">Vendredi</string>
+    <string name="saturday">Samedi</string>
+    <string name="sunday">Dimanche</string>
+    <string name="peripheral_light">Lumière %s</string>
+    <string name="peripheral_shutter">Volet %s</string>
+    <string name="peripheral_garage">Porte de garage %s</string>
+    <string name="select_house">Sélectionner une maison</string>
+    <string name="system_overview">Aperçu du système</string>
+    <string name="device_status">État des appareils</string>
+    <string name="environmental_impact">Impact environnemental</string>
+    <string name="houses">Maisons</string>
+    <string name="devices">Appareils</string>
+    <string name="active_lights">Lumières actives</string>
+    <string name="open_shutters">Volets ouverts</string>
+    <string name="system_efficiency">Efficacité du système</string>
 
 </resources>

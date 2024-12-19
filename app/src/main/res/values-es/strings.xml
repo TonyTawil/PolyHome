@@ -148,7 +148,6 @@
     <string name="total_devices">Total de dispositivos: %1$d</string>
     <string name="energy_usage">Consumo de energía: %1$.1f kWh</string>
     <string name="co2_consumption">Emisión de CO2: %1$.1f kg</string>
-    <string name="system_efficiency">Eficiencia del sistema: %1$d%%</string>
     <string name="total_devices_placeholder">Total de dispositivos: Cargando...</string>
     <string name="energy_usage_placeholder">Consumo de energía: Cargando...</string>
     <string name="co2_consumption_placeholder">Emisión de CO2: Cargando...</string>
@@ -220,4 +219,31 @@
     <string name="have_account_login">¿Ya tienes una cuenta? Inicia sesión</string>
     <string name="signup_successful">¡Registro exitoso! Redirigiendo al inicio de sesión.</string>
     <string name="signup_successful_login">¡Registro exitoso! Por favor inicia sesión.</string>
+
+    <!-- Add these new strings -->
+    <string name="command_turn_on">Encender</string>
+    <string name="command_turn_off">Apagar</string>
+    <string name="command_open">Abrir</string>
+    <string name="command_close">Cerrar</string>
+    <string name="command_stop">Parar</string>
+    <string name="every">Cada</string>
+    <string name="monday">Lunes</string>
+    <string name="tuesday">Martes</string>
+    <string name="wednesday">Miércoles</string>
+    <string name="thursday">Jueves</string>
+    <string name="friday">Viernes</string>
+    <string name="saturday">Sábado</string>
+    <string name="sunday">Domingo</string>
+    <string name="peripheral_light">Luz %s</string>
+    <string name="peripheral_shutter">Persiana %s</string>
+    <string name="peripheral_garage">Puerta de garaje %s</string>
+    <string name="select_house">Seleccionar Casa</string>
+    <string name="system_overview">Resumen del Sistema</string>
+    <string name="device_status">Estado de Dispositivos</string>
+    <string name="environmental_impact">Impacto Ambiental</string>
+    <string name="houses">Casas</string>
+    <string name="devices">Dispositivos</string>
+    <string name="active_lights">Luces Activas</string>
+    <string name="open_shutters">Persianas Abiertas</string>
+    <string name="system_efficiency">Eficiencia del Sistema</string>
 </resources> 

@@ -23,7 +23,6 @@ import com.antoinetawil.polyhome.Models.Schedule
 import com.antoinetawil.polyhome.Models.ScheduleCommand
 import com.antoinetawil.polyhome.R
 import com.antoinetawil.polyhome.Utils.Api
-import com.antoinetawil.polyhome.Activities.BaseActivity
 import com.antoinetawil.polyhome.Utils.HeaderUtils
 import com.antoinetawil.polyhome.Utils.ScheduleReceiver
 import java.text.SimpleDateFormat
@@ -637,7 +636,7 @@ class SchedulesActivity : BaseActivity() {
             val idText = view.findViewById<TextView>(R.id.peripheralIdTextView)
             val controlsContainer = view.findViewById<LinearLayout>(R.id.commandsContainer)
 
-            idText.text = peripheral.id
+            idText.text = formatPeripheralId(peripheral.type, peripheral.id)
 
             when (peripheral.type.lowercase()) {
                 "light" -> configureLightToggleForSchedule(controlsContainer, peripheral)
@@ -748,5 +747,44 @@ class SchedulesActivity : BaseActivity() {
 
     private fun Int.dpToPx(): Int {
         return (this * resources.displayMetrics.density).toInt()
+    }
+
+    private fun formatPeripheralId(type: String, id: String): String {
+        // Extract floor and number separately (e.g., "Light_1.1" -> floor "1", number "1")
+        val pattern = """.*?(\d+)\.(\d+)""".toRegex()
+        val matchResult = pattern.find(id)
+
+        val displayNumber =
+                if (matchResult != null) {
+                    // If we found floor.number format, reconstruct it
+                    val (floor, number) = matchResult.destructured
+                    "$floor.$number"
+                } else {
+                    // If no floor.number format, just use any numbers found
+                    id.filter { it.isDigit() }
+                }
+
+        return when (type.uppercase()) {
+            "LIGHT" -> getString(R.string.peripheral_light, displayNumber)
+            "SHUTTER" -> getString(R.string.peripheral_shutter, displayNumber)
+            "GARAGE" -> getString(R.string.peripheral_garage, displayNumber)
+            else -> id
+        }
+    }
+
+    private fun createPeripheralView(peripheral: Peripheral) {
+        val view =
+                layoutInflater.inflate(
+                        R.layout.schedule_peripheral_item,
+                        peripheralsContainer,
+                        false
+                )
+        val peripheralIdText = view.findViewById<TextView>(R.id.peripheralIdText)
+        val controlsContainer = view.findViewById<LinearLayout>(R.id.controlsContainer)
+
+        // Use the translated peripheral ID
+        peripheralIdText.text = formatPeripheralId(peripheral.type, peripheral.id)
+
+        // ... rest of the createPeripheralView method remains the same ...
     }
 }

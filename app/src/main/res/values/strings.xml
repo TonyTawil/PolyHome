@@ -187,5 +187,29 @@
     <string name="have_account_login">Already have an account? Log in</string>
     <string name="signup_successful">Signup successful! Redirecting to login.</string>
     <string name="signup_successful_login">Signup successful! Please log in.</string>
+    <string name="command_turn_on">Turn On</string>
+    <string name="command_turn_off">Turn Off</string>
+    <string name="command_open">Open</string>
+    <string name="command_close">Close</string>
+    <string name="command_stop">Stop</string>
+    <string name="every">Every</string>
+    <string name="monday">Monday</string>
+    <string name="tuesday">Tuesday</string>
+    <string name="wednesday">Wednesday</string>
+    <string name="thursday">Thursday</string>
+    <string name="friday">Friday</string>
+    <string name="saturday">Saturday</string>
+    <string name="sunday">Sunday</string>
+    <string name="peripheral_light">Light %s</string>
+    <string name="peripheral_shutter">Shutter %s</string>
+    <string name="peripheral_garage">Garage Door %s</string>
+    <string name="select_house">Select House</string>
+    <string name="system_overview">System Overview</string>
+    <string name="device_status">Device Status</string>
+    <string name="environmental_impact">Environmental Impact</string>
+    <string name="houses">Houses</string>
+    <string name="devices">Devices</string>
+    <string name="active_lights">Active Lights</string>
+    <string name="open_shutters">Open Shutters</string>
 
 </resources>
