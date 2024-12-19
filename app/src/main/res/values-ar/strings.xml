@@ -61,4 +61,19 @@
 
     <!-- Search -->
     <string name="search_by_id">البحث بالمعرف</string>
+
+    <!-- Notifications -->
+    <string name="notifications_title">الإشعارات</string>
+    <string name="no_notifications">لا توجد إشعارات حتى الآن</string>
+    <string name="failed_to_load_notifications">فشل في تحميل الإشعارات</string>
+
+    <!-- Schedule Notifications -->
+    <string name="schedule_executed_success">تم تنفيذ البرنامج بنجاح</string>
+    <string name="schedule_executed_failure">فشل في تنفيذ البرنامج</string>
+    <string name="schedule_execution_complete">اكتمل تنفيذ البرنامج</string>
+
+    <string name="notification_channel_name">إشعارات البرنامج</string>
+    <string name="notification_channel_description">إشعارات للأوامر المجدولة</string>
+
+    <string name="clear_notifications">مسح الكل</string>
 </resources> 

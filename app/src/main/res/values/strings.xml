@@ -160,5 +160,11 @@
     <string name="status_on">On</string>
     <string name="status_off">Off</string>
     <string name="status_stopped">Stopped</string>
+    <string name="no_notifications">No notifications yet</string>
+    <string name="notifications_title">Notifications</string>
+    <string name="failed_to_load_notifications">Failed to load notifications</string>
+    <string name="notification_channel_name">Schedule Notifications</string>
+    <string name="notification_channel_description">Notifications for scheduled commands</string>
+    <string name="clear_notifications">Clear All</string>
 
 </resources>

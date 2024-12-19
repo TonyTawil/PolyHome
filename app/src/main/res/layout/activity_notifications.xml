@@ -8,36 +8,69 @@
     android:layout_height="match_parent"
     tools:context=".Activities.NotificationsActivity">
 
-    <!-- Main Content -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/background_color">
 
-        <!-- Include App Header -->
         <include
             android:id="@+id/header"
             layout="@layout/layout_app_bar"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Placeholder content -->
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/titleTextView"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/notifications"
+            android:gravity="center"
+            android:padding="16dp"
+            android:text="@string/notifications_title"
+            android:textColor="@color/primary_text"
             android:textSize="20sp"
             android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/header" />
+
+        <Button
+            android:id="@+id/clearButton"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginHorizontal="16dp"
+            android:background="@drawable/button_background_secondary"
+            android:elevation="0dp"
+            android:text="@string/clear_notifications"
+            android:textAllCaps="false"
             android:textColor="@color/primary_text"
-            app:layout_constraintTop_toBottomOf="@id/header"
-            app:layout_constraintStart_toStartOf="parent"
+            android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="16dp" />
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/titleTextView" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/notificationsRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:clipToPadding="false"
+            android:paddingVertical="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/clearButton" />
+
+        <TextView
+            android:id="@+id/emptyStateText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/no_notifications"
+            android:textSize="16sp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/clearButton" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Navigation Drawer -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigation_view"
         android:layout_width="wrap_content"
@@ -47,4 +80,5 @@
         app:menu="@menu/menu_drawer"
         app:itemTextColor="@color/black"
         app:headerLayout="@layout/nav_header" />
+
 </androidx.drawerlayout.widget.DrawerLayout>

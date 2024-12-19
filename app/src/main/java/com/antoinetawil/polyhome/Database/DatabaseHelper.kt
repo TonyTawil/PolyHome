@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.antoinetawil.polyhome.Models.Notification
 import com.antoinetawil.polyhome.Models.Schedule
 import com.antoinetawil.polyhome.Models.ScheduleCommand
 import org.json.JSONArray
@@ -14,8 +15,9 @@ class DatabaseHelper(context: Context) :
 
     companion object {
         private const val DATABASE_NAME = "polyhome.db"
-        private const val DATABASE_VERSION = 3
+        private const val DATABASE_VERSION = 4
         private const val TABLE_SCHEDULES = "schedules"
+        private const val TABLE_NOTIFICATIONS = "notifications"
 
         private const val COLUMN_ID = "id"
         private const val COLUMN_DATE_TIME = "date_time"
@@ -23,6 +25,10 @@ class DatabaseHelper(context: Context) :
         private const val COLUMN_COMMANDS = "commands"
         private const val COLUMN_RECURRING_DAYS = "recurring_days"
         private const val COLUMN_IS_ENABLED = "is_enabled"
+        private const val COLUMN_TITLE = "title"
+        private const val COLUMN_CONTENT = "content"
+        private const val COLUMN_TIMESTAMP = "timestamp"
+        private const val COLUMN_SUCCESS = "success"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -39,6 +45,19 @@ class DatabaseHelper(context: Context) :
         """.trimIndent()
 
         db.execSQL(createTable)
+
+        val createNotificationsTable =
+                """
+            CREATE TABLE $TABLE_NOTIFICATIONS (
+                $COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                $COLUMN_TITLE TEXT NOT NULL,
+                $COLUMN_CONTENT TEXT NOT NULL,
+                $COLUMN_TIMESTAMP INTEGER NOT NULL,
+                $COLUMN_SUCCESS INTEGER NOT NULL
+            )
+        """.trimIndent()
+
+        db.execSQL(createNotificationsTable)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -51,6 +70,19 @@ class DatabaseHelper(context: Context) :
             db.execSQL(
                     "ALTER TABLE $TABLE_SCHEDULES ADD COLUMN $COLUMN_IS_ENABLED INTEGER DEFAULT 1"
             )
+        }
+        if (oldVersion < 4) {
+            val createNotificationsTable =
+                    """
+                CREATE TABLE $TABLE_NOTIFICATIONS (
+                    $COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                    $COLUMN_TITLE TEXT NOT NULL,
+                    $COLUMN_CONTENT TEXT NOT NULL,
+                    $COLUMN_TIMESTAMP INTEGER NOT NULL,
+                    $COLUMN_SUCCESS INTEGER NOT NULL
+                )
+            """.trimIndent()
+            db.execSQL(createNotificationsTable)
         }
     }
 
@@ -185,5 +217,52 @@ class DatabaseHelper(context: Context) :
         val db = this.writableDatabase
         val values = ContentValues().apply { put(COLUMN_DATE_TIME, newDateTime) }
         db.update(TABLE_SCHEDULES, values, "$COLUMN_ID = ?", arrayOf(scheduleId.toString()))
+    }
+
+    fun insertNotification(notification: Notification): Long {
+        val db = this.writableDatabase
+        val values =
+                ContentValues().apply {
+                    put(COLUMN_TITLE, notification.title)
+                    put(COLUMN_CONTENT, notification.content)
+                    put(COLUMN_TIMESTAMP, notification.timestamp)
+                    put(COLUMN_SUCCESS, if (notification.success) 1 else 0)
+                }
+        return db.insert(TABLE_NOTIFICATIONS, null, values)
+    }
+
+    fun getAllNotifications(): List<Notification> {
+        val notifications = mutableListOf<Notification>()
+        val db = this.readableDatabase
+        val cursor =
+                db.query(
+                        TABLE_NOTIFICATIONS,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        "$COLUMN_TIMESTAMP DESC"
+                )
+
+        cursor.use {
+            while (it.moveToNext()) {
+                notifications.add(
+                        Notification(
+                                id = it.getLong(it.getColumnIndexOrThrow(COLUMN_ID)),
+                                title = it.getString(it.getColumnIndexOrThrow(COLUMN_TITLE)),
+                                content = it.getString(it.getColumnIndexOrThrow(COLUMN_CONTENT)),
+                                timestamp = it.getLong(it.getColumnIndexOrThrow(COLUMN_TIMESTAMP)),
+                                success = it.getInt(it.getColumnIndexOrThrow(COLUMN_SUCCESS)) == 1
+                        )
+                )
+            }
+        }
+        return notifications
+    }
+
+    fun clearAllNotifications() {
+        val db = this.writableDatabase
+        db.delete(TABLE_NOTIFICATIONS, null, null)
     }
 }

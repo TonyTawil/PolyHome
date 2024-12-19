@@ -80,4 +80,19 @@
 
     <!-- Search -->
     <string name="search_by_id">Buscar por ID</string>
+
+    <!-- Notifications -->
+    <string name="notifications_title">Notificaciones</string>
+    <string name="no_notifications">No hay notificaciones todavía</string>
+    <string name="failed_to_load_notifications">Error al cargar las notificaciones</string>
+
+    <!-- Schedule Notifications -->
+    <string name="schedule_executed_success">Programa ejecutado con éxito</string>
+    <string name="schedule_executed_failure">Error en la ejecución del programa</string>
+    <string name="schedule_execution_complete">Ejecución del programa completada</string>
+
+    <string name="notification_channel_name">Notificaciones de programa</string>
+    <string name="notification_channel_description">Notificaciones para comandos programados</string>
+
+    <string name="clear_notifications">Borrar todo</string>
 </resources> 

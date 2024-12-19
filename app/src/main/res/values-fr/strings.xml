@@ -127,5 +127,11 @@
     <string name="water_usage_placeholder">Consommation d\'eau : Chargement...</string>
     <string name="avg_efficiency_placeholder">Efficacité moyenne : Chargement...</string>
     <string name="peak_time_usage_placeholder">Heures de pointe : Chargement...</string>
+    <string name="notifications_title">Notifications</string>
+    <string name="no_notifications">Aucune notification pour le moment</string>
+    <string name="failed_to_load_notifications">Échec du chargement des notifications</string>
+    <string name="notification_channel_name">Notifications de programme</string>
+    <string name="notification_channel_description">Notifications pour les commandes programmées</string>
+    <string name="clear_notifications">Tout effacer</string>
 
 </resources>
