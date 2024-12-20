@@ -44,7 +44,7 @@
         android:orientation="horizontal"
         android:gravity="center_vertical">
 
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/emailEditText"
             android:layout_width="0dp"
             android:layout_height="48dp"
@@ -54,7 +54,8 @@
             android:background="@drawable/edit_text_background"
             android:padding="12dp"
             android:textColor="@color/primary_text"
-            android:layout_marginEnd="8dp" />
+            android:layout_marginEnd="8dp"
+            android:completionThreshold="1" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/addUserButton"
