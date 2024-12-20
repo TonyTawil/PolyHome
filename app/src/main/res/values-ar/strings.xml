@@ -243,4 +243,8 @@
     <string name="open_shutters">الستائر المفتوحة</string>
     <string name="system_efficiency">كفاءة النظام</string>
     <string name="all_schedules">جميع الجداول</string>
+    <string name="update_schedule">تحديث الجدول</string>
+    <string name="schedule_updated_success">تم تحديث الجدول بنجاح</string>
+    <string name="schedule_update_details">تم تحديث جدول المنزل %1$d مع %2$d أمر%3$s</string>
+
 </resources> 

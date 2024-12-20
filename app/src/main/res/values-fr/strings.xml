@@ -66,7 +66,7 @@
     <string name="light_turned_on">Lumière allumée</string>
     <string name="light_turned_off">Lumière éteinte</string>
     <string name="failed_toggle_light">Échec de l\'activation de la lumière</string>
-    <string name="command_sent_successfully">Commande %1$s envoy��e avec succès à %2$s</string>
+    <string name="command_sent_successfully">Commande %1$s envoyée avec succès à %2$s</string>
     <string name="failed_command">Échec de l\'envoi de %1$s à %2$s</string>
     <string name="lights_fr">Lumières</string>
     <string name="rolling_shutters_fr">Volets</string>
@@ -214,6 +214,9 @@
     <string name="system_efficiency">Efficacité du système</string>
     <string name="korean">Coréen</string>
     <string name="all_schedules">Tous les horaires</string>
+    <string name="update_schedule">Mettre à jour le programme</string>
+    <string name="schedule_updated_success">Horaire mis à jour avec succès</string>
+    <string name="schedule_update_details">Horaire pour la Maison %1$d mis à jour avec %2$d commande%3$s</string>
 
 
 </resources>

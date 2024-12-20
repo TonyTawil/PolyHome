@@ -29,13 +29,22 @@ object NotificationTranslator {
                             context.getString(R.string.schedule_executed_success)
                     "Schedule Execution Failed" ->
                             context.getString(R.string.schedule_executed_failure)
+                    "Schedule Updated Successfully" ->
+                            context.getString(R.string.schedule_updated_success)
                     else -> englishTitle
                 }
 
         val localizedContent =
-                when (englishContent) {
-                    "Schedule execution completed" ->
+                when {
+                    englishContent.startsWith("Schedule execution completed") ->
                             context.getString(R.string.schedule_execution_complete)
+                    englishContent.startsWith("Schedule for House") ->
+                            context.getString(
+                                R.string.schedule_update_details,
+                                extractHouseId(englishContent),
+                                extractCommandCount(englishContent),
+                                if (extractCommandCount(englishContent) > 1) "s" else ""
+                            )
                     else -> englishContent
                 }
 
@@ -54,16 +63,32 @@ object NotificationTranslator {
                             "Schedule Executed Successfully"
                     context.getString(R.string.schedule_executed_failure) ->
                             "Schedule Execution Failed"
+                    context.getString(R.string.schedule_updated_success) ->
+                            "Schedule Updated Successfully"
                     else -> localizedTitle
                 }
 
         val englishContent =
-                when (localizedContent) {
-                    context.getString(R.string.schedule_execution_complete) ->
+                when {
+                    localizedContent == context.getString(R.string.schedule_execution_complete) ->
                             "Schedule execution completed"
+                    localizedContent.startsWith(context.getString(R.string.schedule_update_details, 0, 0, "")) -> {
+                        val houseId = extractHouseId(localizedContent)
+                        val commandCount = extractCommandCount(localizedContent)
+                        "Schedule for House $houseId updated with $commandCount command${if (commandCount > 1) "s" else ""}"
+                    }
                     else -> localizedContent
                 }
 
         return Pair(englishTitle, englishContent)
+    }
+
+    // Add helper functions
+    private fun extractHouseId(content: String): Int {
+        return "House (\\d+)".toRegex().find(content)?.groupValues?.get(1)?.toIntOrNull() ?: 0
+    }
+
+    private fun extractCommandCount(content: String): Int {
+        return "(\\d+) command".toRegex().find(content)?.groupValues?.get(1)?.toIntOrNull() ?: 0
     }
 }

@@ -24,6 +24,7 @@ import com.antoinetawil.polyhome.Models.ScheduleCommand
 import com.antoinetawil.polyhome.R
 import com.antoinetawil.polyhome.Utils.Api
 import com.antoinetawil.polyhome.Utils.HeaderUtils
+import com.antoinetawil.polyhome.Utils.NotificationHelper
 import com.antoinetawil.polyhome.Utils.ScheduleReceiver
 import java.text.SimpleDateFormat
 import java.util.*
@@ -62,6 +63,11 @@ class SchedulesActivity : BaseActivity() {
     private lateinit var minutePicker: NumberPicker
     private lateinit var calendarButton: Button
 
+    private var isEditMode = false
+    private var editScheduleId: Long = -1
+
+    private var scheduleToEdit: Schedule? = null
+
     companion object {
         private const val ALARM_PERMISSION_REQUEST_CODE = 123
     }
@@ -69,6 +75,10 @@ class SchedulesActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_schedules)
+
+        // Get edit mode information
+        isEditMode = intent.getBooleanExtra("EDIT_MODE", false)
+        editScheduleId = intent.getLongExtra("SCHEDULE_ID", -1)
 
         floors =
                 listOf(
@@ -129,6 +139,12 @@ class SchedulesActivity : BaseActivity() {
             minValue = 0
             maxValue = 59
             value = Calendar.getInstance().get(Calendar.MINUTE)
+        }
+
+        saveScheduleButton.text = getString(if (isEditMode) R.string.update_schedule else R.string.save_schedule)
+
+        if (isEditMode) {
+            loadScheduleForEditing()
         }
     }
 
@@ -261,9 +277,7 @@ class SchedulesActivity : BaseActivity() {
 
         api.get<Map<String, List<Map<String, Any>>>>(
                 path = url,
-                securityToken =
-                        getSharedPreferences("PolyHomePrefs", MODE_PRIVATE)
-                                .getString("auth_token", "")!!,
+                securityToken = getSharedPreferences("PolyHomePrefs", MODE_PRIVATE).getString("auth_token", "")!!,
                 onSuccess = { responseCode, response ->
                     runOnUiThread {
                         if (responseCode == 200 && response != null) {
@@ -302,6 +316,24 @@ class SchedulesActivity : BaseActivity() {
                                     }
                             )
 
+                            // If in edit mode, set the states of peripherals based on schedule commands
+                            if (isEditMode) {
+                                scheduleToEdit?.commands?.forEach { command ->
+                                    val peripheral = peripherals.find { p -> p.id == command.peripheralId }
+                                    peripheral?.let { p ->
+                                        when (command.command) {
+                                            "TURN ON" -> p.power = 1
+                                            "TURN OFF" -> p.power = -1
+                                            "OPEN" -> p.opening = 1.0
+                                            "CLOSE" -> p.opening = 0.0
+                                            "STOP" -> p.opening = 0.5
+                                        }
+                                    }
+                                }
+                            }
+
+                            updatePeripheralsList()
+
                             if (peripherals.isEmpty()) {
                                 Toast.makeText(
                                                 this,
@@ -309,15 +341,7 @@ class SchedulesActivity : BaseActivity() {
                                                 Toast.LENGTH_SHORT
                                         )
                                         .show()
-                            } else {
-                                Toast.makeText(
-                                                this,
-                                                getString(R.string.peripherals_fetched),
-                                                Toast.LENGTH_SHORT
-                                        )
-                                        .show()
                             }
-                            updatePeripheralsList()
                         } else {
                             Toast.makeText(
                                             this,
@@ -400,13 +424,24 @@ class SchedulesActivity : BaseActivity() {
 
             val schedule =
                     Schedule(
+                            id = if (isEditMode) editScheduleId else 0,
                             dateTime = scheduleDateTime,
                             houseId = selectedHouse?.houseId ?: -1,
                             commands = commands,
                             recurringDays = getSelectedDays()
                     )
 
-            dbHelper.insertSchedule(schedule)
+            if (isEditMode) {
+                dbHelper.updateSchedule(schedule)
+                withContext(Dispatchers.Main) {
+                    NotificationHelper(this@SchedulesActivity).showScheduleUpdateNotification(
+                        houseId = schedule.houseId,
+                        commandCount = commands.size
+                    )
+                }
+            } else {
+                dbHelper.insertSchedule(schedule)
+            }
 
             val selectedDays = getSelectedDays()
             if (selectedDays.isEmpty()) {
@@ -786,5 +821,53 @@ class SchedulesActivity : BaseActivity() {
         peripheralIdText.text = formatPeripheralId(peripheral.type, peripheral.id)
 
         // ... rest of the createPeripheralView method remains the same ...
+    }
+
+    private fun loadScheduleForEditing() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val schedule = dbHelper.getSchedule(editScheduleId)
+            scheduleToEdit = schedule
+            
+            withContext(Dispatchers.Main) {
+                schedule?.let {
+                    // Set date and time
+                    val dateTime = it.dateTime.split(" ")
+                    selectedDate = dateTime[0]
+                    calendarButton.text = selectedDate
+                    
+                    // Set time
+                    val time = dateTime[1].split(":")
+                    hourPicker.value = time[0].toInt()
+                    minutePicker.value = time[1].toInt()
+                    
+                    // Set recurring days
+                    dayToggles.forEachIndexed { index, toggle ->
+                        toggle.isChecked = it.recurringDays.contains(index + 1)
+                    }
+                    
+                    // Set house
+                    val housePosition = houses.indexOfFirst { house -> house.houseId == it.houseId }
+                    if (housePosition != -1) {
+                        houseSpinner.setSelection(housePosition)
+                        selectedHouse = houses[housePosition]
+                        
+                        // Determine peripheral type from first command
+                        it.commands.firstOrNull()?.let { command ->
+                            val typePosition = when(command.peripheralType.lowercase()) {
+                                "light" -> 0
+                                "shutter" -> 1
+                                "garage door" -> 2
+                                else -> 0
+                            }
+                            peripheralTypeSpinner.setSelection(typePosition)
+                            selectedPeripheralType = peripheralTypeSpinner.selectedItem.toString()
+                            
+                            // Now fetch peripherals
+                            fetchPeripherals()
+                        }
+                    }
+                }
+            }
+        }
     }
 }

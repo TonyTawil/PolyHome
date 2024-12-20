@@ -58,7 +58,10 @@ class SchedulesListActivity : BaseActivity() {
     }
 
     private fun setupRecyclerView() {
-        adapter = ScheduleListAdapter { schedule -> deleteSchedule(schedule) }
+        adapter = ScheduleListAdapter(
+            onDeleteClick = { schedule -> deleteSchedule(schedule) },
+            onScheduleClick = { schedule -> editSchedule(schedule) }
+        )
         schedulesRecyclerView.layoutManager = LinearLayoutManager(this)
         schedulesRecyclerView.adapter = adapter
     }
@@ -82,6 +85,14 @@ class SchedulesListActivity : BaseActivity() {
             dbHelper.deleteSchedule(schedule.id)
             loadSchedules() // Reload the list after deletion
         }
+    }
+
+    private fun editSchedule(schedule: Schedule) {
+        val intent = Intent(this, SchedulesActivity::class.java).apply {
+            putExtra("EDIT_MODE", true)
+            putExtra("SCHEDULE_ID", schedule.id)
+        }
+        startActivity(intent)
     }
 
     private fun showEmptyState() {

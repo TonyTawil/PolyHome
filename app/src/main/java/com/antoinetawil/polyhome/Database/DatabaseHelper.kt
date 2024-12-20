@@ -265,4 +265,16 @@ class DatabaseHelper(context: Context) :
         val db = this.writableDatabase
         db.delete(TABLE_NOTIFICATIONS, null, null)
     }
+
+    fun updateSchedule(schedule: Schedule) {
+        val db = this.writableDatabase
+        val values = ContentValues().apply {
+            put(COLUMN_DATE_TIME, schedule.dateTime)
+            put(COLUMN_HOUSE_ID, schedule.houseId)
+            put(COLUMN_COMMANDS, commandsToJson(schedule.commands))
+            put(COLUMN_RECURRING_DAYS, schedule.recurringDays.joinToString(","))
+            put(COLUMN_IS_ENABLED, if (schedule.isEnabled) 1 else 0)
+        }
+        db.update(TABLE_SCHEDULES, values, "$COLUMN_ID = ?", arrayOf(schedule.id.toString()))
+    }
 }

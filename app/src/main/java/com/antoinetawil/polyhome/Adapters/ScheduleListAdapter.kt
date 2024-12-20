@@ -15,8 +15,10 @@ import com.antoinetawil.polyhome.Models.Schedule
 import com.antoinetawil.polyhome.R
 import com.google.android.material.switchmaterial.SwitchMaterial
 
-class ScheduleListAdapter(private val onDeleteClick: (Schedule) -> Unit) :
-        ListAdapter<Schedule, ScheduleListAdapter.ScheduleViewHolder>(ScheduleDiffCallback()) {
+class ScheduleListAdapter(
+    private val onDeleteClick: (Schedule) -> Unit,
+    private val onScheduleClick: (Schedule) -> Unit
+) : ListAdapter<Schedule, ScheduleListAdapter.ScheduleViewHolder>(ScheduleDiffCallback()) {
 
     class ScheduleViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val timeText: TextView = view.findViewById(R.id.timeText)
@@ -100,6 +102,11 @@ class ScheduleListAdapter(private val onDeleteClick: (Schedule) -> Unit) :
             (holder.itemView.context as? SchedulesListActivity)?.let { activity ->
                 activity.updateScheduleEnabled(schedule.id, isChecked)
             }
+        }
+
+        // Add click listener to the entire card
+        holder.itemView.setOnClickListener {
+            onScheduleClick(schedule)
         }
     }
 

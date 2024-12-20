@@ -250,5 +250,9 @@
     <string name="system_efficiency">Eficiencia del Sistema</string>
 
     <string name="all_schedules">Todos los horarios</string>
-=
+    <string name="update_schedule">Actualizar horario</string>
+
+    <string name="schedule_updated_success">Horario actualizado con éxito</string>
+    <string name="schedule_update_details">Horario para Casa %1$d actualizado con %2$d comando%3$s</string>
+
 </resources> 

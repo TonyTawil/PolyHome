@@ -214,5 +214,8 @@
     <string name="open_shutters">Open Shutters</string>
     <string name="korean">Korean</string>
     <string name="all_schedules">All schedules</string>
+    <string name="update_schedule">Update Schedule</string>
+    <string name="schedule_updated_success">Schedule Updated Successfully</string>
+    <string name="schedule_update_details">Schedule for House %1$d updated with %2$d command%3$s</string>
 
 </resources>

@@ -122,4 +122,54 @@ class NotificationHelper(private val context: Context) {
                 )
         dbHelper.insertNotification(notification)
     }
+
+    fun showScheduleUpdateNotification(houseId: Int, commandCount: Int) {
+        // Use localized context for notification content
+        val localizedContext = updateContextWithStoredLanguage()
+
+        val title = localizedContext.getString(R.string.schedule_updated_success)
+        val content = localizedContext.getString(
+            R.string.schedule_update_details,
+            houseId,
+            commandCount,
+            if (commandCount > 1) "s" else ""
+        )
+
+        val intent = Intent(context, SchedulesListActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
+
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            0,
+            intent,
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            } else {
+                PendingIntent.FLAG_UPDATE_CURRENT
+            }
+        )
+
+        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_success)
+            .setContentTitle(title)
+            .setContentText(content)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
+
+        with(NotificationManagerCompat.from(context)) {
+            notify(notificationId++, builder.build())
+        }
+
+        // Save notification to database in English
+        val dbHelper = DatabaseHelper(context)
+        val notification = Notification(
+            title = "Schedule Updated Successfully",
+            content = "Schedule for House $houseId updated with $commandCount command${if (commandCount > 1) "s" else ""}",
+            timestamp = System.currentTimeMillis(),
+            success = true
+        )
+        dbHelper.insertNotification(notification)
+    }
 }
