@@ -122,7 +122,7 @@
     <string name="total_devices">Total Devices: %1$d</string>
     <string name="energy_usage">Energy Usage: %1$.1f kWh</string>
     <string name="co2_consumption">CO2 Emission: %1$.1f kg</string>
-    <string name="system_efficiency">System Efficiency: %1$d%%</string>
+    <string name="system_efficiency">System Efficiency </string>
     <string name="total_devices_placeholder">Total Devices: Loading...</string>
     <string name="energy_usage_placeholder">Energy Usage: Loading...</string>
     <string name="co2_consumption_placeholder">CO2 Emission: Loading...</string>
