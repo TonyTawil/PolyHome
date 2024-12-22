@@ -163,6 +163,7 @@
     <string name="active_devices_format">Appareils actifs : %d</string>
     <string name="energy_saved_format">Énergie économisée : %.1f kWh</string>
     <string name="shutter_status_format">%d ouvert / %d total</string>
+    <string name="light_status_format">%d allumées / %d total</string>
     <string name="status_percentage">Ouverture : %d%%</string>
     <string name="status_on">Allumé</string>
     <string name="status_off">Éteint</string>

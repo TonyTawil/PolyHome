@@ -3,47 +3,48 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
+    android:layout_marginStart="5dp"
     android:gravity="center_vertical">
 
     <Button
         android:id="@+id/openButton"
         android:layout_width="wrap_content"
-        android:layout_height="36dp"
+        android:layout_height="32dp"
         android:text="@string/open"
         android:textSize="12sp"
         android:textColor="@color/primary_text"
         android:background="@drawable/outlined_button_background"
         android:layout_marginEnd="4dp"
-        android:minHeight="36dp"
-        android:paddingHorizontal="12dp"
+        android:minHeight="32dp"
+        android:paddingHorizontal="8dp"
         android:includeFontPadding="false"
         android:gravity="center"/>
 
     <Button
         android:id="@+id/stopButton"
         android:layout_width="wrap_content"
-        android:layout_height="36dp"
+        android:layout_height="32dp"
         android:text="@string/stop"
         android:textSize="12sp"
         android:textColor="@color/primary_text"
         android:background="@drawable/outlined_button_background"
         android:layout_marginHorizontal="4dp"
-        android:minHeight="36dp"
-        android:paddingHorizontal="12dp"
+        android:minHeight="32dp"
+        android:paddingHorizontal="8dp"
         android:includeFontPadding="false"
         android:gravity="center"/>
 
     <Button
         android:id="@+id/closeButton"
         android:layout_width="wrap_content"
-        android:layout_height="36dp"
+        android:layout_height="32dp"
         android:text="@string/close"
         android:textSize="12sp"
         android:textColor="@color/primary_text"
         android:background="@drawable/outlined_button_background"
         android:layout_marginStart="4dp"
-        android:minHeight="36dp"
-        android:paddingHorizontal="12dp"
+        android:minHeight="32dp"
+        android:paddingHorizontal="8dp"
         android:includeFontPadding="false"
         android:gravity="center"/>
 

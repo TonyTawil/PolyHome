@@ -124,6 +124,7 @@
     <string name="active_devices_format">Dispositivos activos: %d</string>
     <string name="energy_saved_format">Energía ahorrada: %.1f kWh</string>
     <string name="shutter_status_format">%d abierto / %d total</string>
+    <string name="light_status_format">%d encendida / %d total</string>
     <string name="house_tag">Casa %d</string>
     <string name="house_tag_with_commands">Casa %1$d (%2$d comando%3$s)</string>
     <string name="no_schedules">No hay programaciones todavía</string>

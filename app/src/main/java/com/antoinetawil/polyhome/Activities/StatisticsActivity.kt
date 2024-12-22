@@ -122,12 +122,10 @@ class StatisticsActivity : BaseActivity() {
 
         if (token != null) {
             if (selectedHouseId != null) {
-                // Fetch statistics for selected house
                 fetchDevicesForHouse(token, selectedHouseId!!) { devices ->
                     processDevices(devices, 1)
                 }
             } else {
-                // Fetch statistics for all houses
                 fetchHousesAndDevices(token)
             }
         } else {
@@ -164,7 +162,6 @@ class StatisticsActivity : BaseActivity() {
                     if (device.isShutterOpen) {
                         activeShutters++
                         activeDevices++
-                        // Calculate power based on opening percentage
                         totalPower += 0.2 * (device.shutterOpeningPercentage / 100.0)
                     }
                 }
@@ -199,7 +196,6 @@ class StatisticsActivity : BaseActivity() {
 
     private fun calculateEfficiency(activeDevices: Int, totalDevices: Int): Int {
         if (totalDevices == 0) return 100
-        // Higher efficiency means fewer devices are active
         return ((1 - (activeDevices.toDouble() / totalDevices)) * 100).toInt()
     }
 
@@ -223,7 +219,7 @@ class StatisticsActivity : BaseActivity() {
             }
 
             findViewById<TextView>(R.id.activeLightsValue).apply {
-                text = getString(R.string.shutter_status_format, activeLights, totalLights)
+                text = translator.formatLightStatus(activeLights, totalLights)
                 alpha = 0f
                 animate().alpha(1f).setDuration(500).start()
             }
@@ -277,7 +273,7 @@ class StatisticsActivity : BaseActivity() {
     }
 
     companion object {
-        private const val MAX_DAILY_CO2 = 50.0 // Maximum expected daily CO2 in kg
+        private const val MAX_DAILY_CO2 = 50.0
     }
 
     data class Device(

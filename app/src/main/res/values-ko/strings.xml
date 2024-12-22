@@ -129,7 +129,7 @@
     <string name="login">로그인</string>
     <string name="no_account_register">계정이 없으신가요? 가입하기</string>
     <string name="please_fill_fields">모든 필드를 입력해주세요</string>
-    <string name="invalid_server_response">서버 응답이 잘못되었습니다</string>
+    <string name="invalid_server_response">서버 응답이 잘못되었���니다</string>
     <string name="invalid_credentials">잘못된 인증 정보</string>
     <string name="register">가입</string>
     <string name="create_account">계정 만들기</string>
@@ -187,7 +187,7 @@
         <string name="schedule_will_run_soon">일정이 곧 실행됩니다</string>
 
         <!-- Notifications -->
-        <string name="notification_permission_title">알림 활��화</string>
+        <string name="notification_permission_title">알림 활성화</string>
         <string name="notification_permission_message">예약된 명령에 대한 알림을 받으려면 PolyHome의 알림을 허용해주세요</string>
         <string name="allow">허용</string>
         <string name="deny">거부</string>
@@ -206,6 +206,7 @@
         <string name="active_devices_format">활성 기기: %d</string>
         <string name="energy_saved_format">절약된 에너지: %.1f kWh</string>
         <string name="shutter_status_format">%d 열림 / %d 전체</string>
+        <string name="light_status_format">%d 켜짐 / %d 전체</string>
 
         <!-- User Management -->
         <string name="manage_users">사용자 관리</string>
@@ -261,6 +262,7 @@
     <string name="update_schedule">일정 업데이트</string>
     <string name="schedule_updated_success">일정이 성공적으로 업데이트되었습니다</string>
     <string name="schedule_update_details">집 %1$d의 일정이 %2$d개의 명령%3$s으로 업데이트되었습니다</string>
+    <string name="language">언어</string>
 
     <!-- Authentication strings -->
     <string name="authentication_type">인증 유형</string>

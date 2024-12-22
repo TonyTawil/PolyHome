@@ -27,6 +27,10 @@ class StatisticsTranslator(private val context: Context) {
         return context.getString(R.string.shutter_status_format, active, total)
     }
 
+    fun formatLightStatus(active: Int, total: Int): String {
+        return context.getString(R.string.light_status_format, active, total)
+    }
+
     fun formatEfficiency(efficiency: Int): String {
         return context.getString(R.string.efficiency_format, efficiency)
     }

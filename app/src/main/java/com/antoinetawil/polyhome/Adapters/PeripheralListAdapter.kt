@@ -46,7 +46,11 @@ class PeripheralListAdapter(
 
     override fun onBindViewHolder(holder: PeripheralViewHolder, position: Int) {
         val peripheral = peripheralList[position]
-        holder.peripheralIdText.text = peripheral.id
+        holder.peripheralIdText.text =
+                when (peripheral.type.lowercase()) {
+                    "garage door" -> "Door"
+                    else -> peripheral.id
+                }
 
         when (peripheral.type.lowercase()) {
             "light" -> {

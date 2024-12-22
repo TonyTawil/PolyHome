@@ -305,7 +305,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="System Efficiency"
+                            android:text="@string/system_efficiency"
                             android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1" />
 
                         <com.google.android.material.progressindicator.LinearProgressIndicator

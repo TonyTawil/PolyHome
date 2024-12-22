@@ -99,12 +99,13 @@
     <string name="loading">جارٍ التحميل...</string>
     <string name="co2_value_format">%s كجم</string>
     <string name="total_houses_format">إجمالي المنازل: %d</string>
-    <string name="total_devices_format">إجمالي الأجهزة: %d</string>
+    <string name="total_devices_format">��جمالي الأجهزة: %d</string>
     <string name="daily_co2_format">ثاني أكسيد الكربون اليومي: %.1f كجم</string>
     <string name="efficiency_format">كفاءة النظام: %d%%</string>
     <string name="active_devices_format">الأجهزة النشطة: %d</string>
     <string name="energy_saved_format">الطاقة الموفرة: %.1f كيلوواط/ساعة</string>
     <string name="shutter_status_format">%d مفتوح / %d الإجمالي</string>
+    <string name="light_status_format">%d مضاء / %d الإجمالي</string>
     <string name="house_tag">منزل %d</string>
     <string name="house_tag_with_commands">منزل %1$d (%2$d أمر%3$s)</string>
     <string name="no_schedules">لا توجد جداول حتى الآن</string>
@@ -167,7 +168,7 @@
     <string name="auth_token_missing">رمز المصادقة مفقود</string>
     <string name="house_id_label">المعرف: %1$d</string>
     <string name="manage_permissions">إدارة الأذونات</string>
-    <string name="no_devices_to_operate">لا توجد أجهزة للتشغيل</string>
+    <string name="no_devices_to_operate">��ا توجد أجهزة للتشغيل</string>
     <string name="operation_completed">اكتملت العملية لجميع %1$s</string>
     <string name="light_turned_on">تم تشغيل الضوء</string>
     <string name="light_turned_off">تم إطفاء الضوء</string>
@@ -184,7 +185,7 @@
     <string name="schedules">الجداول</string>
     <string name="statistics">الإحصائيات</string>
     <string name="no_peripherals_selected">لم يتم اختيار أي جهاز</string>
-    <string name="no_matching_peripherals">لم يتم العثور على أجهزة مطابقة</string>
+    <string name="no_matching_peripherals">لم يتم العثور على أجهزة مطا��قة</string>
     <string name="total_houses">إجمالي المنازل: %1$d</string>
     <string name="active_devices">الأجهزة النشطة: %1$d</string>
     <string name="daily_co2">ثاني أكسيد الكربون اليومي: %1$.1f كجم</string>
@@ -199,7 +200,7 @@
     <string name="no_account_register">ليس لديك حساب؟ سجل</string>
     <string name="please_fill_fields">يرجى ملء جميع الحقول</string>
     <string name="invalid_server_response">استجابة غير صالحة من الخادم</string>
-    <string name="invalid_credentials">بيانات الاعتماد غير صالحة</string>
+    <string name="invalid_credentials">بيانات الاعتماد غير صا��حة</string>
     <string name="register">سجل</string>
 
     <!-- Language Switcher -->
@@ -215,7 +216,7 @@
     <string name="sign_up">تسجيل</string>
     <string name="have_account_login">لديك حساب بالفعل؟ تسجيل الدخول</string>
     <string name="signup_successful">تم التسجيل بنجاح! جارٍ إعادة التوجيه لتسجيل الدخول.</string>
-    <string name="signup_successful_login">تم التسجيل بنجاح! الجاء تسج��ل الدخول.</string>
+    <string name="signup_successful_login">تم التسجيل بنجاح! الجاء تسجل الدخول.</string>
 
     <!-- Add these new strings -->
     <string name="command_turn_on">تشغيل</string>

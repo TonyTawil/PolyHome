@@ -156,6 +156,7 @@
     <string name="active_devices_format">Active Devices: %d</string>
     <string name="energy_saved_format">Energy Saved: %.1f kWh</string>
     <string name="shutter_status_format">%d open / %d total</string>
+    <string name="light_status_format">%d on / %d total</string>
     <string name="status_open">Status: Open</string>
     <string name="status_closed">Status: Closed</string>
     <string name="status_percentage">Opening: %d%%</string>
