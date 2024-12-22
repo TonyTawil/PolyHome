@@ -84,8 +84,11 @@ class SettingsActivity : BaseActivity() {
                                     4 -> "ko"
                                     else -> "en"
                                 }
+                        val currentLanguage = getCurrentLanguage()
                         if (newLocale != currentLanguage) {
                             setLocalePreference(newLocale)
+                            // Recreate the activity to apply the new locale
+                            recreate()
                         }
                     }
 

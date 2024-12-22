@@ -2,6 +2,7 @@ package com.antoinetawil.polyhome.Activities
 
 import android.app.KeyguardManager
 import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
@@ -113,7 +114,33 @@ open class BaseActivity : AppCompatActivity() {
                 .edit()
                 .putString(LANGUAGE_KEY, languageCode)
                 .apply()
-        recreate()
+
+        // Update the locale immediately
+        val locale =
+                if (languageCode == "ar") {
+                    Locale.Builder().setLanguage("ar").setExtension('u', "nu-latn").build()
+                } else {
+                    Locale(languageCode)
+                }
+
+        Locale.setDefault(locale)
+        val config = Configuration(resources.configuration)
+        config.setLocale(locale)
+
+        // Support RTL layout for Arabic
+        if (locale.language == "ar") {
+            config.setLayoutDirection(Locale("ar"))
+        } else {
+            config.setLayoutDirection(Locale.getDefault())
+        }
+
+        resources.updateConfiguration(config, resources.displayMetrics)
+
+        // Restart the entire app to apply the language change
+        val intent = packageManager.getLaunchIntentForPackage(packageName)
+        intent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intent)
+        finish()
     }
 
     protected fun setThemePreference(isDarkMode: Boolean) {
