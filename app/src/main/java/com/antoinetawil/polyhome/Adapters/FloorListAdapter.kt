@@ -34,7 +34,7 @@ class FloorListAdapter(
 
         // Update the icon based on the peripheral type
         val iconResId = when (peripheralType) {
-            "Light" -> R.drawable.ic_light_off
+            "Light" -> R.drawable.ic_light_on
             "Shutter" -> R.drawable.ic_shutter
             "GarageDoor" -> R.drawable.ic_garage
             else -> R.drawable.ic_light_off // Default icon

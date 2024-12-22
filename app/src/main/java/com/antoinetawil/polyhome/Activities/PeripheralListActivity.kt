@@ -15,6 +15,10 @@ import com.antoinetawil.polyhome.Models.Peripheral
 import com.antoinetawil.polyhome.R
 import com.antoinetawil.polyhome.Utils.Api
 import com.antoinetawil.polyhome.Utils.HeaderUtils
+import java.io.IOException
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 
 class PeripheralListActivity : BaseActivity() {
@@ -30,6 +34,7 @@ class PeripheralListActivity : BaseActivity() {
     private val filteredPeripherals = mutableListOf<Peripheral>()
     private lateinit var actionButtonsContainer: LinearLayout
     private var isOperationInProgress = false
+    private var completedCommands = 0
     private val api = Api()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -287,12 +292,25 @@ class PeripheralListActivity : BaseActivity() {
     }
 
     private fun performBulkOperation(command: String, type: String) {
-        if (isOperationInProgress) return
+        Log.d(TAG, "Starting performBulkOperation with command: $command and type: $type")
 
+        // Allow new commands for shutters/garage doors (except when stopping)
+        val isShutterOrDoor =
+                type.lowercase() in listOf("shutter", "garage door", "rolling shutter")
+        if (isOperationInProgress &&
+                        !(command == "STOP" ||
+                                (isShutterOrDoor && command in listOf("OPEN", "CLOSE")))
+        ) {
+            Log.d(
+                    TAG,
+                    "Operation already in progress and not allowed to override, returning early."
+            )
+            return
+        }
+
+        Log.d(TAG, "Proceeding with bulk operation.")
         isOperationInProgress = true
         toggleButtons(false)
-
-        Log.d(TAG, "Performing Bulk Operation: $command for type: $type")
 
         val normalizedType =
                 when (type.lowercase()) {
@@ -311,6 +329,7 @@ class PeripheralListActivity : BaseActivity() {
                 }
 
         if (affectedPeripherals.isEmpty()) {
+            Log.d(TAG, "No peripherals found for type: $normalizedType with command: $command")
             runOnUiThread {
                 Toast.makeText(this, getString(R.string.no_devices_to_operate), Toast.LENGTH_SHORT)
                         .show()
@@ -320,38 +339,190 @@ class PeripheralListActivity : BaseActivity() {
             return
         }
 
-        affectedPeripherals.forEach { peripheral ->
-            val houseId = intent.getIntExtra("houseId", -1)
-            val sharedPreferences = getSharedPreferences("PolyHomePrefs", MODE_PRIVATE)
-            val token = sharedPreferences.getString("auth_token", null)
+        Log.d(TAG, "Found ${affectedPeripherals.size} peripherals to operate on.")
 
-            if (token == null || houseId == -1) {
-                Log.e(TAG, "Invalid token or houseId")
-                return@forEach
-            }
-
-            val url =
-                    "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/devices/${peripheral.id}/command"
-            Log.d(TAG, "Sending command $command to URL: $url")
-
-            api.post<Map<String, String>, Unit>(
-                    path = url,
-                    data = mapOf("command" to command),
-                    securityToken = token,
-                    onSuccess = { responseCode, _ ->
-                        if (responseCode == 200) {
-                            // Instead of manually updating state, we'll refetch later
-                        } else {
-                            Log.e(TAG, "Failed to execute $command for ${peripheral.id}")
-                        }
-                    }
-            )
-        }
-
-        // After all commands are sent, refetch the current state
         val houseId = intent.getIntExtra("houseId", -1)
         val token =
                 getSharedPreferences("PolyHomePrefs", MODE_PRIVATE).getString("auth_token", null)
+
+        if (token == null || houseId == -1) {
+            Log.e(TAG, "Invalid token or houseId")
+            runOnUiThread {
+                isOperationInProgress = false
+                toggleButtons(true)
+            }
+            return
+        }
+
+        if (normalizedType == "light") {
+            // For lights, track completion of all requests
+            var completedRequests = 0
+            var successfulRequests = 0
+            val totalRequests = affectedPeripherals.size
+
+            affectedPeripherals.forEach { peripheral ->
+                val url =
+                        "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/devices/${peripheral.id}/command"
+                val jsonObject = JSONObject().apply { put("command", command) }
+                val requestBody =
+                        jsonObject.toString().toRequestBody("application/json".toMediaTypeOrNull())
+
+                val request =
+                        Request.Builder()
+                                .url(url)
+                                .post(requestBody)
+                                .addHeader("Authorization", "Bearer $token")
+                                .build()
+
+                OkHttpClient()
+                        .newCall(request)
+                        .enqueue(
+                                object : Callback {
+                                    override fun onFailure(call: Call, e: IOException) {
+                                        Log.e(
+                                                TAG,
+                                                "Failed to execute command for light ${peripheral.id}: ${e.message}"
+                                        )
+                                        synchronized(this@PeripheralListActivity) {
+                                            completedRequests++
+                                            checkLightOperationsComplete(
+                                                    completedRequests,
+                                                    successfulRequests,
+                                                    totalRequests,
+                                                    type
+                                            )
+                                        }
+                                    }
+
+                                    override fun onResponse(call: Call, response: Response) {
+                                        synchronized(this@PeripheralListActivity) {
+                                            completedRequests++
+                                            if (response.isSuccessful) {
+                                                successfulRequests++
+                                                Log.d(
+                                                        TAG,
+                                                        "Successfully executed command for light ${peripheral.id}"
+                                                )
+                                            } else {
+                                                Log.e(
+                                                        TAG,
+                                                        "Command failed for light ${peripheral.id} with code: ${response.code}"
+                                                )
+                                            }
+                                            response.close()
+                                            checkLightOperationsComplete(
+                                                    completedRequests,
+                                                    successfulRequests,
+                                                    totalRequests,
+                                                    type
+                                            )
+                                        }
+                                    }
+                                }
+                        )
+            }
+        } else {
+            // Existing code for shutters and garage doors
+            val client = OkHttpClient()
+            val requests =
+                    affectedPeripherals.map { peripheral ->
+                        val url =
+                                "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/devices/${peripheral.id}/command"
+                        val jsonObject = JSONObject().apply { put("command", command) }
+                        val requestBody =
+                                jsonObject
+                                        .toString()
+                                        .toRequestBody("application/json".toMediaTypeOrNull())
+
+                        Request.Builder()
+                                .url(url)
+                                .post(requestBody)
+                                .addHeader("Authorization", "Bearer $token")
+                                .build()
+                    }
+
+            requests.forEach { request ->
+                client.newCall(request)
+                        .enqueue(
+                                object : Callback {
+                                    override fun onFailure(call: Call, e: IOException) {
+                                        Log.e(TAG, "Failed to execute command: ${e.message}")
+                                    }
+
+                                    override fun onResponse(call: Call, response: Response) {
+                                        if (!response.isSuccessful) {
+                                            Log.e(TAG, "Command failed with code: ${response.code}")
+                                        }
+                                        response.close()
+                                    }
+                                }
+                        )
+            }
+            startRefreshCycle(command, type)
+        }
+
+        Log.d(TAG, "Completed initiating bulk operation for command: $command")
+    }
+
+    private fun checkLightOperationsComplete(
+            completedRequests: Int,
+            successfulRequests: Int,
+            totalRequests: Int,
+            type: String
+    ) {
+        if (completedRequests == totalRequests) {
+            Log.d(
+                    TAG,
+                    "All light operations completed. Success rate: $successfulRequests/$totalRequests"
+            )
+            runOnUiThread {
+                refreshDevicesState(type)
+                isOperationInProgress = false
+                toggleButtons(true)
+
+                if (successfulRequests < totalRequests) {
+                    Toast.makeText(this, "A light failed or smth", Toast.LENGTH_SHORT)
+                            .show()
+                }
+            }
+        }
+    }
+
+    private fun startRefreshCycle(command: String, type: String) {
+        var refreshCount = 0
+        val maxRefreshes = if (command == "STOP") 3 else 5
+        val refreshInterval = if (command == "STOP") 1000L else 2000L
+
+        val handler = android.os.Handler(android.os.Looper.getMainLooper())
+        val refreshRunnable =
+                object : Runnable {
+                    override fun run() {
+                        refreshCount++
+                        refreshDevicesState(type)
+
+                        if (refreshCount < maxRefreshes) {
+                            handler.postDelayed(this, refreshInterval)
+                        } else {
+                            // Final refresh and cleanup
+                            refreshDevicesState(type)
+                            runOnUiThread {
+                                isOperationInProgress = false
+                                toggleButtons(true)
+                            }
+                        }
+                    }
+                }
+
+        // Start first refresh sooner for better responsiveness
+        handler.postDelayed(refreshRunnable, 200) // Reduced initial delay
+    }
+
+    fun refreshDevicesState(type: String) {
+        val houseId = intent.getIntExtra("houseId", -1)
+        val token =
+                getSharedPreferences("PolyHomePrefs", MODE_PRIVATE).getString("auth_token", null)
+        val floor = intent.getStringExtra("floor") ?: getString(R.string.all_floors)
+        val peripheralType = intent.getStringExtra("type") ?: ""
 
         if (token != null && houseId != -1) {
             api.get<Map<String, List<Map<String, Any>>>>(
@@ -360,8 +531,36 @@ class PeripheralListActivity : BaseActivity() {
                     onSuccess = { responseCode, response ->
                         if (responseCode == 200 && response != null) {
                             val devices = response["devices"] ?: emptyList()
+                            val filteredDevices =
+                                    devices.filter { device ->
+                                        val id = device["id"] as? String ?: ""
+                                        val inferredType =
+                                                when {
+                                                    id.startsWith("Light", ignoreCase = true) ->
+                                                            "Light"
+                                                    id.startsWith("Shutter", ignoreCase = true) ->
+                                                            "Shutter"
+                                                    id.startsWith(
+                                                            "GarageDoor",
+                                                            ignoreCase = true
+                                                    ) -> "GarageDoor"
+                                                    else -> null
+                                                }
+                                        inferredType?.equals(peripheralType, ignoreCase = true) ==
+                                                true &&
+                                                when (floor) {
+                                                    getString(R.string.first_floor) ->
+                                                            id.contains("1.")
+                                                    getString(R.string.second_floor) ->
+                                                            id.contains("2.")
+                                                    else -> true
+                                                }
+                                    }
+
                             val updatedPeripherals =
-                                    devices.map { device -> parsePeripheral(JSONObject(device)) }
+                                    filteredDevices.map { device ->
+                                        parsePeripheral(JSONObject(device))
+                                    }
 
                             runOnUiThread {
                                 peripherals.clear()
@@ -369,40 +568,10 @@ class PeripheralListActivity : BaseActivity() {
                                 filteredPeripherals.clear()
                                 filteredPeripherals.addAll(updatedPeripherals)
                                 adapter.notifyDataSetChanged()
-                                isOperationInProgress = false
-                                toggleButtons(true)
-                                Toast.makeText(
-                                                this,
-                                                getString(R.string.operation_completed, type),
-                                                Toast.LENGTH_SHORT
-                                        )
-                                        .show()
-                            }
-                        } else {
-                            runOnUiThread {
-                                isOperationInProgress = false
-                                toggleButtons(true)
-                                Toast.makeText(
-                                                this,
-                                                getString(R.string.operation_completed, type),
-                                                Toast.LENGTH_SHORT
-                                        )
-                                        .show()
                             }
                         }
                     }
             )
-        } else {
-            runOnUiThread {
-                isOperationInProgress = false
-                toggleButtons(true)
-                Toast.makeText(
-                                this,
-                                getString(R.string.operation_completed, type),
-                                Toast.LENGTH_SHORT
-                        )
-                        .show()
-            }
         }
     }
 
