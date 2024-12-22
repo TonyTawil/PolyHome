@@ -14,7 +14,6 @@ import com.antoinetawil.polyhome.Adapters.PeripheralListAdapter
 import com.antoinetawil.polyhome.Models.Peripheral
 import com.antoinetawil.polyhome.R
 import com.antoinetawil.polyhome.Utils.Api
-import com.antoinetawil.polyhome.Activities.BaseActivity
 import com.antoinetawil.polyhome.Utils.HeaderUtils
 import org.json.JSONObject
 
@@ -55,7 +54,6 @@ class PeripheralListActivity : BaseActivity() {
             return
         }
 
-        // Fetch fresh data
         val token =
                 getSharedPreferences("PolyHomePrefs", MODE_PRIVATE).getString("auth_token", null)
         if (token != null) {
@@ -87,11 +85,10 @@ class PeripheralListActivity : BaseActivity() {
                                                             id.contains("1.")
                                                     getString(R.string.second_floor) ->
                                                             id.contains("2.")
-                                                    else -> true // All floors
+                                                    else -> true
                                                 }
                                     }
 
-                            // Convert to Peripheral objects
                             val newPeripherals =
                                     filteredDevices.map { device ->
                                         parsePeripheral(JSONObject(device))
@@ -133,7 +130,6 @@ class PeripheralListActivity : BaseActivity() {
 
         when (peripheralType.lowercase()) {
             "light" -> {
-                // Use the light bulk action buttons layout
                 val buttonsView =
                         LayoutInflater.from(this)
                                 .inflate(
@@ -153,7 +149,6 @@ class PeripheralListActivity : BaseActivity() {
                 actionButtonsContainer.addView(buttonsView)
             }
             "shutter", "garage door" -> {
-                // Use the bulk action buttons layout
                 val buttonsView =
                         LayoutInflater.from(this)
                                 .inflate(
@@ -245,7 +240,7 @@ class PeripheralListActivity : BaseActivity() {
     }
 
     private fun generateTitle(type: String, floor: String): String {
-        val isFrench = resources.configuration.locales[0].language == "fr" // Detect current locale
+        val isFrench = resources.configuration.locales[0].language == "fr"
 
         if (type.lowercase() == "garagedoor") {
             return if (isFrench) getString(R.string.garage_door_fr)
@@ -345,22 +340,7 @@ class PeripheralListActivity : BaseActivity() {
                     securityToken = token,
                     onSuccess = { responseCode, _ ->
                         if (responseCode == 200) {
-                            runOnUiThread {
-                                if (type.equals("light", ignoreCase = true)) {
-                                    peripheral.power = if (command == "TURN ON") 1 else 0
-                                } else if (type.equals("shutter", ignoreCase = true) ||
-                                                type.equals("garage door", ignoreCase = true)
-                                ) {
-                                    peripheral.opening =
-                                            when (command.uppercase()) {
-                                                "OPEN" -> 1.0
-                                                "CLOSE" -> 0.0
-                                                "STOP" -> peripheral.opening
-                                                else -> peripheral.opening
-                                            }
-                                }
-                                adapter.notifyDataSetChanged()
-                            }
+                            // Instead of manually updating state, we'll refetch later
                         } else {
                             Log.e(TAG, "Failed to execute $command for ${peripheral.id}")
                         }
@@ -368,11 +348,61 @@ class PeripheralListActivity : BaseActivity() {
             )
         }
 
-        runOnUiThread {
-            isOperationInProgress = false
-            toggleButtons(true)
-            Toast.makeText(this, getString(R.string.operation_completed, type), Toast.LENGTH_SHORT)
-                    .show()
+        // After all commands are sent, refetch the current state
+        val houseId = intent.getIntExtra("houseId", -1)
+        val token =
+                getSharedPreferences("PolyHomePrefs", MODE_PRIVATE).getString("auth_token", null)
+
+        if (token != null && houseId != -1) {
+            api.get<Map<String, List<Map<String, Any>>>>(
+                    path = "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/devices",
+                    securityToken = token,
+                    onSuccess = { responseCode, response ->
+                        if (responseCode == 200 && response != null) {
+                            val devices = response["devices"] ?: emptyList()
+                            val updatedPeripherals =
+                                    devices.map { device -> parsePeripheral(JSONObject(device)) }
+
+                            runOnUiThread {
+                                peripherals.clear()
+                                peripherals.addAll(updatedPeripherals)
+                                filteredPeripherals.clear()
+                                filteredPeripherals.addAll(updatedPeripherals)
+                                adapter.notifyDataSetChanged()
+                                isOperationInProgress = false
+                                toggleButtons(true)
+                                Toast.makeText(
+                                                this,
+                                                getString(R.string.operation_completed, type),
+                                                Toast.LENGTH_SHORT
+                                        )
+                                        .show()
+                            }
+                        } else {
+                            runOnUiThread {
+                                isOperationInProgress = false
+                                toggleButtons(true)
+                                Toast.makeText(
+                                                this,
+                                                getString(R.string.operation_completed, type),
+                                                Toast.LENGTH_SHORT
+                                        )
+                                        .show()
+                            }
+                        }
+                    }
+            )
+        } else {
+            runOnUiThread {
+                isOperationInProgress = false
+                toggleButtons(true)
+                Toast.makeText(
+                                this,
+                                getString(R.string.operation_completed, type),
+                                Toast.LENGTH_SHORT
+                        )
+                        .show()
+            }
         }
     }
 

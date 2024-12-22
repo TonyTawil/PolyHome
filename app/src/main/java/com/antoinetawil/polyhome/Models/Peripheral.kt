@@ -6,7 +6,8 @@ data class Peripheral(
         val availableCommands: List<String>,
         var power: Int? = null,
         var opening: Double? = null,
-        val openingMode: Int? = null
+        val openingMode: Int? = null,
+        var isStopped: Boolean = false
 ) {
     val isShutterOpen: Boolean
         get() =
@@ -26,9 +27,7 @@ data class Peripheral(
                     else -> 0
                 }
 
-    // Helper function to safely get power value
     fun getPowerSafely(): Int = power ?: 0
 
-    // Helper function to safely get opening value as percentage
     fun getOpeningSafely(): Int = shutterOpeningPercentage
 }

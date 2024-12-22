@@ -24,7 +24,7 @@ import org.json.JSONObject
 class PeripheralListAdapter(
         private val peripheralList: List<Peripheral>,
         private val context: Context,
-        private val isScheduleMode: Boolean = false // Special behavior for SchedulesActivity
+        private val isScheduleMode: Boolean = false
 ) : RecyclerView.Adapter<PeripheralListAdapter.PeripheralViewHolder>() {
 
     class PeripheralViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -48,7 +48,6 @@ class PeripheralListAdapter(
         val peripheral = peripheralList[position]
         holder.peripheralIdText.text = peripheral.id
 
-        // Update status text based on peripheral type
         when (peripheral.type.lowercase()) {
             "light" -> {
                 holder.statusText.text =
@@ -58,6 +57,7 @@ class PeripheralListAdapter(
             "rolling shutter", "garage door" -> {
                 holder.statusText.text =
                         when {
+                            peripheral.isStopped -> context.getString(R.string.status_stopped)
                             peripheral.opening == 1.0 -> context.getString(R.string.status_open)
                             peripheral.opening == 0.0 -> context.getString(R.string.status_closed)
                             else ->
@@ -110,9 +110,9 @@ class PeripheralListAdapter(
                     setOnClickListener {
                         peripheral.power =
                                 when (peripheral.power) {
-                                    1 -> -1 // ON -> OFF
-                                    -1 -> 0 // OFF -> unselected
-                                    else -> 1 // unselected -> ON
+                                    1 -> -1
+                                    -1 -> 0
+                                    else -> 1
                                 }
                         setImageResource(
                                 when (peripheral.power) {
@@ -157,7 +157,6 @@ class PeripheralListAdapter(
                                             else R.drawable.ic_light_off
                                     )
 
-                                    // Update the status text
                                     val parentView = parent.parent as? View
                                     parentView?.findViewById<TextView>(R.id.statusTextView)?.text =
                                             if (peripheral.power == 1)
@@ -209,7 +208,6 @@ class PeripheralListAdapter(
                     }
                 }
 
-        // Set initial state based on current opening state
         if (peripheral.isShutterOpen) {
             updateButtonStates(container, openButton)
         } else {
@@ -235,30 +233,24 @@ class PeripheralListAdapter(
     private fun createStyledButton(text: String): Button {
         return Button(context).apply {
             layoutParams =
-                    LinearLayout.LayoutParams(
-                                    0, // Width will be 0 with weight for equal sizing
-                                    LinearLayout.LayoutParams.WRAP_CONTENT
-                            )
-                            .apply {
-                                weight = 1f // Equal width for both buttons
-                                marginStart = 8.dpToPx()
-                                marginEnd = 8.dpToPx()
-                            }
+                    LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+                        weight = 1f
+                        marginStart = 8.dpToPx()
+                        marginEnd = 8.dpToPx()
+                    }
             this.text = text
             setBackgroundResource(R.drawable.button_background_secondary)
-            elevation = 0f // Remove button shadow
+            elevation = 0f
             textSize = 14f
-            minimumHeight = 48.dpToPx() // Standard button height
+            minimumHeight = 48.dpToPx()
         }
     }
 
-    // Add extension function for dp conversion
     private fun Int.dpToPx(): Int {
         return (this * context.resources.displayMetrics.density).toInt()
     }
 
     private fun configureShutterAndDoorButtons(container: LinearLayout, peripheral: Peripheral) {
-        // Inflate the shutter buttons layout
         val buttonsView =
                 LayoutInflater.from(context)
                         .inflate(R.layout.shutter_buttons_layout, container, false)
@@ -267,7 +259,6 @@ class PeripheralListAdapter(
         val stopButton = buttonsView.findViewById<Button>(R.id.stopButton)
         val closeButton = buttonsView.findViewById<Button>(R.id.closeButton)
 
-        // Set initial button states
         openButton.isEnabled = peripheral.availableCommands.contains("OPEN")
         stopButton.isEnabled = peripheral.availableCommands.contains("STOP")
         closeButton.isEnabled = peripheral.availableCommands.contains("CLOSE")
@@ -308,7 +299,6 @@ class PeripheralListAdapter(
             sendCommandToPeripheral(peripheral.id, "STOP") { success ->
                 (context as PeripheralListActivity).runOnUiThread {
                     if (success) {
-                        // When stopped, show "Stopped" status
                         val parentView = (container.parent as? View)?.parent as? View
                         parentView?.findViewById<TextView>(R.id.statusTextView)?.text =
                                 context.getString(R.string.status_stopped)
