@@ -60,7 +60,6 @@
                     android:padding="16dp">
 
                     <TextView
-                        android:id="@+id/themeLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/theme"
@@ -68,27 +67,27 @@
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
-                    <RelativeLayout
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
                         android:paddingTop="6dp">
 
                         <TextView
                             android:id="@+id/themeModeText"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentStart="true"
-                            android:layout_centerVertical="true"
+                            android:layout_weight="1"
                             android:textColor="@color/gray" />
 
                         <Switch
                             android:id="@+id/themeSwitch"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:layout_centerVertical="true"
+                            android:layout_marginStart="16dp"
                             android:thumbTint="@color/thumb_color" />
-                    </RelativeLayout>
+                    </LinearLayout>
                 </LinearLayout>
 
                 <!-- Security Section -->
@@ -108,31 +107,33 @@
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
-                    <RelativeLayout
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
                         android:paddingTop="6dp">
 
                         <TextView
                             android:id="@+id/securityLabel"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentStart="true"
-                            android:layout_centerVertical="true"
-                            android:layout_marginEnd="16dp"
-                            android:layout_toStartOf="@id/securitySpinner"
                             android:text="@string/authentication_type"
-                            android:textColor="@color/gray" />
+                            android:textColor="@color/gray"
+                            android:maxLines="1" />
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
 
                         <Spinner
                             android:id="@+id/securitySpinner"
-                            android:layout_width="wrap_content"
+                            android:layout_width="180dp"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:layout_centerVertical="true"
-                            android:minWidth="140dp"
+                            android:layout_marginStart="16dp"
                             android:spinnerMode="dropdown" />
-                    </RelativeLayout>
+                    </LinearLayout>
                 </LinearLayout>
 
                 <!-- General Section -->
@@ -152,27 +153,32 @@
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
-                    <RelativeLayout
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:paddingTop="8dp">
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingTop="6dp">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentStart="true"
-                            android:layout_centerVertical="true"
                             android:text="@string/language"
-                            android:textColor="@color/gray" />
+                            android:textColor="@color/gray"
+                            android:maxLines="1" />
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
 
                         <Spinner
                             android:id="@+id/languageSpinner"
-                            android:layout_width="wrap_content"
+                            android:layout_width="180dp"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:layout_centerVertical="true"
+                            android:layout_marginStart="16dp"
                             android:spinnerMode="dropdown" />
-                    </RelativeLayout>
+                    </LinearLayout>
                 </LinearLayout>
 
                 <!-- About Section -->
