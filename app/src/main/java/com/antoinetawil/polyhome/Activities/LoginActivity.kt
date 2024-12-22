@@ -71,7 +71,6 @@ class LoginActivity : BaseActivity() {
 
         val colorSpan = ForegroundColorSpan(ContextCompat.getColor(this, R.color.PolytechBlue))
 
-        // Find the position of the register text in the full string
         val startIndex = fullText.indexOf(registerText)
         if (startIndex >= 0) {
             val endIndex = startIndex + registerText.length
@@ -97,29 +96,30 @@ class LoginActivity : BaseActivity() {
     private fun setupLanguageSpinner() {
         val spinner: Spinner = findViewById(R.id.languageSpinner)
 
-        val languages =
+        // Define language pairs (code to display name)
+        val languagePairs =
                 listOf(
-                        getString(R.string.english),
-                        getString(R.string.french),
-                        getString(R.string.spanish),
-                        getString(R.string.arabic),
-                        getString(R.string.korean)
+                        "en" to getString(R.string.english),
+                        "fr" to getString(R.string.french),
+                        "es" to getString(R.string.spanish),
+                        "ar" to getString(R.string.arabic),
+                        "ko" to getString(R.string.korean)
                 )
 
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, languages)
+        // Create adapter with display names only
+        val adapter =
+                ArrayAdapter(
+                        this,
+                        android.R.layout.simple_spinner_item,
+                        languagePairs.map { it.second }
+                )
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = adapter
 
-        // Set current language as selected
+        // Set current selection based on language code
         val currentLanguage = getCurrentLanguage()
         val position =
-                when (currentLanguage) {
-                    "fr" -> 1
-                    "es" -> 2
-                    "ar" -> 3
-                    "ko" -> 4
-                    else -> 0
-                }
+                languagePairs.indexOfFirst { it.first == currentLanguage }.takeIf { it != -1 } ?: 0
         spinner.setSelection(position)
 
         spinner.onItemSelectedListener =
@@ -130,17 +130,9 @@ class LoginActivity : BaseActivity() {
                             position: Int,
                             id: Long
                     ) {
-                        val locale =
-                                when (position) {
-                                    1 -> "fr"
-                                    2 -> "es"
-                                    3 -> "ar"
-                                    4 -> "ko"
-                                    else -> "en"
-                                }
-                        if (locale != getCurrentLanguage()) {
-                            setLocalePreference(locale)
-                            recreate()
+                        val newLocale = languagePairs[position].first
+                        if (newLocale != getCurrentLanguage()) {
+                            setLocalePreference(newLocale)
                         }
                     }
 

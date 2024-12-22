@@ -20,7 +20,8 @@
     <!-- Settings -->
     <string name="settings">Ajustes</string>
     <string name="theme">Tema</string>
-    <string name="enable_dark_mode">Activar Modo Oscuro</string>
+    <string name="enable_light_mode">Activar modo claro</string>
+    <string name="enable_dark_mode">Activar modo oscuro</string>
     <string name="security">Seguridad</string>
     <string name="enable_biometric_auth">Activar Autenticación Biométrica</string>
     <string name="about">Acerca de</string>

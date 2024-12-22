@@ -32,7 +32,6 @@ open class BaseActivity : AppCompatActivity() {
             }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Set theme before calling super.onCreate
         val isDarkMode =
                 getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getBoolean(DARK_MODE_KEY, false)
         AppCompatDelegate.setDefaultNightMode(
@@ -64,11 +63,9 @@ open class BaseActivity : AppCompatActivity() {
                         if (intent != null) {
                             authLauncher.launch(intent)
                         } else {
-                            // If intent is null, device might not have security set up
                             isAuthenticatedWithFingerprint = true
                         }
                     } else {
-                        // If device has no security set up, proceed without authentication
                         isAuthenticatedWithFingerprint = true
                     }
                 }
@@ -77,29 +74,27 @@ open class BaseActivity : AppCompatActivity() {
     }
 
     override fun attachBaseContext(newBase: Context) {
-        val languageCode = getLanguagePreference(newBase)
+        val languageCode =
+                newBase.getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getString(LANGUAGE_KEY, "en")
+                        ?: "en"
+
         val locale =
                 if (languageCode == "ar") {
-                    // For Arabic, only force Western Arabic numerals while keeping Arabic text
-                    Locale.Builder()
-                            .setLanguage("ar")
-                            .setExtension('u', "nu-latn") // This only sets numeric type to Latin
-                            .build()
+                    Locale.Builder().setLanguage("ar").setExtension('u', "nu-latn").build()
                 } else {
                     Locale(languageCode)
                 }
 
+        Locale.setDefault(locale)
         val config = Configuration(newBase.resources.configuration)
+        config.setLocale(locale)
 
-        // Support RTL layout for Arabic
         if (locale.language == "ar") {
             config.setLayoutDirection(Locale("ar"))
         } else {
             config.setLayoutDirection(Locale.getDefault())
         }
 
-        Locale.setDefault(locale)
-        config.setLocale(locale)
         val context = newBase.createConfigurationContext(config)
         super.attachBaseContext(context)
     }
@@ -110,48 +105,33 @@ open class BaseActivity : AppCompatActivity() {
     }
 
     protected fun setLocalePreference(languageCode: String) {
+        // Save the new language preference
         getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
                 .edit()
                 .putString(LANGUAGE_KEY, languageCode)
                 .apply()
 
-        // Update the locale immediately
-        val locale =
-                if (languageCode == "ar") {
-                    Locale.Builder().setLanguage("ar").setExtension('u', "nu-latn").build()
-                } else {
-                    Locale(languageCode)
+        // Restart the app with the new language
+        val intent =
+                packageManager.getLaunchIntentForPackage(packageName)?.apply {
+                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
                 }
-
-        Locale.setDefault(locale)
-        val config = Configuration(resources.configuration)
-        config.setLocale(locale)
-
-        // Support RTL layout for Arabic
-        if (locale.language == "ar") {
-            config.setLayoutDirection(Locale("ar"))
-        } else {
-            config.setLayoutDirection(Locale.getDefault())
-        }
-
-        resources.updateConfiguration(config, resources.displayMetrics)
-
-        // Restart the entire app to apply the language change
-        val intent = packageManager.getLaunchIntentForPackage(packageName)
-        intent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)
         finish()
     }
 
     protected fun setThemePreference(isDarkMode: Boolean) {
-        AppCompatDelegate.setDefaultNightMode(
-                if (isDarkMode) AppCompatDelegate.MODE_NIGHT_YES
-                else AppCompatDelegate.MODE_NIGHT_NO
-        )
+        // Save the preference first
         getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
                 .edit()
                 .putBoolean(DARK_MODE_KEY, isDarkMode)
                 .apply()
+
+        // Then update the theme
+        AppCompatDelegate.setDefaultNightMode(
+                if (isDarkMode) AppCompatDelegate.MODE_NIGHT_YES
+                else AppCompatDelegate.MODE_NIGHT_NO
+        )
     }
 
     protected fun getSecurityType(): String {

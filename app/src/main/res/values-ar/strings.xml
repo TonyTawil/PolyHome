@@ -19,8 +19,9 @@
 
     <!-- Settings -->
     <string name="settings">الإعدادات</string>
-    <string name="theme">المظهر</string>
-    <string name="enable_dark_mode">تفعيل الوضع الليلي</string>
+    <string name="theme">السمة</string>
+    <string name="enable_light_mode">تفعيل الوضع الفاتح</string>
+    <string name="enable_dark_mode">تفعيل الوضع الداكن</string>
     <string name="security">الأمان</string>
     <string name="enable_biometric_auth">تفعيل المصادقة البيومترية</string>
     <string name="about">حول</string>
@@ -99,7 +100,7 @@
     <string name="co2_value_format">%s كجم</string>
     <string name="total_houses_format">إجمالي المنازل: %d</string>
     <string name="total_devices_format">إجمالي الأجهزة: %d</string>
-    <string name="daily_co2_format">ث��ني أكسيد الكربون اليومي: %.1f كجم</string>
+    <string name="daily_co2_format">ثاني أكسيد الكربون اليومي: %.1f كجم</string>
     <string name="efficiency_format">كفاءة النظام: %d%%</string>
     <string name="active_devices_format">الأجهزة النشطة: %d</string>
     <string name="energy_saved_format">الطاقة الموفرة: %.1f كيلوواط/ساعة</string>
@@ -159,7 +160,7 @@
     <string name="give_permission">منح الإذن</string>
     <string name="remove_permission">إزالة الإذن</string>
     <string name="invalid_data">بيانات غير صالحة</string>
-    <string name="fetch_failed">فشل في جلب البيانات</string>
+    <string name="fetch_failed">فشل في جب البيانات</string>
     <string name="all_houses">جميع المنازل</string>
     <string name="owner_status">المالك</string>
     <string name="guest_status">ضيف</string>
@@ -203,7 +204,7 @@
 
     <!-- Language Switcher -->
     <string name="language">اللغة</string>
-    <string name="english">الإنجل��زية</string>
+    <string name="english">الإنجليزية</string>
     <string name="french">الفرنسية</string>
     <string name="spanish">الإسبانية</string>
     <string name="arabic">العربية</string>
@@ -214,7 +215,7 @@
     <string name="sign_up">تسجيل</string>
     <string name="have_account_login">لديك حساب بالفعل؟ تسجيل الدخول</string>
     <string name="signup_successful">تم التسجيل بنجاح! جارٍ إعادة التوجيه لتسجيل الدخول.</string>
-    <string name="signup_successful_login">تم التسجيل بنجاح! الجاء تسجيل الدخول.</string>
+    <string name="signup_successful_login">تم التسجيل بنجاح! الجاء تسج��ل الدخول.</string>
 
     <!-- Add these new strings -->
     <string name="command_turn_on">تشغيل</string>
@@ -254,5 +255,7 @@
     <string name="auth_option_none">لا شيء</string>
     <string name="auth_required">المصادقة مطلوبة</string>
     <string name="auth_verify_identity">يرجى التحقق من هويتك للمتابعة</string>
+
+    <!-- Theme strings -->
 
 </resources> 

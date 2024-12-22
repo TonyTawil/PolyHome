@@ -9,6 +9,7 @@
     </string-array>
     <string name="settings">Paramètres</string>
     <string name="theme">Thème</string>
+    <string name="enable_light_mode">Activer le mode clair</string>
     <string name="enable_dark_mode">Activer le mode sombre</string>
     <string name="language">Langue</string>
     <string name="security">Sécurité</string>
@@ -21,7 +22,7 @@
     <string name="second_floor">Deuxième étage</string>
     <string name="invalid_data">Données invalides</string>
     <string name="auth_token_missing">Jeton d\'authentification manquant</string>
-    <string name="fetch_failed">��chec de la récupération des périphériques</string>
+    <string name="fetch_failed">����chec de la récupération des périphériques</string>
     <string name="all_houses">Toutes les maisons</string>
     <string name="owner_status">Propriétaire</string>
     <string name="guest_status">Invité</string>

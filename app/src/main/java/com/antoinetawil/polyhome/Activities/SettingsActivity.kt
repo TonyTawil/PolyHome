@@ -6,6 +6,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.Switch
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.drawerlayout.widget.DrawerLayout
 import com.antoinetawil.polyhome.R
@@ -15,6 +16,7 @@ class SettingsActivity : BaseActivity() {
 
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var themeSwitch: Switch
+    private lateinit var themeModeText: TextView
     private lateinit var languageSpinner: Spinner
     private lateinit var securitySpinner: Spinner
 
@@ -26,14 +28,22 @@ class SettingsActivity : BaseActivity() {
         HeaderUtils.setupHeaderWithDrawer(this, drawerLayout)
 
         themeSwitch = findViewById(R.id.themeSwitch)
+        themeModeText = findViewById(R.id.themeModeText)
         languageSpinner = findViewById(R.id.languageSpinner)
         securitySpinner = findViewById(R.id.securitySpinner)
 
-        themeSwitch.isChecked = isDarkModeEnabled()
+        val isDark = isDarkModeEnabled()
+        themeSwitch.isChecked = isDark
+        updateThemeSwitchText(isDark)
         themeSwitch.setOnCheckedChangeListener { _, isChecked -> onThemeChanged(isChecked) }
 
         setupLanguageSpinner()
         setupSecuritySpinner()
+    }
+
+    private fun updateThemeSwitchText(isDark: Boolean) {
+        themeModeText.text =
+                getString(if (isDark) R.string.enable_light_mode else R.string.enable_dark_mode)
     }
 
     private fun isDarkModeEnabled(): Boolean {
@@ -42,7 +52,22 @@ class SettingsActivity : BaseActivity() {
     }
 
     private fun onThemeChanged(isDarkMode: Boolean) {
+        // Prevent multiple recreations by removing the listener temporarily
+        themeSwitch.setOnCheckedChangeListener(null)
+
+        // Update the theme preference and switch text
         setThemePreference(isDarkMode)
+        updateThemeSwitchText(isDarkMode)
+
+        // Reattach the listener after a short delay to prevent rapid toggling
+        themeSwitch.postDelayed(
+                {
+                    themeSwitch.setOnCheckedChangeListener { _, isChecked ->
+                        onThemeChanged(isChecked)
+                    }
+                },
+                1000
+        ) // 1 second delay
     }
 
     private fun getCurrentLanguage(): String {
@@ -50,45 +75,30 @@ class SettingsActivity : BaseActivity() {
     }
 
     private fun setupLanguageSpinner() {
-        val languageSpinner = findViewById<Spinner>(R.id.languageSpinner)
-        val languages = resources.getStringArray(R.array.language_options)
+        val languages = arrayOf("English", "Français", "Español", "한국어", "العربية")
+        val languageCodes = arrayOf("en", "fr", "es", "ko", "ar")
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, languages)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         languageSpinner.adapter = adapter
 
-        // Set current selection
+        // Set initial selection based on current language
         val currentLanguage = getCurrentLanguage()
-        val position =
-                when (currentLanguage) {
-                    "fr" -> 1
-                    "es" -> 2
-                    "ar" -> 3
-                    "ko" -> 4
-                    else -> 0
-                }
-        languageSpinner.setSelection(position)
+        val index = languageCodes.indexOf(currentLanguage)
+        if (index != -1) {
+            languageSpinner.setSelection(index)
+        }
 
         languageSpinner.onItemSelectedListener =
                 object : AdapterView.OnItemSelectedListener {
                     override fun onItemSelected(
                             parent: AdapterView<*>?,
                             view: View?,
-                            pos: Int,
+                            position: Int,
                             id: Long
                     ) {
-                        val newLocale =
-                                when (pos) {
-                                    1 -> "fr"
-                                    2 -> "es"
-                                    3 -> "ar"
-                                    4 -> "ko"
-                                    else -> "en"
-                                }
-                        val currentLanguage = getCurrentLanguage()
-                        if (newLocale != currentLanguage) {
-                            setLocalePreference(newLocale)
-                            // Recreate the activity to apply the new locale
-                            recreate()
+                        val selectedLanguageCode = languageCodes[position]
+                        if (selectedLanguageCode != currentLanguage) {
+                            setLocalePreference(selectedLanguageCode)
                         }
                     }
 
@@ -107,13 +117,12 @@ class SettingsActivity : BaseActivity() {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         securitySpinner.adapter = adapter
 
-        // Set current selection
         val currentSecurity = getSecurityType()
         val position =
                 when (currentSecurity) {
                     "password" -> 1
                     "none" -> 2
-                    else -> 0 // fingerprint is default
+                    else -> 0
                 }
         securitySpinner.setSelection(position)
 

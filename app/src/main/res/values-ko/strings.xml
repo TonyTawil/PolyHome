@@ -20,8 +20,8 @@
     <!-- Settings -->
     <string name="settings">설정</string>
     <string name="theme">테마</string>
+    <string name="enable_light_mode">라이트 모드 활성화</string>
     <string name="enable_dark_mode">다크 모드 활성화</string>
-    <string name="language">언어</string>
     <string name="security">보안</string>
     <string name="enable_biometric_auth">생체 인증 활성화</string>
     <string name="about">정보</string>
@@ -187,7 +187,7 @@
         <string name="schedule_will_run_soon">일정이 곧 실행됩니다</string>
 
         <!-- Notifications -->
-        <string name="notification_permission_title">알림 활성화</string>
+        <string name="notification_permission_title">알림 활��화</string>
         <string name="notification_permission_message">예약된 명령에 대한 알림을 받으려면 PolyHome의 알림을 허용해주세요</string>
         <string name="allow">허용</string>
         <string name="deny">거부</string>
@@ -212,7 +212,7 @@
         <string name="add_user">사용자 추가</string>
         <string name="access_granted">접근 권한이 성공적으로 부여되었습니다</string>
         <string name="access_removed">접근 권한이 성공적으로 제거되었습니다</string>
-        <string name="failed_to_fetch_users">사용��� 가져오기 실패</string>
+        <string name="failed_to_fetch_users">사용자 가져오기 실패</string>
         <string name="failed_to_grant_access">접근 권한 부여 실패</string>
         <string name="failed_to_remove_access">접근 권한 제거 실패</string>
         <string name="remove_user">사용자 제거</string>
