@@ -27,7 +27,6 @@ object HeaderUtils {
 
         val searchIcon = activity.findViewById<ImageButton>(R.id.searchIcon)
 
-        // Hide search icon for specific activities
         when (activity) {
             is SchedulesListActivity,
             is SettingsActivity,

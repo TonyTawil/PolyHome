@@ -271,7 +271,6 @@ class PeripheralListAdapter(
             sendCommandToPeripheral(peripheral.id, "OPEN") { success ->
                 (context as PeripheralListActivity).runOnUiThread {
                     if (success) {
-                        // Initial state update
                         peripheral.opening = 1.0
                         updateShutterStatus(peripheral, container.parent as View, "OPEN")
                         Toast.makeText(
@@ -285,30 +284,28 @@ class PeripheralListAdapter(
                                 )
                                 .show()
 
-                        // Start periodic refresh
                         var refreshCount = 0
                         val handler = android.os.Handler(android.os.Looper.getMainLooper())
                         val refreshRunnable =
                                 object : Runnable {
                                     override fun run() {
                                         refreshCount++
-                                        if (refreshCount < 5) { // 5 refreshes total (2s * 5 = 10s)
+                                        if (refreshCount < 5) {
                                             (context as PeripheralListActivity).refreshDevicesState(
                                                     ""
                                             )
                                             handler.postDelayed(
                                                     this,
                                                     2000
-                                            ) // Run again in 2 seconds
+                                            )
                                         } else {
-                                            // Final refresh
                                             (context as PeripheralListActivity).refreshDevicesState(
                                                     ""
                                             )
                                         }
                                     }
                                 }
-                        handler.postDelayed(refreshRunnable, 2000) // Start first delayed refresh
+                        handler.postDelayed(refreshRunnable, 2000)
                     } else {
                         Toast.makeText(
                                         context,
@@ -329,7 +326,6 @@ class PeripheralListAdapter(
             sendCommandToPeripheral(peripheral.id, "STOP") { success ->
                 (context as PeripheralListActivity).runOnUiThread {
                     if (success) {
-                        // Single refresh for STOP command
                         (context as PeripheralListActivity).refreshDevicesState("")
                         Toast.makeText(
                                         context,
@@ -361,7 +357,6 @@ class PeripheralListAdapter(
             sendCommandToPeripheral(peripheral.id, "CLOSE") { success ->
                 (context as PeripheralListActivity).runOnUiThread {
                     if (success) {
-                        // Initial state update
                         peripheral.opening = 0.0
                         updateShutterStatus(peripheral, container.parent as View, "CLOSE")
                         Toast.makeText(
@@ -375,30 +370,28 @@ class PeripheralListAdapter(
                                 )
                                 .show()
 
-                        // Start periodic refresh
                         var refreshCount = 0
                         val handler = android.os.Handler(android.os.Looper.getMainLooper())
                         val refreshRunnable =
                                 object : Runnable {
                                     override fun run() {
                                         refreshCount++
-                                        if (refreshCount < 5) { // 5 refreshes total (2s * 5 = 10s)
+                                        if (refreshCount < 5) {
                                             (context as PeripheralListActivity).refreshDevicesState(
                                                     ""
                                             )
                                             handler.postDelayed(
                                                     this,
                                                     2000
-                                            ) // Run again in 2 seconds
+                                            )
                                         } else {
-                                            // Final refresh
                                             (context as PeripheralListActivity).refreshDevicesState(
                                                     ""
                                             )
                                         }
                                     }
                                 }
-                        handler.postDelayed(refreshRunnable, 2000) // Start first delayed refresh
+                        handler.postDelayed(refreshRunnable, 2000)
                     } else {
                         Toast.makeText(
                                         context,

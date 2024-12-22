@@ -1,4 +1,3 @@
-<!-- themes-night.xml -->
 <resources>
     <style name="Theme.PolyHome" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/PolytechBlue</item>

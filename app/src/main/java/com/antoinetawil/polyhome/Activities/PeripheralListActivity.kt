@@ -294,7 +294,6 @@ class PeripheralListActivity : BaseActivity() {
     private fun performBulkOperation(command: String, type: String) {
         Log.d(TAG, "Starting performBulkOperation with command: $command and type: $type")
 
-        // Allow new commands for shutters/garage doors (except when stopping)
         val isShutterOrDoor =
                 type.lowercase() in listOf("shutter", "garage door", "rolling shutter")
         if (isOperationInProgress &&
@@ -355,7 +354,6 @@ class PeripheralListActivity : BaseActivity() {
         }
 
         if (normalizedType == "light") {
-            // For lights, track completion of all requests
             var completedRequests = 0
             var successfulRequests = 0
             val totalRequests = affectedPeripherals.size
@@ -422,7 +420,6 @@ class PeripheralListActivity : BaseActivity() {
                         )
             }
         } else {
-            // Existing code for shutters and garage doors
             val client = OkHttpClient()
             val requests =
                     affectedPeripherals.map { peripheral ->
@@ -503,7 +500,6 @@ class PeripheralListActivity : BaseActivity() {
                         if (refreshCount < maxRefreshes) {
                             handler.postDelayed(this, refreshInterval)
                         } else {
-                            // Final refresh and cleanup
                             refreshDevicesState(type)
                             runOnUiThread {
                                 isOperationInProgress = false
@@ -513,7 +509,6 @@ class PeripheralListActivity : BaseActivity() {
                     }
                 }
 
-        // Start first refresh sooner for better responsiveness
         handler.postDelayed(refreshRunnable, 200) // Reduced initial delay
     }
 

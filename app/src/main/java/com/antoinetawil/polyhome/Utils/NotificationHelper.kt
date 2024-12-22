@@ -47,7 +47,6 @@ class NotificationHelper(private val context: Context) {
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // Use localized context for channel creation
             val localizedContext = updateContextWithStoredLanguage()
             val importance = NotificationManager.IMPORTANCE_DEFAULT
             val channel =
@@ -69,10 +68,8 @@ class NotificationHelper(private val context: Context) {
     }
 
     fun showScheduleExecutionNotification(title: String, content: String, success: Boolean = true) {
-        // Use localized context for notification content
         val localizedContext = updateContextWithStoredLanguage()
 
-        // Get localized strings directly from resources using localized context
         val localizedTitle =
                 if (success) {
                     localizedContext.getString(R.string.schedule_executed_success)
@@ -109,7 +106,6 @@ class NotificationHelper(private val context: Context) {
 
         with(NotificationManagerCompat.from(context)) { notify(notificationId++, builder.build()) }
 
-        // Save notification to database in English
         val dbHelper = DatabaseHelper(context)
         val notification =
                 Notification(
@@ -124,7 +120,6 @@ class NotificationHelper(private val context: Context) {
     }
 
     fun showScheduleUpdateNotification(houseId: Int, commandCount: Int) {
-        // Use localized context for notification content
         val localizedContext = updateContextWithStoredLanguage()
 
         val title = localizedContext.getString(R.string.schedule_updated_success)
@@ -162,7 +157,6 @@ class NotificationHelper(private val context: Context) {
             notify(notificationId++, builder.build())
         }
 
-        // Save notification to database in English
         val dbHelper = DatabaseHelper(context)
         val notification = Notification(
             title = "Schedule Updated Successfully",

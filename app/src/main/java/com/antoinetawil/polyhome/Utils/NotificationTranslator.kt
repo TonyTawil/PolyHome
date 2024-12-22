@@ -13,11 +13,9 @@ object NotificationTranslator {
                 }
         val content = context.getString(R.string.schedule_execution_complete)
 
-        // Return both the translated and English versions
         return Pair(title, content)
     }
 
-    // Convert English stored notification to localized version
     fun getLocalizedNotification(
             context: Context,
             englishTitle: String,
@@ -51,7 +49,6 @@ object NotificationTranslator {
         return Pair(localizedTitle, localizedContent)
     }
 
-    // Convert localized notification to English for storage
     fun getEnglishNotification(
             context: Context,
             localizedTitle: String,
@@ -83,7 +80,6 @@ object NotificationTranslator {
         return Pair(englishTitle, englishContent)
     }
 
-    // Add helper functions
     private fun extractHouseId(content: String): Int {
         return "House (\\d+)".toRegex().find(content)?.groupValues?.get(1)?.toIntOrNull() ?: 0
     }

@@ -68,7 +68,6 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <!-- Overview Section -->
                 <TextView
                     style="@style/TextAppearance.MaterialComponents.Headline6"
                     android:layout_width="wrap_content"
@@ -76,14 +75,12 @@
                     android:layout_marginBottom="16dp"
                     android:text="@string/system_overview" />
 
-                <!-- Stats Grid -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="24dp"
                     android:orientation="horizontal">
 
-                    <!-- Houses Card -->
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -120,7 +117,6 @@
 
                     </com.google.android.material.card.MaterialCardView>
 
-                    <!-- Devices Card -->
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -159,7 +155,6 @@
 
                 </LinearLayout>
 
-                <!-- Device Status Section -->
                 <TextView
                     style="@style/TextAppearance.MaterialComponents.Headline6"
                     android:layout_width="wrap_content"
@@ -174,7 +169,6 @@
                     android:layout_marginBottom="24dp"
                     android:orientation="horizontal">
 
-                    <!-- Active Lights Card -->
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
@@ -211,7 +205,6 @@
 
                     </com.google.android.material.card.MaterialCardView>
 
-                    <!-- Active Shutters Card -->
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
@@ -250,7 +243,6 @@
 
                 </LinearLayout>
 
-                <!-- Environmental Impact Section -->
                 <TextView
                     style="@style/TextAppearance.MaterialComponents.Headline6"
                     android:layout_width="wrap_content"
@@ -259,7 +251,6 @@
                     android:layout_marginBottom="16dp"
                     android:text="@string/environmental_impact" />
 
-                <!-- CO2 Card -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -289,7 +280,6 @@
 
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Efficiency Card -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

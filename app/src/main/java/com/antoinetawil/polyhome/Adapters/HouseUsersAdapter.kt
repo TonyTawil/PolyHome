@@ -31,8 +31,6 @@ class HouseUsersAdapter(
         val user = users[position]
         holder.userLoginText.text = user.userLogin
 
-        // Only show remove button if current user is owner and the user being displayed is not the
-        // owner
         holder.removeButton.visibility = if (isOwner && user.owner == 0) View.VISIBLE else View.GONE
 
         holder.removeButton.setOnClickListener { onRemoveUser(user.userLogin) }

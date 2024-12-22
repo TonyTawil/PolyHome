@@ -48,13 +48,12 @@ class SchedulesListActivity : BaseActivity() {
             startActivity(Intent(this, SchedulesActivity::class.java))
         }
 
-        // Initially show empty state
         showEmptyState()
     }
 
     override fun onResume() {
         super.onResume()
-        loadSchedules() // Refresh the list when returning to this activity
+        loadSchedules()
     }
 
     private fun setupRecyclerView() {
@@ -83,7 +82,7 @@ class SchedulesListActivity : BaseActivity() {
     private fun deleteSchedule(schedule: Schedule) {
         lifecycleScope.launch(Dispatchers.IO) {
             dbHelper.deleteSchedule(schedule.id)
-            loadSchedules() // Reload the list after deletion
+            loadSchedules()
         }
     }
 
@@ -110,7 +109,6 @@ class SchedulesListActivity : BaseActivity() {
             val schedule = dbHelper.getSchedule(scheduleId)
             if (schedule != null) {
                 if (isEnabled) {
-                    // Calculate time until next occurrence
                     val nextOccurrence = calculateNextOccurrence(schedule)
                     val timeDiff = nextOccurrence - System.currentTimeMillis()
 
@@ -135,7 +133,6 @@ class SchedulesListActivity : BaseActivity() {
                     }
                 }
 
-                // Update the schedule as before
                 if (schedule.recurringDays.isEmpty() && !schedule.isSpecificDate) {
                     val scheduleTime =
                             SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
@@ -177,13 +174,12 @@ class SchedulesListActivity : BaseActivity() {
 
         when {
             schedule.recurringDays.isNotEmpty() -> {
-                // Find next recurring day
                 val currentDay = calendar.get(Calendar.DAY_OF_WEEK)
                 val nextDay =
                         schedule.recurringDays
                                 .map {
                                     if (it == 7) 1 else it + 1
-                                } // Convert our day format to Calendar format
+                                }
                                 .sortedBy { if (it > currentDay) it else it + 7 }
                                 .first()
 
@@ -193,12 +189,10 @@ class SchedulesListActivity : BaseActivity() {
                 calendar.add(Calendar.DAY_OF_MONTH, daysToAdd)
             }
             schedule.isSpecificDate -> {
-                // Use the specific date
                 val dateParts = schedule.dateTime.split(" ")[0].split("-")
                 calendar.set(dateParts[0].toInt(), dateParts[1].toInt() - 1, dateParts[2].toInt())
             }
             else -> {
-                // Use today or tomorrow
                 if (hour < calendar.get(Calendar.HOUR_OF_DAY) ||
                                 (hour == calendar.get(Calendar.HOUR_OF_DAY) &&
                                         minute <= calendar.get(Calendar.MINUTE))

@@ -23,6 +23,6 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/remove_user"
         android:src="@drawable/ic_delete"
-        android:tint="@color/red" />
+        android:tint="@color/PolytechBlue" />
 
 </LinearLayout> 

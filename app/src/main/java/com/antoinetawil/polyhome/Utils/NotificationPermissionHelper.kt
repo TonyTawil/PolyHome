@@ -14,7 +14,6 @@ class NotificationPermissionHelper(private val activity: AppCompatActivity) {
     private val requestPermissionLauncher =
             activity.registerForActivityResult(ActivityResultContracts.RequestPermission()) {
                     isGranted ->
-                // Optional: Handle permission result
             }
 
     fun checkNotificationPermission() {
@@ -24,7 +23,6 @@ class NotificationPermissionHelper(private val activity: AppCompatActivity) {
                         activity,
                         Manifest.permission.POST_NOTIFICATIONS
                 ) == PackageManager.PERMISSION_GRANTED -> {
-                    // Permission already granted
                 }
                 activity.shouldShowRequestPermissionRationale(
                         Manifest.permission.POST_NOTIFICATIONS

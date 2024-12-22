@@ -96,7 +96,6 @@ class LoginActivity : BaseActivity() {
     private fun setupLanguageSpinner() {
         val spinner: Spinner = findViewById(R.id.languageSpinner)
 
-        // Define language pairs (code to display name)
         val languagePairs =
                 listOf(
                         "en" to getString(R.string.english),
@@ -106,7 +105,6 @@ class LoginActivity : BaseActivity() {
                         "ko" to getString(R.string.korean)
                 )
 
-        // Create adapter with display names only
         val adapter =
                 ArrayAdapter(
                         this,
@@ -116,7 +114,6 @@ class LoginActivity : BaseActivity() {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = adapter
 
-        // Set current selection based on language code
         val currentLanguage = getCurrentLanguage()
         val position =
                 languagePairs.indexOfFirst { it.first == currentLanguage }.takeIf { it != -1 } ?: 0

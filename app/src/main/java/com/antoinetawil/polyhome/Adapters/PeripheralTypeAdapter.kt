@@ -16,9 +16,9 @@ class PeripheralTypeAdapter(
 ) : RecyclerView.Adapter<PeripheralTypeAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val typeIcon: ImageView = view.findViewById(R.id.typeIcon) // Left icon
-        val typeTextView: TextView = view.findViewById(R.id.typeTextView) // Type text
-        val arrowIcon: ImageView = view.findViewById(R.id.arrowIcon) // Right arrow icon
+        val typeIcon: ImageView = view.findViewById(R.id.typeIcon)
+        val typeTextView: TextView = view.findViewById(R.id.typeTextView)
+        val arrowIcon: ImageView = view.findViewById(R.id.arrowIcon)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -31,30 +31,26 @@ class PeripheralTypeAdapter(
         val type = types[position]
         val context = holder.itemView.context
 
-        // Log the type to understand why the wrong icon might be shown
         Log.d("PeripheralTypeAdapter", "Peripheral type at position $position: $type")
 
-        // Update the icon based on the peripheral type
         val iconResId = when (type) {
-            "Light" -> R.drawable.ic_light_on // Use correct icon for "light"
-            "Shutter" -> R.drawable.ic_shutter // Use correct icon for "rolling shutter"
-            "GarageDoor" -> R.drawable.ic_garage // Use correct icon for "garage door"
-            else -> R.drawable.ic_light_off // Use a default icon for unknown types
+            "Light" -> R.drawable.ic_light_on
+            "Shutter" -> R.drawable.ic_shutter
+            "GarageDoor" -> R.drawable.ic_garage
+            else -> R.drawable.ic_light_off
         }
 
         holder.typeIcon.setImageResource(iconResId)
 
-        // Translate the type text based on the current locale
         val translatedType = when (type) {
             "Light" -> context.getString(R.string.light)
             "Shutter" -> context.getString(R.string.shutter)
             "GarageDoor" -> context.getString(R.string.garage_door)
-            else -> type.replaceFirstChar { it.uppercase() } // Fallback to raw type with capitalization
+            else -> type.replaceFirstChar { it.uppercase() }
         }
 
         holder.typeTextView.text = translatedType
 
-        // Set the onClickListener for the item
         holder.itemView.setOnClickListener { onTypeSelected(type) }
     }
 

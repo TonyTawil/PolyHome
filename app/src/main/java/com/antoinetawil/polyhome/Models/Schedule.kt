@@ -10,8 +10,3 @@ data class Schedule(
         val isSpecificDate: Boolean = false
 )
 
-data class ScheduleCommand(
-        val peripheralId: String,
-        val peripheralType: String,
-        val command: String
-)

@@ -1,4 +1,4 @@
-package com.antoinetawil.polyhome
+package com.antoinetawil.polyhome.Utils
 
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt

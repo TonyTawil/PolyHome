@@ -77,7 +77,6 @@ class NotificationsActivity : BaseActivity() {
                 withContext(Dispatchers.Main) {
                     recyclerView.visibility = View.GONE
                     emptyStateText.visibility = View.VISIBLE
-                    // Optionally show an error message to the user
                     Toast.makeText(
                                     this@NotificationsActivity,
                                     getString(R.string.failed_to_load_notifications),

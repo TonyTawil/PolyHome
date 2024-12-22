@@ -11,7 +11,7 @@ import com.antoinetawil.polyhome.R
 
 class FloorListAdapter(
     private val floors: List<String>,
-    private val peripheralType: String, // Added to handle icons
+    private val peripheralType: String,
     private val onFloorSelected: (String) -> Unit
 ) : RecyclerView.Adapter<FloorListAdapter.ViewHolder>() {
 
@@ -29,18 +29,15 @@ class FloorListAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val floor = floors[position]
 
-        // Log the floor and peripheral type for debugging
         Log.d("FloorListAdapter", "Binding floor: $floor with peripheralType: $peripheralType")
 
-        // Update the icon based on the peripheral type
         val iconResId = when (peripheralType) {
             "Light" -> R.drawable.ic_light_on
             "Shutter" -> R.drawable.ic_shutter
             "GarageDoor" -> R.drawable.ic_garage
-            else -> R.drawable.ic_light_off // Default icon
+            else -> R.drawable.ic_light_off
         }
 
-        // Log the resolved icon resource
         Log.d("FloorListAdapter", "Resolved icon for peripheralType '$peripheralType': $iconResId")
 
         holder.typeIcon.setImageResource(iconResId)

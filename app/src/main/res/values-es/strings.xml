@@ -9,7 +9,6 @@
         <item>Coreano</item>
     </string-array>
     
-    <!-- Navigation -->
     <string name="menu_houses">Casas</string>
     <string name="menu_notifications">Notificaciones</string>
     <string name="menu_settings">Ajustes</string>
@@ -17,7 +16,6 @@
     <string name="menu_statistics">Estadísticas</string>
     <string name="menu_sign_out">Cerrar Sesión</string>
 
-    <!-- Settings -->
     <string name="settings">Ajustes</string>
     <string name="theme">Tema</string>
     <string name="enable_light_mode">Activar modo claro</string>
@@ -28,19 +26,16 @@
     <string name="app_version">Versión de la App: 1.0.0</string>
     <string name="general">General</string>
 
-    <!-- Floors -->
     <string name="all_floors">Todos los Pisos</string>
     <string name="first_floor">Primer Piso</string>
     <string name="second_floor">Segundo Piso</string>
 
-    <!-- House List -->
     <string name="all_houses">Todas las Casas</string>
     <string name="owner_status">Propietario</string>
     <string name="guest_status">Invitado</string>
     <string name="house_id_label">ID: %1$d</string>
     <string name="manage_permissions">Gestionar Permisos</string>
 
-    <!-- Peripherals -->
     <string name="light">Luz</string>
     <string name="lights">Luces</string>
     <string name="shutter">Persiana</string>
@@ -49,7 +44,6 @@
     <string name="garage_door">Puerta de Garaje</string>
     <string name="garage_doors">Puertas de Garaje</string>
 
-    <!-- Commands -->
     <string name="open">Abrir</string>
     <string name="close">Cerrar</string>
     <string name="stop">Parar</string>
@@ -59,7 +53,6 @@
     <string name="turn_on_all">Encender Todo</string>
     <string name="turn_off_all">Apagar Todo</string>
 
-    <!-- Status -->
     <string name="status_open">Estado: Abierto</string>
     <string name="status_closed">Estado: Cerrado</string>
     <string name="status_stopped">Parado</string>
@@ -67,7 +60,6 @@
     <string name="status_on">Encendido</string>
     <string name="status_off">Apagado</string>
 
-    <!-- Messages -->
     <string name="invalid_data">Datos inválidos</string>
     <string name="fetch_failed">Error al obtener datos</string>
     <string name="auth_token_missing">Token de autenticación faltante</string>
@@ -79,15 +71,12 @@
     <string name="operation_completed">Operación completada para %1$s.</string>
     <string name="no_devices_to_operate">No hay dispositivos para operar.</string>
 
-    <!-- Search -->
     <string name="search_by_id">Buscar por ID</string>
 
-    <!-- Notifications -->
     <string name="notifications_title">Notificaciones</string>
     <string name="no_notifications">No hay notificaciones todavía</string>
     <string name="failed_to_load_notifications">Error al cargar las notificaciones</string>
 
-    <!-- Schedule Notifications -->
     <string name="schedule_executed_success">Programa ejecutado con éxito</string>
     <string name="schedule_executed_failure">Error en la ejecución del programa</string>
     <string name="schedule_execution_complete">Ejecución del programa completada</string>
@@ -97,7 +86,6 @@
 
     <string name="clear_notifications">Borrar todo</string>
 
-    <!-- Add these missing strings -->
     <string name="add_schedule">Agregar programación</string>
     <string name="delete_schedule">Eliminar programación</string>
     <string name="monday_short">L</string>
@@ -199,7 +187,6 @@
     <string name="register">Regístrese</string>
     <string name="no_account_register">¿No tiene cuenta? Regístrese</string>
 
-    <!-- Login -->
     <string name="app_logo_description">Logo de la aplicación</string>
     <string name="welcome_back">Bienvenido, por favor inicie sesión</string>
     <string name="email_address">Correo electrónico</string>
@@ -209,7 +196,6 @@
     <string name="invalid_server_response">Respuesta inválida del servidor</string>
     <string name="invalid_credentials">Credenciales inválidas</string>
 
-    <!-- Language Switcher -->
     <string name="language">Idioma</string>
     <string name="english">Inglés</string>
     <string name="french">Francés</string>
@@ -217,14 +203,12 @@
     <string name="arabic">Árabe</string>
     <string name="korean">Coreano</string>
 
-    <!-- Signup -->
     <string name="create_account">Crea tu cuenta</string>
     <string name="sign_up">Registrarse</string>
     <string name="have_account_login">¿Ya tienes una cuenta? Inicia sesión</string>
     <string name="signup_successful">¡Registro exitoso! Redirigiendo al inicio de sesión.</string>
     <string name="signup_successful_login">¡Registro exitoso! Por favor inicia sesión.</string>
 
-    <!-- Add these new strings -->
     <string name="command_turn_on">Encender</string>
     <string name="command_turn_off">Apagar</string>
     <string name="command_open">Abrir</string>

@@ -9,7 +9,6 @@
         <item>한국어</item>
     </string-array>
 
-    <!-- Navigation -->
     <string name="menu_houses">집</string>
     <string name="menu_notifications">알림</string>
     <string name="menu_settings">설정</string>
@@ -17,7 +16,6 @@
     <string name="menu_statistics">통계</string>
     <string name="menu_sign_out">로그아웃</string>
 
-    <!-- Settings -->
     <string name="settings">설정</string>
     <string name="theme">테마</string>
     <string name="enable_light_mode">라이트 모드 활성화</string>
@@ -28,12 +26,10 @@
     <string name="app_version">앱 버전: 1.0.0</string>
     <string name="general">일반</string>
 
-    <!-- Floors -->
     <string name="all_floors">전체 층</string>
     <string name="first_floor">1층</string>
     <string name="second_floor">2층</string>
 
-    <!-- Messages -->
     <string name="invalid_data">잘못된 데이터</string>
     <string name="fetch_failed">주변기기 가져오기 실패</string>
     <string name="all_houses">전체 집</string>
@@ -47,7 +43,6 @@
     <string name="permission_removed">권한이 성공적으로 제거되었습니다!</string>
     <string name="failed_permission">권한 업데이트 실패</string>
 
-    <!-- User Management -->
     <string name="enter_email">이메일 주소를 입력해주세요</string>
     <string name="house_id_label">ID: %1$d</string>
     <string name="owner">소유자</string>
@@ -57,20 +52,17 @@
     <string name="give_permission">권한 부여</string>
     <string name="remove_permission">권한 제거</string>
 
-    <!-- Search and Peripherals -->
     <string name="search_by_id">ID로 검색</string>
     <string name="peripheral_types">주변기기 유형</string>
     <string name="invalid_house_data">잘못된 집 데이터</string>
     <string name="failed_fetch_peripherals">주변기기 가져오기 실패. 로그를 확인하세요.</string>
     <string name="failed_fetch_peripherals_log">주변기기 가져오기 실패. 응답 코드: %1$d</string>
 
-    <!-- Device Types -->
     <string name="light">조명</string>
     <string name="shutter">셔터</string>
     <string name="garage_door">차고 문</string>
     <string name="no_devices_to_operate">작동할 기기가 없습니다.</string>
 
-    <!-- Commands -->
     <string name="turn_on_all">전체 켜기</string>
     <string name="turn_off_all">전체 끄기</string>
     <string name="open_all">전체 열기</string>
@@ -82,7 +74,6 @@
     <string name="command_close">닫기</string>
     <string name="command_stop">정지</string>
 
-    <!-- Status -->
     <string name="status_open">상태: 열림</string>
     <string name="status_closed">상태: 닫힘</string>
     <string name="status_stopped">정지됨</string>
@@ -90,7 +81,6 @@
     <string name="status_on">켜짐</string>
     <string name="status_off">꺼짐</string>
 
-    <!-- Schedule -->
     <string name="every">매</string>
     <string name="monday">월요일</string>
     <string name="tuesday">화요일</string>
@@ -107,21 +97,18 @@
     <string name="saturday_short">토</string>
     <string name="sunday_short">일</string>
 
-    <!-- Notifications -->
     <string name="notifications">알림</string>
     <string name="no_notifications">알림이 없습니다</string>
     <string name="notifications_title">알림</string>
     <string name="failed_to_load_notifications">알림 로드 실패</string>
     <string name="clear_notifications">전체 삭제</string>
 
-    <!-- Schedule Notifications -->
     <string name="schedule_executed_success">일정이 성공적으로 실행되었습니다</string>
     <string name="schedule_executed_failure">일정 실행 실패</string>
     <string name="schedule_execution_complete">일정 실행 완료</string>
     <string name="notification_channel_name">일정 알림</string>
     <string name="notification_channel_description">예약된 명령에 대한 알림</string>
 
-    <!-- Authentication -->
     <string name="app_logo_description">앱 로고</string>
     <string name="welcome_back">다시 오신 것을 환영합니다. 로그인해주세요</string>
     <string name="email_address">이메일 주소</string>
@@ -138,7 +125,6 @@
     <string name="signup_successful">가입 성공! 로그인 페이지로 이동합니다.</string>
     <string name="signup_successful_login">가입 성공! 로그인해주세요.</string>
 
-    <!-- Statistics and Overview -->
     <string name="system_overview">시스템 개요</string>
     <string name="device_status">기기 상태</string>
     <string name="environmental_impact">환경 영향</string>
@@ -152,14 +138,12 @@
     <string name="water_usage">물 사용량: %1$.1f L</string>
     <string name="system_efficiency">시스템 효율: %1$d%%</string>
 
-    <!-- Language Names -->
     <string name="english">영어</string>
     <string name="french">프랑스어</string>
     <string name="spanish">스페인어</string>
     <string name="arabic">아랍어</string>
     <string name="korean">한국어</string>
     <string name="all_schedules">모든 일정</string>
-        <!-- Messages -->
         <string name="operation_completed">모든 %1$s에 대한 작업이 완료되었습니다.</string>
         <string name="light_turned_on">조명이 켜졌습니다</string>
         <string name="light_turned_off">조명이 꺼졌습니다</string>
@@ -167,7 +151,6 @@
         <string name="command_sent_successfully">%2$s에 명령 %1$s이(가) 성공적으로 전송되었습니다.</string>
         <string name="failed_command">%2$s에 %1$s 명령 전송 실패</string>
 
-        <!-- Schedules -->
         <string name="select_date">날짜 선택</string>
         <string name="select_time">시간 선택</string>
         <string name="save_schedule">일정 저장</string>
@@ -186,13 +169,11 @@
         <string name="schedule_will_run_minutes">일정이 %1$d분 후 실행됩니다</string>
         <string name="schedule_will_run_soon">일정이 곧 실행됩니다</string>
 
-        <!-- Notifications -->
         <string name="notification_permission_title">알림 활성화</string>
         <string name="notification_permission_message">예약된 명령에 대한 알림을 받으려면 PolyHome의 알림을 허용해주세요</string>
         <string name="allow">허용</string>
         <string name="deny">거부</string>
 
-        <!-- Statistics and Overview -->
         <string name="total_houses">전체 집: %1$d</string>
         <string name="active_devices">활성 기기: %1$d</string>
         <string name="daily_co2">일일 CO2 배출량: %1$.1f kg</string>
@@ -208,7 +189,6 @@
         <string name="shutter_status_format">%d 열림 / %d 전체</string>
         <string name="light_status_format">%d 켜짐 / %d 전체</string>
 
-        <!-- User Management -->
         <string name="manage_users">사용자 관리</string>
         <string name="add_user">사용자 추가</string>
         <string name="access_granted">접근 권한이 성공적으로 부여되었습니다</string>
@@ -218,10 +198,8 @@
         <string name="failed_to_remove_access">접근 권한 제거 실패</string>
         <string name="remove_user">사용자 제거</string>
 
-        <!-- Loading -->
         <string name="loading">로드 중...</string>
 
-        <!-- Peripherals -->
         <string name="peripheral_light">조명 %s</string>
         <string name="peripheral_shutter">셔터 %s</string>
         <string name="peripheral_garage">차고 문 %s</string>
@@ -264,7 +242,6 @@
     <string name="schedule_update_details">집 %1$d의 일정이 %2$d개의 명령%3$s으로 업데이트되었습니다</string>
     <string name="language">언어</string>
 
-    <!-- Authentication strings -->
     <string name="authentication_type">인증 유형</string>
     <string name="auth_option_fingerprint">지문</string>
     <string name="auth_option_password">시스템 비밀번호</string>

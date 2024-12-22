@@ -51,7 +51,6 @@ class FloorListActivity : BaseActivity() {
             return
         }
 
-        // Skip floor selection for GarageDoor
         if (peripheralType.equals("GarageDoor", ignoreCase = true)) {
             Log.d(TAG, "GarageDoor detected. Skipping floor selection.")
             fetchPeripherals(houseId, peripheralType, skipFloorSelection = true)
@@ -129,7 +128,6 @@ class FloorListActivity : BaseActivity() {
                 val jsonObject = JSONObject(device)
                 val id = jsonObject.getString("id")
 
-                // Infer type from the prefix of `id` (e.g., "Light", "Shutter", "GarageDoor")
                 val inferredType =
                         when {
                             id.startsWith("Light", ignoreCase = true) -> "Light"

@@ -2,14 +2,14 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="PolytechBlue">#009FE3</color> <!-- Brand color -->
-    <color name="primary_text">#212121</color> <!-- Dark text for light background -->
-    <color name="background_color">#F5F5F5</color> <!-- Light background -->
-    <color name="gray">#BDBDBD</color> <!-- Neutral gray -->
-    <color name="light_gray">#E0E0E0</color> <!-- Slightly lighter gray -->
-    <color name="dark_accent">@color/PolytechBlue</color> <!-- Optional fallback -->
-    <color name="surface_color">@color/white</color> <!-- White surfaces -->
-    <color name="on_surface">@color/primary_text</color> <!-- Text on surfaces -->
+    <color name="PolytechBlue">#009FE3</color>
+    <color name="primary_text">#212121</color>
+    <color name="background_color">#F5F5F5</color>
+    <color name="gray">#BDBDBD</color>
+    <color name="light_gray">#E0E0E0</color>
+    <color name="dark_accent">@color/PolytechBlue</color>
+    <color name="surface_color">@color/white</color>
+    <color name="on_surface">@color/primary_text</color>
     <color name="drawer_text_color">@color/primary_text</color>
     <color name="secondary_text">#757575</color>
     <color name="red">#FF5252</color>

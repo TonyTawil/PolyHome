@@ -26,9 +26,8 @@ class ScheduleReceiver : BroadcastReceiver() {
         val isLastCommand = intent.getBooleanExtra("isLastCommand", true)
         val notificationHelper = NotificationHelper(context)
 
-        // Execute the command
         executeCommand(context, peripheralId, command) { success ->
-            if (isLastCommand) { // Only show notification for the last command
+            if (isLastCommand) {
                 val title =
                         if (success) {
                             context.getString(R.string.schedule_executed_success)
@@ -36,11 +35,9 @@ class ScheduleReceiver : BroadcastReceiver() {
                             context.getString(R.string.schedule_executed_failure)
                         }
 
-                val content = context.getString(R.string.schedule_execution_complete)
-
                 notificationHelper.showScheduleExecutionNotification(
                         title = title,
-                        content = content,
+                        content = context.getString(R.string.schedule_execution_complete),
                         success = success
                 )
             }
@@ -58,46 +55,37 @@ class ScheduleReceiver : BroadcastReceiver() {
         val houseId = sharedPreferences.getInt("selected_house_id", -1)
 
         if (token == null || houseId == -1) {
-            Log.e(TAG, "Missing token or house ID - token: $token, houseId: $houseId")
             callback(false)
             return
         }
 
-        Log.d(
-                TAG,
-                "Sending command to API - houseId: $houseId, peripheralId: $deviceId, command: $command"
-        )
-
+        val client = OkHttpClient()
         val url =
                 "https://polyhome.lesmoulinsdudev.com/api/houses/$houseId/devices/$deviceId/command"
-        val client = OkHttpClient()
+
         val jsonObject = JSONObject().apply { put("command", command) }
+
         val requestBody =
                 jsonObject.toString().toRequestBody("application/json".toMediaTypeOrNull())
 
         val request =
                 Request.Builder()
                         .url(url)
-                        .post(requestBody)
                         .addHeader("Authorization", "Bearer $token")
+                        .post(requestBody)
                         .build()
 
         client.newCall(request)
                 .enqueue(
                         object : Callback {
                             override fun onFailure(call: Call, e: IOException) {
-                                Log.e(TAG, "Command $command failed for $deviceId: $e")
+                                Log.e(TAG, "Failed to execute command: ${e.message}")
                                 callback(false)
                             }
 
                             override fun onResponse(call: Call, response: Response) {
-                                if (response.isSuccessful) {
-                                    Log.d(TAG, "Command $command successfully sent to $deviceId")
-                                    callback(true)
-                                } else {
-                                    Log.e(TAG, "Failed to send command $command for $deviceId")
-                                    callback(false)
-                                }
+                                callback(response.isSuccessful)
+                                response.close()
                             }
                         }
                 )

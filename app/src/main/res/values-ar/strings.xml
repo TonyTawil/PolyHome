@@ -9,7 +9,6 @@
         <item>الكورية</item>
     </string-array>
 
-    <!-- Navigation -->
     <string name="menu_houses">المنازل</string>
     <string name="menu_notifications">الإشعارات</string>
     <string name="menu_settings">الإعدادات</string>
@@ -17,7 +16,6 @@
     <string name="menu_statistics">الإحصائيات</string>
     <string name="menu_sign_out">تسجيل الخروج</string>
 
-    <!-- Settings -->
     <string name="settings">الإعدادات</string>
     <string name="theme">السمة</string>
     <string name="enable_light_mode">تفعيل الوضع الفاتح</string>
@@ -28,12 +26,10 @@
     <string name="app_version">إصدار التطبيق: 1.0.0</string>
     <string name="general">عام</string>
 
-    <!-- Floors -->
     <string name="all_floors">جميع الطوابق</string>
     <string name="first_floor">الطابق الأول</string>
     <string name="second_floor">الطابق الثاني</string>
 
-    <!-- Commands -->
     <string name="open">فتح</string>
     <string name="close">إغلاق</string>
     <string name="stop">إيقاف</string>
@@ -43,7 +39,6 @@
     <string name="turn_on_all">تشغيل الكل</string>
     <string name="turn_off_all">إطفاء الكل</string>
 
-    <!-- Status -->
     <string name="status_open">الحالة: مفتوح</string>
     <string name="status_closed">الحالة: مغلق</string>
     <string name="status_stopped">متوقف</string>
@@ -51,7 +46,6 @@
     <string name="status_on">مشغل</string>
     <string name="status_off">مطفأ</string>
 
-    <!-- Peripherals -->
     <string name="light">إضاءة</string>
     <string name="lights">إضاءات</string>
     <string name="shutter">ستارة</string>
@@ -60,15 +54,12 @@
     <string name="garage_door">باب المرآب</string>
     <string name="garage_doors">أبواب المرآب</string>
 
-    <!-- Search -->
     <string name="search_by_id">البحث بالمعرف</string>
 
-    <!-- Notifications -->
     <string name="notifications_title">الإشعارات</string>
     <string name="no_notifications">لا توجد إشعارات حتى الآن</string>
     <string name="failed_to_load_notifications">فشل في تحميل الإشعارات</string>
 
-    <!-- Schedule Notifications -->
     <string name="schedule_executed_success">تم تنفيذ البرنامج بنجاح</string>
     <string name="schedule_executed_failure">فشل في تنفيذ البرنامج</string>
     <string name="schedule_execution_complete">اكتمل تنفيذ البرنامج</string>
@@ -78,7 +69,6 @@
 
     <string name="clear_notifications">مسح الكل</string>
 
-    <!-- Add these missing strings -->
     <string name="add_schedule">إضافة جدول</string>
     <string name="delete_schedule">حذف الجدول</string>
     <string name="monday_short">ن</string>
@@ -203,7 +193,6 @@
     <string name="invalid_credentials">بيانات الاعتماد غير صا��حة</string>
     <string name="register">سجل</string>
 
-    <!-- Language Switcher -->
     <string name="language">اللغة</string>
     <string name="english">الإنجليزية</string>
     <string name="french">الفرنسية</string>
@@ -211,14 +200,12 @@
     <string name="arabic">العربية</string>
     <string name="korean">الكورية</string>
 
-    <!-- Signup -->
     <string name="create_account">إنشاء حسابك</string>
     <string name="sign_up">تسجيل</string>
     <string name="have_account_login">لديك حساب بالفعل؟ تسجيل الدخول</string>
     <string name="signup_successful">تم التسجيل بنجاح! جارٍ إعادة التوجيه لتسجيل الدخول.</string>
     <string name="signup_successful_login">تم التسجيل بنجاح! الجاء تسجل الدخول.</string>
 
-    <!-- Add these new strings -->
     <string name="command_turn_on">تشغيل</string>
     <string name="command_turn_off">إيقاف</string>
     <string name="command_open">فتح</string>
@@ -249,7 +236,6 @@
     <string name="schedule_updated_success">تم تحديث الجدول بنجاح</string>
     <string name="schedule_update_details">تم تحديث جدول المنزل %1$d مع %2$d أمر%3$s</string>
 
-    <!-- Authentication strings -->
     <string name="authentication_type">نوع المصادقة</string>
     <string name="auth_option_fingerprint">بصمة الإصبع</string>
     <string name="auth_option_password">كلمة مرور النظام</string>
@@ -257,6 +243,5 @@
     <string name="auth_required">المصادقة مطلوبة</string>
     <string name="auth_verify_identity">يرجى التحقق من هويتك للمتابعة</string>
 
-    <!-- Theme strings -->
 
 </resources> 

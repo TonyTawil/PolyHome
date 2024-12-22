@@ -52,14 +52,11 @@ class SettingsActivity : BaseActivity() {
     }
 
     private fun onThemeChanged(isDarkMode: Boolean) {
-        // Prevent multiple recreations by removing the listener temporarily
         themeSwitch.setOnCheckedChangeListener(null)
 
-        // Update the theme preference and switch text
         setThemePreference(isDarkMode)
         updateThemeSwitchText(isDarkMode)
 
-        // Reattach the listener after a short delay to prevent rapid toggling
         themeSwitch.postDelayed(
                 {
                     themeSwitch.setOnCheckedChangeListener { _, isChecked ->
@@ -67,7 +64,7 @@ class SettingsActivity : BaseActivity() {
                     }
                 },
                 1000
-        ) // 1 second delay
+        )
     }
 
     private fun getCurrentLanguage(): String {
@@ -81,7 +78,6 @@ class SettingsActivity : BaseActivity() {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         languageSpinner.adapter = adapter
 
-        // Set initial selection based on current language
         val currentLanguage = getCurrentLanguage()
         val index = languageCodes.indexOf(currentLanguage)
         if (index != -1) {

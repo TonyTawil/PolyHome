@@ -41,10 +41,8 @@ class ScheduleListAdapter(
         val schedule = getItem(position)
         val context = holder.itemView.context
 
-        // Format time
         holder.timeText.text = schedule.dateTime.split(" ")[1]
 
-        // Format days/date
         val daysText =
                 when {
                     schedule.recurringDays.isNotEmpty() -> {
@@ -61,7 +59,6 @@ class ScheduleListAdapter(
                 }
         holder.daysText.text = daysText
 
-        // Create summary text - Show house ID and number of commands
         val totalCommands = schedule.commands.size
         holder.commandsSummaryText.text =
                 context.getString(
@@ -71,10 +68,8 @@ class ScheduleListAdapter(
                         if (totalCommands > 1) "s" else ""
                 )
 
-        // Setup commands display
         holder.commandsContainer.removeAllViews()
 
-        // Add command views (remove house ID view since it's now in the summary)
         schedule.commands.forEach { command ->
             val commandView =
                     TextView(context).apply {
@@ -87,7 +82,6 @@ class ScheduleListAdapter(
             holder.commandsContainer.addView(commandView)
         }
 
-        // Setup expand/collapse functionality
         holder.expandButton.setOnClickListener {
             val isExpanded = holder.commandsContainer.visibility == View.VISIBLE
             holder.commandsContainer.visibility = if (isExpanded) View.GONE else View.VISIBLE
@@ -96,7 +90,6 @@ class ScheduleListAdapter(
 
         holder.deleteButton.setOnClickListener { onDeleteClick(schedule) }
 
-        // Setup switch
         holder.scheduleSwitch.isChecked = schedule.isEnabled
         holder.scheduleSwitch.setOnCheckedChangeListener { _, isChecked ->
             (holder.itemView.context as? SchedulesListActivity)?.let { activity ->
@@ -104,7 +97,6 @@ class ScheduleListAdapter(
             }
         }
 
-        // Add click listener to the entire card
         holder.itemView.setOnClickListener {
             onScheduleClick(schedule)
         }
@@ -139,17 +131,14 @@ class ScheduleListAdapter(
     }
 
     private fun formatPeripheralId(type: String, id: String, context: Context): String {
-        // Extract floor and number separately (e.g., "Light_1.1" -> floor "1", number "1")
         val pattern = """.*?(\d+)\.(\d+)""".toRegex()
         val matchResult = pattern.find(id)
 
         val displayNumber =
                 if (matchResult != null) {
-                    // If we found floor.number format, reconstruct it
                     val (floor, number) = matchResult.destructured
                     "$floor.$number"
                 } else {
-                    // If no floor.number format, just use any numbers found
                     id.filter { it.isDigit() }
                 }
 

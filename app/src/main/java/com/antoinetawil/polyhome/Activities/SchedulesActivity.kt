@@ -76,7 +76,6 @@ class SchedulesActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_schedules)
 
-        // Get edit mode information
         isEditMode = intent.getBooleanExtra("EDIT_MODE", false)
         editScheduleId = intent.getLongExtra("SCHEDULE_ID", -1)
 
@@ -319,8 +318,6 @@ class SchedulesActivity : BaseActivity() {
                                     }
                             )
 
-                            // If in edit mode, set the states of peripherals based on schedule
-                            // commands
                             if (isEditMode) {
                                 scheduleToEdit?.commands?.forEach { command ->
                                     val peripheral =
@@ -390,7 +387,6 @@ class SchedulesActivity : BaseActivity() {
             return
         }
 
-        // Include all peripherals, not just the modified ones
         val selectedPeripherals =
                 peripherals.filter { peripheral ->
                     when (peripheral.type.lowercase()) {
@@ -463,8 +459,12 @@ class SchedulesActivity : BaseActivity() {
 
             val selectedDays = getSelectedDays()
             if (selectedDays.isEmpty()) {
-                selectedPeripherals.forEach { peripheral ->
-                    scheduleCommand(peripheral, scheduleTimeInMillis, true)
+                selectedPeripherals.forEachIndexed { index, peripheral ->
+                    scheduleCommand(
+                            peripheral,
+                            scheduleTimeInMillis,
+                            isLastCommand = index == selectedPeripherals.size - 1
+                    )
                 }
             } else {
                 selectedPeripherals.forEach { peripheral ->
@@ -638,6 +638,7 @@ class SchedulesActivity : BaseActivity() {
                         putExtra("command", command)
                         putExtra("recurring", true)
                         putExtra("dayOfWeek", dayOfWeek)
+                        putExtra("isLastCommand", dayOfWeek == days.last())
                         data = Uri.parse("custom://${peripheral.id}/$dayOfWeek")
                     }
 
@@ -720,9 +721,9 @@ class SchedulesActivity : BaseActivity() {
                     setOnClickListener {
                         peripheral.power =
                                 when (peripheral.power) {
-                                    1 -> -1 // ON -> OFF
-                                    -1 -> 0 // OFF -> unselected
-                                    else -> 1 // unselected -> ON
+                                    1 -> -1
+                                    -1 -> 0
+                                    else -> 1
                                 }
                         setImageResource(
                                 when (peripheral.power) {
@@ -756,7 +757,6 @@ class SchedulesActivity : BaseActivity() {
                     }
                 }
 
-        // Set initial state if exists
         when (peripheral.opening) {
             1.0 -> updateButtonStates(container, openButton)
             0.0 -> updateButtonStates(container, closeButton)
@@ -772,17 +772,17 @@ class SchedulesActivity : BaseActivity() {
         return Button(this).apply {
             layoutParams =
                     LinearLayout.LayoutParams(
-                                    0, // Width will be 0 with weight for equal sizing
+                                    0,
                                     LinearLayout.LayoutParams.WRAP_CONTENT
                             )
                             .apply {
-                                weight = 1f // Equal width for both buttons
+                                weight = 1f
                                 marginStart = 8.dpToPx()
                                 marginEnd = 8.dpToPx()
                             }
             this.text = text
             setBackgroundResource(R.drawable.button_background_secondary)
-            elevation = 0f // Remove button shadow
+            elevation = 0f
             textSize = 14f
             minimumHeight = 48.dpToPx()
         }
@@ -803,17 +803,14 @@ class SchedulesActivity : BaseActivity() {
     }
 
     private fun formatPeripheralId(type: String, id: String): String {
-        // Extract floor and number separately (e.g., "Light_1.1" -> floor "1", number "1")
         val pattern = """.*?(\d+)\.(\d+)""".toRegex()
         val matchResult = pattern.find(id)
 
         val displayNumber =
                 if (matchResult != null) {
-                    // If we found floor.number format, reconstruct it
                     val (floor, number) = matchResult.destructured
                     "$floor.$number"
                 } else {
-                    // If no floor.number format, just use any numbers found
                     id.filter { it.isDigit() }
                 }
 
@@ -835,10 +832,8 @@ class SchedulesActivity : BaseActivity() {
         val peripheralIdText = view.findViewById<TextView>(R.id.peripheralIdText)
         val controlsContainer = view.findViewById<LinearLayout>(R.id.controlsContainer)
 
-        // Use the translated peripheral ID
         peripheralIdText.text = formatPeripheralId(peripheral.type, peripheral.id)
 
-        // ... rest of the createPeripheralView method remains the same ...
     }
 
     private fun loadScheduleForEditing() {
@@ -848,28 +843,23 @@ class SchedulesActivity : BaseActivity() {
 
             withContext(Dispatchers.Main) {
                 schedule?.let {
-                    // Set date and time
                     val dateTime = it.dateTime.split(" ")
                     selectedDate = dateTime[0]
                     calendarButton.text = selectedDate
 
-                    // Set time
                     val time = dateTime[1].split(":")
                     hourPicker.value = time[0].toInt()
                     minutePicker.value = time[1].toInt()
 
-                    // Set recurring days
                     dayToggles.forEachIndexed { index, toggle ->
                         toggle.isChecked = it.recurringDays.contains(index + 1)
                     }
 
-                    // Set house
                     val housePosition = houses.indexOfFirst { house -> house.houseId == it.houseId }
                     if (housePosition != -1) {
                         houseSpinner.setSelection(housePosition)
                         selectedHouse = houses[housePosition]
 
-                        // Determine peripheral type from first command
                         it.commands.firstOrNull()?.let { command ->
                             val typePosition =
                                     when (command.peripheralType.lowercase()) {
@@ -881,7 +871,6 @@ class SchedulesActivity : BaseActivity() {
                             peripheralTypeSpinner.setSelection(typePosition)
                             selectedPeripheralType = peripheralTypeSpinner.selectedItem.toString()
 
-                            // Now fetch peripherals
                             fetchPeripherals()
                         }
                     }

@@ -34,7 +34,6 @@ class NotificationListAdapter :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val notification = getItem(position)
 
-        // Translate the stored English notification to the current locale
         val (localizedTitle, localizedContent) =
                 NotificationTranslator.getLocalizedNotification(
                         holder.itemView.context,
@@ -45,11 +44,9 @@ class NotificationListAdapter :
         holder.titleText.text = localizedTitle
         holder.contentText.text = localizedContent
 
-        // Format timestamp
         val dateFormat = SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault())
         holder.timeText.text = dateFormat.format(Date(notification.timestamp))
 
-        // Set status icon
         holder.statusIcon.setImageResource(
                 if (notification.success) R.drawable.ic_success else R.drawable.ic_error
         )
