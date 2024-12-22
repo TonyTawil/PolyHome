@@ -99,7 +99,7 @@
     <string name="co2_value_format">%s كجم</string>
     <string name="total_houses_format">إجمالي المنازل: %d</string>
     <string name="total_devices_format">إجمالي الأجهزة: %d</string>
-    <string name="daily_co2_format">ثاني أكسيد الكربون اليومي: %.1f كجم</string>
+    <string name="daily_co2_format">ث��ني أكسيد الكربون اليومي: %.1f كجم</string>
     <string name="efficiency_format">كفاءة النظام: %d%%</string>
     <string name="active_devices_format">الأجهزة النشطة: %d</string>
     <string name="energy_saved_format">الطاقة الموفرة: %.1f كيلوواط/ساعة</string>
@@ -203,7 +203,7 @@
 
     <!-- Language Switcher -->
     <string name="language">اللغة</string>
-    <string name="english">الإنجليزية</string>
+    <string name="english">الإنجل��زية</string>
     <string name="french">الفرنسية</string>
     <string name="spanish">الإسبانية</string>
     <string name="arabic">العربية</string>
@@ -246,5 +246,13 @@
     <string name="update_schedule">تحديث الجدول</string>
     <string name="schedule_updated_success">تم تحديث الجدول بنجاح</string>
     <string name="schedule_update_details">تم تحديث جدول المنزل %1$d مع %2$d أمر%3$s</string>
+
+    <!-- Authentication strings -->
+    <string name="authentication_type">نوع المصادقة</string>
+    <string name="auth_option_fingerprint">بصمة الإصبع</string>
+    <string name="auth_option_password">كلمة مرور النظام</string>
+    <string name="auth_option_none">لا شيء</string>
+    <string name="auth_required">المصادقة مطلوبة</string>
+    <string name="auth_verify_identity">يرجى التحقق من هويتك للمتابعة</string>
 
 </resources> 

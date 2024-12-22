@@ -255,4 +255,11 @@
     <string name="schedule_updated_success">Horario actualizado con éxito</string>
     <string name="schedule_update_details">Horario para Casa %1$d actualizado con %2$d comando%3$s</string>
 
+    <string name="authentication_type">Tipo de autenticación</string>
+    <string name="auth_option_fingerprint">Huella digital</string>
+    <string name="auth_option_password">Contraseña del sistema</string>
+    <string name="auth_option_none">Ninguno</string>
+    <string name="auth_required">Autenticación requerida</string>
+    <string name="auth_verify_identity">Por favor, verifique su identidad para continuar</string>
+
 </resources> 

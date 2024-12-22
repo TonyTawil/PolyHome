@@ -113,20 +113,24 @@
                         android:paddingTop="6dp">
 
                         <TextView
+                            android:id="@+id/securityLabel"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentStart="true"
                             android:layout_centerVertical="true"
-                            android:text="@string/enable_biometric_auth"
+                            android:layout_marginEnd="16dp"
+                            android:layout_toStartOf="@id/securitySpinner"
+                            android:text="@string/authentication_type"
                             android:textColor="@color/gray" />
 
-                        <Switch
-                            android:id="@+id/biometricSwitch"
+                        <Spinner
+                            android:id="@+id/securitySpinner"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
                             android:layout_centerVertical="true"
-                            android:thumbTint="@color/thumb_color" />
+                            android:minWidth="140dp"
+                            android:spinnerMode="dropdown" />
                     </RelativeLayout>
                 </LinearLayout>
 

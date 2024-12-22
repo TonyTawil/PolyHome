@@ -217,5 +217,11 @@
     <string name="update_schedule">Update Schedule</string>
     <string name="schedule_updated_success">Schedule Updated Successfully</string>
     <string name="schedule_update_details">Schedule for House %1$d updated with %2$d command%3$s</string>
+    <string name="authentication_type">Authentication Type</string>
+    <string name="auth_option_fingerprint">Fingerprint</string>
+    <string name="auth_option_password">System Password</string>
+    <string name="auth_option_none">None</string>
+    <string name="auth_required">Authentication Required</string>
+    <string name="auth_verify_identity">Please verify your identity to continue</string>
 
 </resources>

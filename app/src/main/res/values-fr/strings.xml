@@ -21,7 +21,7 @@
     <string name="second_floor">Deuxième étage</string>
     <string name="invalid_data">Données invalides</string>
     <string name="auth_token_missing">Jeton d\'authentification manquant</string>
-    <string name="fetch_failed">Échec de la récupération des périphériques</string>
+    <string name="fetch_failed">��chec de la récupération des périphériques</string>
     <string name="all_houses">Toutes les maisons</string>
     <string name="owner_status">Propriétaire</string>
     <string name="guest_status">Invité</string>
@@ -217,6 +217,12 @@
     <string name="update_schedule">Mettre à jour le programme</string>
     <string name="schedule_updated_success">Horaire mis à jour avec succès</string>
     <string name="schedule_update_details">Horaire pour la Maison %1$d mis à jour avec %2$d commande%3$s</string>
+    <string name="authentication_type">Type d\'authentification</string>
+    <string name="auth_option_fingerprint">Empreinte digitale</string>
+    <string name="auth_option_password">Mot de passe système</string>
+    <string name="auth_option_none">Aucun</string>
+    <string name="auth_required">Authentification requise</string>
+    <string name="auth_verify_identity">Veuillez vérifier votre identité pour continuer</string>
 
 
 </resources>

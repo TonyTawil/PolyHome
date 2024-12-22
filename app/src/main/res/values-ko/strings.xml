@@ -212,7 +212,7 @@
         <string name="add_user">사용자 추가</string>
         <string name="access_granted">접근 권한이 성공적으로 부여되었습니다</string>
         <string name="access_removed">접근 권한이 성공적으로 제거되었습니다</string>
-        <string name="failed_to_fetch_users">사용자 가져오기 실패</string>
+        <string name="failed_to_fetch_users">사용��� 가져오기 실패</string>
         <string name="failed_to_grant_access">접근 권한 부여 실패</string>
         <string name="failed_to_remove_access">접근 권한 제거 실패</string>
         <string name="remove_user">사용자 제거</string>
@@ -262,5 +262,12 @@
     <string name="schedule_updated_success">일정이 성공적으로 업데이트되었습니다</string>
     <string name="schedule_update_details">집 %1$d의 일정이 %2$d개의 명령%3$s으로 업데이트되었습니다</string>
 
+    <!-- Authentication strings -->
+    <string name="authentication_type">인증 유형</string>
+    <string name="auth_option_fingerprint">지문</string>
+    <string name="auth_option_password">시스템 비밀번호</string>
+    <string name="auth_option_none">없음</string>
+    <string name="auth_required">인증 필요</string>
+    <string name="auth_verify_identity">계속하려면 신원을 확인하세요</string>
 
 </resources>
