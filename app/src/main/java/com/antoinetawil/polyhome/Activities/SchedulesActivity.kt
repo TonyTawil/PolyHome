@@ -141,7 +141,8 @@ class SchedulesActivity : BaseActivity() {
             value = Calendar.getInstance().get(Calendar.MINUTE)
         }
 
-        saveScheduleButton.text = getString(if (isEditMode) R.string.update_schedule else R.string.save_schedule)
+        saveScheduleButton.text =
+                getString(if (isEditMode) R.string.update_schedule else R.string.save_schedule)
 
         if (isEditMode) {
             loadScheduleForEditing()
@@ -277,7 +278,9 @@ class SchedulesActivity : BaseActivity() {
 
         api.get<Map<String, List<Map<String, Any>>>>(
                 path = url,
-                securityToken = getSharedPreferences("PolyHomePrefs", MODE_PRIVATE).getString("auth_token", "")!!,
+                securityToken =
+                        getSharedPreferences("PolyHomePrefs", MODE_PRIVATE)
+                                .getString("auth_token", "")!!,
                 onSuccess = { responseCode, response ->
                     runOnUiThread {
                         if (responseCode == 200 && response != null) {
@@ -316,10 +319,12 @@ class SchedulesActivity : BaseActivity() {
                                     }
                             )
 
-                            // If in edit mode, set the states of peripherals based on schedule commands
+                            // If in edit mode, set the states of peripherals based on schedule
+                            // commands
                             if (isEditMode) {
                                 scheduleToEdit?.commands?.forEach { command ->
-                                    val peripheral = peripherals.find { p -> p.id == command.peripheralId }
+                                    val peripheral =
+                                            peripherals.find { p -> p.id == command.peripheralId }
                                     peripheral?.let { p ->
                                         when (command.command) {
                                             "TURN ON" -> p.power = 1
@@ -385,11 +390,11 @@ class SchedulesActivity : BaseActivity() {
             return
         }
 
+        // Include all peripherals, not just the modified ones
         val selectedPeripherals =
                 peripherals.filter { peripheral ->
                     when (peripheral.type.lowercase()) {
-                        "light" -> peripheral.power != 0
-                        "rolling shutter", "garage door" -> peripheral.opening != 0.0
+                        "light", "rolling shutter", "garage door" -> true
                         else -> false
                     }
                 }
@@ -418,7 +423,19 @@ class SchedulesActivity : BaseActivity() {
                         ScheduleCommand(
                                 peripheralId = peripheral.id,
                                 peripheralType = peripheral.type,
-                                command = determineCommand(peripheral)
+                                command =
+                                        when (peripheral.type.lowercase()) {
+                                            "light" ->
+                                                    if (peripheral.power == 1) "TURN ON"
+                                                    else "TURN OFF"
+                                            "rolling shutter", "garage door" ->
+                                                    when {
+                                                        peripheral.opening == 1.0 -> "OPEN"
+                                                        peripheral.opening == 0.0 -> "CLOSE"
+                                                        else -> "STOP"
+                                                    }
+                                            else -> ""
+                                        }
                         )
                     }
 
@@ -434,10 +451,11 @@ class SchedulesActivity : BaseActivity() {
             if (isEditMode) {
                 dbHelper.updateSchedule(schedule)
                 withContext(Dispatchers.Main) {
-                    NotificationHelper(this@SchedulesActivity).showScheduleUpdateNotification(
-                        houseId = schedule.houseId,
-                        commandCount = commands.size
-                    )
+                    NotificationHelper(this@SchedulesActivity)
+                            .showScheduleUpdateNotification(
+                                    houseId = schedule.houseId,
+                                    commandCount = commands.size
+                            )
                 }
             } else {
                 dbHelper.insertSchedule(schedule)
@@ -827,41 +845,42 @@ class SchedulesActivity : BaseActivity() {
         lifecycleScope.launch(Dispatchers.IO) {
             val schedule = dbHelper.getSchedule(editScheduleId)
             scheduleToEdit = schedule
-            
+
             withContext(Dispatchers.Main) {
                 schedule?.let {
                     // Set date and time
                     val dateTime = it.dateTime.split(" ")
                     selectedDate = dateTime[0]
                     calendarButton.text = selectedDate
-                    
+
                     // Set time
                     val time = dateTime[1].split(":")
                     hourPicker.value = time[0].toInt()
                     minutePicker.value = time[1].toInt()
-                    
+
                     // Set recurring days
                     dayToggles.forEachIndexed { index, toggle ->
                         toggle.isChecked = it.recurringDays.contains(index + 1)
                     }
-                    
+
                     // Set house
                     val housePosition = houses.indexOfFirst { house -> house.houseId == it.houseId }
                     if (housePosition != -1) {
                         houseSpinner.setSelection(housePosition)
                         selectedHouse = houses[housePosition]
-                        
+
                         // Determine peripheral type from first command
                         it.commands.firstOrNull()?.let { command ->
-                            val typePosition = when(command.peripheralType.lowercase()) {
-                                "light" -> 0
-                                "shutter" -> 1
-                                "garage door" -> 2
-                                else -> 0
-                            }
+                            val typePosition =
+                                    when (command.peripheralType.lowercase()) {
+                                        "light" -> 0
+                                        "shutter" -> 1
+                                        "garage door" -> 2
+                                        else -> 0
+                                    }
                             peripheralTypeSpinner.setSelection(typePosition)
                             selectedPeripheralType = peripheralTypeSpinner.selectedItem.toString()
-                            
+
                             // Now fetch peripherals
                             fetchPeripherals()
                         }
